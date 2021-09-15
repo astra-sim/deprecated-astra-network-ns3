@@ -199,6 +199,8 @@ void OnOffApplication::StartSending ()
   NS_LOG_FUNCTION_NOARGS ();
   m_lastStartTime = Simulator::Now ();
   ScheduleNextTx ();  // Schedule the send packet event
+  // call astra sim here schedule it here
+  NS_LOG_INFO("can call astra sim here after sending specified number of packet");
   ScheduleStopEvent ();
 }
 
@@ -259,6 +261,7 @@ void OnOffApplication::SendPacket ()
   m_txTrace (packet);
   m_socket->Send (packet);
   m_totBytes += m_pktSize;
+  NS_LOG_INFO("node details of onoff application"<<GetNode ());
   if (InetSocketAddress::IsMatchingType (m_peer))
     {
       NS_LOG_INFO ("At time " << Simulator::Now ().GetSeconds ()
@@ -267,6 +270,7 @@ void OnOffApplication::SendPacket ()
                    << InetSocketAddress::ConvertFrom(m_peer).GetIpv4 ()
                    << " port " << InetSocketAddress::ConvertFrom (m_peer).GetPort ()
                    << " total Tx " << m_totBytes << " bytes");
+      //m_txTraceWithAddresses (packet, localAddress, InetSocketAddress::ConvertFrom (m_peer));
     }
   else if (Inet6SocketAddress::IsMatchingType (m_peer))
     {
@@ -276,9 +280,11 @@ void OnOffApplication::SendPacket ()
                    << Inet6SocketAddress::ConvertFrom(m_peer).GetIpv6 ()
                    << " port " << Inet6SocketAddress::ConvertFrom (m_peer).GetPort ()
                    << " total Tx " << m_totBytes << " bytes");
+      //m_txTraceWithAddresses (packet, localAddress, Inet6SocketAddress::ConvertFrom(m_peer));
     }
   m_lastStartTime = Simulator::Now ();
   m_residualBits = 0;
+  NS_LOG_INFO("can call astra sim here after sending one packet");
   ScheduleNextTx ();
 }
 
