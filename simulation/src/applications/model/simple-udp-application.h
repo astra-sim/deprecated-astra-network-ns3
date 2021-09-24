@@ -1,12 +1,24 @@
 #ifndef NS3_UDP_ARQ_APPLICATION_H
 #define NS3_UDP_ARQ_APPLICATION_H
+#include <queue>
 #include "ns3/socket.h"
 #include "ns3/application.h"
+#include "ns3/internet-module.h"
+#include "ns3/network-module.h"
+#include <iostream>
 
 using namespace ns3;
 
 namespace ns3
 {
+  struct task{
+      int src;
+      int dest;
+      int type;
+      // void (*fptr) (void);
+      void* fun_arg;
+      void (*msg_handler)(void* fun_arg);
+    };
   class SimpleUdpApplication : public Application 
   {
     public:
@@ -18,15 +30,25 @@ namespace ns3
 
       /** \brief handles incoming packets on port 7777
        */
-      void HandleReadOne (Ptr<Socket> socket);
+      // void HandleReadOne (Ptr<Socket> socket);
 
       /** \brief handles incoming packets on port 9999
        */
-      void HandleReadTwo (Ptr<Socket> socket);
+      void HandleRead (Ptr<Socket> socket);
 
       /** \brief Send an outgoing packet. This creates a new socket every time (not the best solution)
       */
-      void SendPacket (Ptr<Packet> packet, Ipv4Address destination, uint16_t port);
+      void SendPacket(int dest, void* fun_arg,
+          void (*msg_handler)(void* fun_arg));
+
+      void InitializeAppSend(int nodes, int index, Ipv4InterfaceContainer interfaces);
+
+      void InitializeAppRecv(int nodes, int index);
+
+      void FinishTask();
+
+      // void processQueue(int &finishFlag, std::queue<task> &dataQueue,Ptr<Socket> m_send_socket[]);
+      void processQueue();
 
     private:
       
@@ -35,12 +57,17 @@ namespace ns3
       virtual void StartApplication ();
 
 
-      Ptr<Socket> m_recv_socket1; /**< A socket to receive on a specific port */
-      Ptr<Socket> m_recv_socket2; /**< A socket to receive on a specific port */
-      uint16_t m_port1; 
-      uint16_t m_port2;
+      // Ptr<Socket> m_recv_socket1; /**< A socket to receive on a specific port */
+      Ptr<Socket> m_recv_socket[100]; /**< A socket to receive on a specific port */
+      // uint16_t m_port1; 
+      uint16_t m_port_send;
+      // uint16_t m_port1; 
+      uint16_t m_port_recv;
 
-      Ptr<Socket> m_send_socket; /**< A socket to listen on a specific port */
+      Ptr<Socket> m_send_socket[100]; /**< A socket to listen on a specific port */
+      std::queue<struct task> dataQueue;
+      int finishFlag;
+
   };
 }
 
