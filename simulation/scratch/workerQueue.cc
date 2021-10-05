@@ -2,20 +2,20 @@
 #include <iostream> 
 #include <string>
 #include <map>
-#include <set>
-
 using namespace std;
+//type=0->send, type=1->receive, type=2->schedule
 struct task1{
     int src;
     int dest;
     int type;
     // void (*fptr) (void);
+    int count;
     void* fun_arg;
     void (*msg_handler)(void* fun_arg);
 };
 extern queue<struct task1> workerQueue;
 extern map<pair<int,int>, struct task1> expeRecvHash;
-extern set<pair<int,int> > recvHash;
+extern map<pair<int,int>,int > recvHash;
 // class workerQueue{
 //     public:
 //         static queue<string> q;

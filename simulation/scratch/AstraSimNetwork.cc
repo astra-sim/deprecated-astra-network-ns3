@@ -75,24 +75,37 @@ class ASTRASimNetwork: AstraSim::AstraNetworkAPI{
             AstraSim::timespec_t delta,
             void (*fun_ptr)(void* fun_arg),
             void* fun_arg){
+                delta.time_val = 5; //trial
+                task1 t;
+                t.type = 2;
+                t.fun_arg = fun_arg;
+                t.msg_handler = fun_ptr;
+                t.schTime = delta.time_val;
+                workerQueue.push(t);
                 return;
             }
         virtual int sim_send(
-            void* buffer,
-            uint64_t count,
-            int type,
+            void* buffer, //not yet used 
+            uint64_t count, //number of bytes to be send
+            int type,//not yet used 
             int dst,
-            int tag,
-            AstraSim::sim_request* request,
+            int tag, //not yet used 
+            AstraSim::sim_request* request,//not yet used 
             void (*msg_handler)(void* fun_arg),
             void* fun_arg){
                 // int src = 0;
-                // workerQueue.push(make_pair(src, dst));
-                cout<<"event pushed\n";
-                // Simulator::Schedule (Seconds (2), &SimpleUdpApplication::SendPacket, udp0, packet1, dest_ip, 7777);
-                // RoCE roce;
-                // roce.sim_init(2);
-                // roce.sim_send();
+                //populate task1 with the required arguments
+                task1 t;
+                t.src = rank; //how to get src, is it the rank (starts from 0?)
+                t.dest = dst;
+                // int a = 1;
+                t.count = count; 
+                //t.fun_arg = &a;
+                t.type = 0;
+                t.fun_arg = fun_arg;
+                t.msg_handler = msg_handler;
+                workerQueue.push(t);
+                cout<<"event at sender pushed\n";
                 return 0;
             }
         virtual int sim_recv(
@@ -104,6 +117,18 @@ class ASTRASimNetwork: AstraSim::AstraNetworkAPI{
             AstraSim::sim_request* request,
             void (*msg_handler)(void* fun_arg),
             void* fun_arg){
+                //populate task1 with the required arguments
+                task1 t;
+                t.src = src;
+                t.dest = 2; //how to get dest, is it the rank (starts from 0?)
+                // int a = 1;
+                t.count = count; 
+                //t.fun_arg = &a;
+                t.type = 1;
+                t.fun_arg = fun_arg;
+                t.msg_handler = msg_handler;
+                workerQueue.push(t);
+                cout<<"event at receiver pushed\n";
                 return 0;
             }
         void  handleEvent(int dst,int cnt) {
@@ -112,16 +137,15 @@ class ASTRASimNetwork: AstraSim::AstraNetworkAPI{
         }
 };
 
-void foo(void) {
-    myTCPMultiple example;
-    example.init_t();
+void fun_send(void* a) {
+    cout<<*(int *)a<<"Having fun in send!"<<"\n";
 }
-
-void fun(void* a) {
-    cout<<*(int *)a<<"\n";
-    cout<<"Having fun!"<<endl;
+void fun_recv(void* a) {
+    cout<<*(int *)a<<"Having fun in recv!"<<"\n";
 }
-
+void fun_sch(void* a) {
+    cout<<*(int *)a<<"Having fun in schedule!"<<"\n";
+}
 void sim_init(int n){
     NodeContainer nodes;
     nodes.Create (n);
@@ -162,36 +186,48 @@ void sim_init(int n){
         udp[i]->InitializeAppSend(n,i,ifaces);    
         
     }
-    Ipv4Address dest_ip = ifaces.GetAddress(1);
-    cout<<"dest ip is "<<dest_ip<<"\n";
+    // Ipv4Address dest_ip = ifaces.GetAddress(1);
+    // cout<<"dest ip is "<<dest_ip<<"\n";
 
-    task1 t;
-    t.src = 1;
-    t.dest = 2;
-    int a = 1;
-    t.fun_arg = &a;
-    t.msg_handler = &fun;
-    workerQueue.push(t);
     while(!workerQueue.empty()){
         task1 t1 = workerQueue.front();
-        Ipv4Address dest_ip1 = ifaces.GetAddress(t1.dest);
-        cout<<"dest ip is "<<dest_ip1<<"\n";
-        Simulator::Schedule (Seconds (4), &SimpleUdpApplication::SendPacket, udp[t1.src], t1.dest, t1.fun_arg, t1.msg_handler);
-        // t1.msg_handler(t1.fun_arg);
+        if(t1.type==0){
+            Ipv4Address dest_ip1 = ifaces.GetAddress(t1.dest);
+            cout<<"dest ip is "<<dest_ip1<<"\n";
+            udp[t1.src]->SendPacket(t1.dest, t1.fun_arg, t1.msg_handler, t1.count);
+            // Simulator::Schedule (Seconds (0), &SimpleUdpApplication::SendPacket, udp[t1.src], t1.dest, t1.fun_arg, t1.msg_handler, t1.count);
+        }
+        else if(t1.type==1){
+            //WHENEVER SENDING TO RECEIVE FUNCTION first check if that pair already in receive hash. 
+            if(recvHash.find(make_pair(t1.src,t1.dest))!=recvHash.end()){
+                int count = recvHash[make_pair(t1.src,t1.dest)];
+                if(count == t1.count)
+                {
+                    recvHash.erase(make_pair(t1.src,t1.dest));
+                    t1.msg_handler(t1.fun_arg);
+                    cout<<"already in recv hash\n";
+                }
+                else if (count > t1.count){
+                    recvHash[make_pair(t1.src,t1.dest)] = count - t1.count;
+                    t1.msg_handler(t1.fun_arg);
+                    cout<<"already in recv hash with more data\n";
+                }
+                else{
+                    recvHash.erase(make_pair(t1.src,t1.dest));
+                    t1.count -= count;
+                    expeRecvHash[make_pair(t1.src,t1.dest)] = t1;
+                    cout<<"partially in recv hash\n";
+                }
+            }
+            else{
+                expeRecvHash[make_pair(t1.src,t1.dest)] = t1;
+                cout<<"not in recv hash\n";
+            }
+        }
+        else{
+            Simulator::Schedule (Seconds (t1.schTime), t1.msg_handler, t1.fun_arg);
+        }
         workerQueue.pop();
-    }
-    //WHENEVER SENDING TO RECEIVE FUNCTION first check if that pair already in receive hash. 
-    if(recvHash.find(make_pair(1,2))!=recvHash.end()){
-        recvHash.erase(make_pair(1,2));
-        t.msg_handler(t.fun_arg);
-        cout<<"already in recv hash\n";
-    }
-    else{
-        expeRecvHash[make_pair(1,2)] = t;
-        cout<<"not in recv hash\n";
-    }
-    for(std::map<std::pair<int, int>, struct task1>::iterator it = expeRecvHash.begin();it!=expeRecvHash.end();it++){
-        std::cout<<it->first.first<<" "<<it->first.second<<"\n";
     }
 //    Simulator::Schedule (Seconds (4), &SimpleUdpApplication::FinishTask, udp[t.src]); 
 //    Simulator::Schedule (Seconds (5), &SimpleUdpApplication::processQueue, udp[t.src]);
@@ -199,37 +235,9 @@ void sim_init(int n){
     // LogComponentEnable ("SimpleUdpApplication", LOG_LEVEL_INFO);
     // Simulator::Schedule (Seconds (2), &SimpleUdpApplication::SendPacket, udp[0], packet2, dest_ip, 9999);
 
-    // Simulator::Stop (Seconds (10));
-
-    // pair<int, int> p1 = workerQueue.front();
-
     Simulator::Run ();
-    // pair<int,int> p = workerQueue.front();
-    // cout<<p.first<<" "<<p.second<<"\n";
-    // while(1)
-    // {
-    //     while(!workerQueue.empty()){
-    //         cout<<"sdkfl\n";
-    //         pair<int,int> p = workerQueue.front();
-    //         cout<<p.first<<" "<<p.second;
-    //         workerQueue.pop();
-    //         cout<<"xxxx\n";
-    //         dest_ip = ifaces.GetAddress(p.second);
-    //         cout<<"xxxx1 "<<dest_ip<<"\n";
-    //         udp[p.first]->SendPacket(packet1,1);
-    //         // udp[p.first]->SendPacket(packet2,dest_ip,9999);
-    //         // Simulator::Schedule (Seconds (0), &SimpleUdpApplication::SendPacket, udp[p.first],packet1,1);
-    //         cout<<"xxxx2\n";
-    //     }
-    // }
     
-    Simulator::Stop (Seconds (10));
-    // while(1){}
-}
-
-void MovieQuote(void* fun_arg)
-{
-    cout<<"in movie quote\n";
+    Simulator::Stop (Seconds (100));
 }
 
 
@@ -239,20 +247,12 @@ int main (int argc, char *argv[]){
     // LogComponentEnable("myTCPMultiple",LOG_LEVEL_INFO);
     LogComponentEnable("OnOffApplication", LOG_LEVEL_INFO);
     LogComponentEnable("PacketSink", LOG_LEVEL_INFO);
-    // ASTRASimNetwork network = ASTRASimNetwork(1);
-    // network.sim_init(4);
-    // network.sim_finish();
-    //AstraSim::sim_requests* request;
-    // void (*SomethingToSay)(void* arg);
-    // network.handleEvent(1,1);
-    // foo();
-    // RoCE roce;
+    ASTRASimNetwork network = ASTRASimNetwork(1);
+    int fun_arg=1;
+    network.sim_send(nullptr,3000,-1,2,-1,nullptr,&fun_send,&fun_arg);
+    network.sim_recv(nullptr,3000,-1,1,-1,nullptr,&fun_recv,&fun_arg);
+    network.sim_schedule(AstraSim::timespec_t(),&fun_sch,&fun_arg);
+    //pass number of nodes
     sim_init(4);
-    // std::thread  t1(sim_init, 4);
-    // sleep(2);
-    // network.sim_send(nullptr,1,1,1,1,nullptr,&MovieQuote,nullptr);
-    // network.sim_send(nullptr,1,1,1,1,nullptr,&MovieQuote,nullptr);
-    // sleep(2);
-    // t1.join();
     return 0;
 }

@@ -2,7 +2,6 @@
 #include <iostream> 
 #include <string>
 #include <map>
-#include <set>
 
 using namespace std;
 struct task1{
@@ -10,12 +9,14 @@ struct task1{
     int dest;
     int type;
     // void (*fptr) (void);
+    int count;
     void* fun_arg;
     void (*msg_handler)(void* fun_arg);
+    int schTime; //in sec
 };
 extern queue<struct task1> workerQueue;
 extern map<pair<int,int>, struct task1> expeRecvHash;
-extern set<pair<int,int> > recvHash;
+extern map<pair<int,int>,int > recvHash;
 
 // class workerQueue{
 //     public:
