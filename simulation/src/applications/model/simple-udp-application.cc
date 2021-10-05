@@ -2,6 +2,7 @@
 #include "simple-udp-application.h"
 #include "ns3/udp-socket.h"
 #include "ns3/simulator.h"
+#include "ns3/nstime.h"
 #include "ns3/csma-net-device.h"
 #include "ns3/ethernet-header.h"
 #include "ns3/arp-header.h"
@@ -24,7 +25,7 @@
 #define RED_CODE "\033[91m"
 #define BOLD_CODE "\033[1m"
 #define END_CODE "\033[0m"
-set<pair<int,int> > recvHash;
+map<pair<int,int>,int > recvHash;
 map<pair<int,int>, struct task1> expeRecvHash;
 namespace ns3
 {
@@ -51,6 +52,7 @@ namespace ns3
     m_port_send = 7000;
     m_port_recv = 9000;
     finishFlag = 0;
+    mtu = 1500;
   }
 
   SimpleUdpApplication::~SimpleUdpApplication()
@@ -106,6 +108,7 @@ namespace ns3
     std::cout<<"receiver node "<<receiver_node<<"\n";
     int sender_node;
     // std::cout<<socket->GetBoundNetDevice()->GetAddress()<<"\n";
+    int count=0; //data in bytes
     while ((packet = socket->RecvFrom(from)))
     {
       MyHeader destinationHeader;
@@ -114,36 +117,73 @@ namespace ns3
       cout<<"sender node is" << sender_node<<"\n";
       NS_LOG_INFO(PURPLE_CODE << "HandleRead : Received a Packet of size: " << packet->GetSize() << " at time " << Now().GetSeconds() << END_CODE);
       //NS_LOG_INFO("Content: " << packet->ToString());
-      std::cout<<"handleread "<<packet->GetSize() << " at time " << Now().GetSeconds()<<"\n";
+      // std::cout<<"handleread "<<packet->GetSize() << " at time " << Now().GetSeconds()<<"\n";
+      count+= packet->GetSize();
+      std::cout<<count<<"\n";
     }
     for(std::map<std::pair<int, int>, struct task1>::iterator it = expeRecvHash.begin();it!=expeRecvHash.end();it++){
         std::cout<<it->first.first<<" "<<it->first.second<<"\n";
     }
     if(expeRecvHash.find(make_pair(sender_node, receiver_node))!=expeRecvHash.end()){
       task1 t2 = expeRecvHash[make_pair(sender_node, receiver_node)];
-      t2.msg_handler(t2.fun_arg);
-      expeRecvHash.erase(make_pair(sender_node, receiver_node));
-      cout<<"already in expected recv hash\n";
+      cout<<"count and t2.count is"<<count<<" "<<t2.count<<"\n";
+      if(count == t2.count)
+      {
+        t2.msg_handler(t2.fun_arg);
+        expeRecvHash.erase(make_pair(sender_node, receiver_node));
+        cout<<"already in expected recv hash\n";
+      }
+      else if (count > t2.count){
+          recvHash[make_pair(1,2)] = count - t2.count;
+          t2.msg_handler(t2.fun_arg);
+          expeRecvHash.erase(make_pair(sender_node, receiver_node));
+          cout<<"already in recv hash with more data\n";
+      }
+      else{
+          t2.count -=count;
+          expeRecvHash[make_pair(sender_node, receiver_node)] = t2;
+          cout<<"t2.count is"<<t2.count<<"\n";
+          cout<<"partially in recv hash \n";
+      }
     }
     else{
-      recvHash.insert(make_pair(sender_node, receiver_node));
+      recvHash[make_pair(sender_node, receiver_node)]=count;
       cout<<"not in expected recv hash\n";
     }
     // recvHash.insert();
   }
+  // void SimpleUdpApplication::SendPacketInternal(){
+  //    m_send_socket[dest]->Send(packet1);
+
+  // }
+  void SimpleUdpApplication::ScheduleTransmit (Time dt, int dest, void* fun_arg,
+    void (*msg_handler)(void* fun_arg), int count)
+  {
+    Simulator::Schedule (dt, &SimpleUdpApplication::SendPacket, this, dest, fun_arg,msg_handler, count);
+  }
 
   void SimpleUdpApplication::SendPacket(int dest, void* fun_arg,
-    void (*msg_handler)(void* fun_arg)){
+    void (*msg_handler)(void* fun_arg), int count){
+    // while(count>0){
+      Ptr<Packet> packet1 = Create <Packet> (mtu);
+      MyHeader sourceHeader;
+      sourceHeader.SetData (GetNode()->GetId());
+      packet1->AddHeader (sourceHeader);
+      packet1->Print (std::cout);
+      std::cout << std::endl;
+      m_send_socket[dest]->Send(packet1);
+      std::cout<<"packet send to port of sender "<<m_port_send+dest<<" and recevied to node"<<m_port_recv+GetNode()->GetId()<<"\n";
+      // Simulator::Schedule (Seconds (1),&SimpleUdpApplication::SendPacketInternal, this, dest, );
+      count-=mtu;
+      if(count>0)
+      {
+        Time m_interval = MilliSeconds (5.0); //delay between packet 5 sec
+        ScheduleTransmit (m_interval,dest,fun_arg, msg_handler, count);
+      }
+    // }
+    if(count<=0)
+      msg_handler(fun_arg); //sender side astrasim callback
     // NS_LOG_FUNCTION (this << packet << destination << port);
-    Ptr<Packet> packet1 = Create <Packet> (400);
-    MyHeader sourceHeader;
-    sourceHeader.SetData (GetNode()->GetId());
-    packet1->AddHeader (sourceHeader);
-    packet1->Print (std::cout);
-    std::cout << std::endl;
-    m_send_socket[dest]->Send(packet1);
-    std::cout<<"packet send to port of sender "<<m_port_send+dest<<" and recevied to node"<<m_port_recv+GetNode()->GetId()<<"\n";
-    msg_handler(fun_arg);
   }
 
   // void SimpleUdpApplication::SendPacket(int dest, void* fun_arg,

@@ -5,6 +5,7 @@
 #include "ns3/application.h"
 #include "ns3/internet-module.h"
 #include "ns3/network-module.h"
+#include "ns3/nstime.h"
 #include <iostream>
 
 using namespace ns3;
@@ -36,10 +37,13 @@ namespace ns3
        */
       void HandleRead (Ptr<Socket> socket);
 
-      /** \brief Send an outgoing packet. This creates a new socket every time (not the best solution)
+      void ScheduleTransmit(Time dt, int dest, void* fun_arg,
+          void (*msg_handler)(void* fun_arg), int count);
+
+      /** \brief Send an outgoing packet. This creates a new socket every time
       */
       void SendPacket(int dest, void* fun_arg,
-          void (*msg_handler)(void* fun_arg));
+          void (*msg_handler)(void* fun_arg), int count);
 
       void InitializeAppSend(int nodes, int index, Ipv4InterfaceContainer interfaces);
 
@@ -49,13 +53,12 @@ namespace ns3
 
       // void processQueue(int &finishFlag, std::queue<task> &dataQueue,Ptr<Socket> m_send_socket[]);
       void processQueue();
-
     private:
       
       
       void SetupReceiveSocket (Ptr<Socket> socket, uint16_t port);
       virtual void StartApplication ();
-
+      // void SimpleUdpApplication::SendPacketInternal();
 
       // Ptr<Socket> m_recv_socket1; /**< A socket to receive on a specific port */
       Ptr<Socket> m_recv_socket[100]; /**< A socket to receive on a specific port */
@@ -67,6 +70,7 @@ namespace ns3
       Ptr<Socket> m_send_socket[100]; /**< A socket to listen on a specific port */
       std::queue<struct task> dataQueue;
       int finishFlag;
+      int mtu;
 
   };
 }
