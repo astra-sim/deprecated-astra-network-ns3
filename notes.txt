@@ -1,7 +1,0 @@
-Problems: 1. Pass different function pointer from send/receive of implementation class to ns3. 
-    1. As ” ./waf --run  scratch/<file>.cc” is used to run ns3 files from command line. The implementation class can invoke ns3 to run from command line. But the problem is in passing variable function pointer and using them later on in ns3. (If we know what function are we passing beforehand, then we can pass function as string and then have a lookup in ns3 starter class for string to function pointer)
-    2. Another way is to have a shared queue where sim_send and sim_receive instruction will be pushed by the implementation class and utilised by the ns3 starter class. I tried to do this but getting error related to linking of the shared queue.
-    3. The other way is to first start the ns3 and internally call astra-sim frontend and pass astra-sim configs through a file. I think there will be changes in the frontend as well here. 
-    4. Another way is to call astra-sim implementation from ns3. 
-In Progress:
-1. After ns3 has send/received all the packets, there is a callback function which need to be invoked, the callback function will internally call astra-sim msg/handler (function pointers) to notify astra-sim frontend. (Currently only print statement added there).
