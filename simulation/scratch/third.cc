@@ -136,6 +136,7 @@ void ScheduleFlowInputs(){
 	while (flow_input.idx < flow_num && Seconds(flow_input.start_time) == Simulator::Now()){
 		uint32_t port = portNumder[flow_input.src][flow_input.dst]++; // get a new port number 
 		RdmaClientHelper clientHelper(flow_input.pg, serverAddress[flow_input.src], serverAddress[flow_input.dst], port, flow_input.dport, flow_input.maxPacketCount, has_win?(global_t==1?maxBdp:pairBdp[n.Get(flow_input.src)][n.Get(flow_input.dst)]):0, global_t==1?maxRtt:pairRtt[flow_input.src][flow_input.dst]);
+		std::cout<<flow_input.src<<" "<<flow_input.dst<<" "<<flow_input.pg<<" "<<serverAddress[flow_input.src]<<" "<<serverAddress[flow_input.dst]<<" "<<port<<" "<<flow_input.dport<<" "<<flow_input.maxPacketCount<<"\n";
 		ApplicationContainer appCon = clientHelper.Install(n.Get(flow_input.src));
 		appCon.Start(Time(0));
 
@@ -298,6 +299,15 @@ void SetRoutingEntries(){
 			}
 		}
 	}
+	for (auto i = nextHop.begin(); i != nextHop.end(); i++){
+		std::cout<<i->first<<" "<<i->second->first<<" "<<i->second->second.size()<<" next hops are\n";
+		vector<Ptr<Node> > nexts = i->second->second;
+		for (int k = 0; k < (int)nexts.size(); k++){
+			Ptr<Node> next = nexts[k];
+			uint32_t interface = nbr2if[node][next].idx;
+			std::cout<<next.getId()<<" "<<interface<<"\n";
+		}
+	}
 }
 
 // take down the link between a and b, and redo the routing
@@ -355,7 +365,7 @@ int main(int argc, char *argv[])
 			std::string key;
 			conf >> key;
 
-			//std::cout << conf.cur << "\n";
+			std::cout << conf.cur << "\n";
 
 			if (key.compare("ENABLE_QCN") == 0)
 			{
@@ -716,7 +726,7 @@ int main(int argc, char *argv[])
 			sw->SetAttribute("EcnEnabled", BooleanValue(enable_qcn));
 		}
 	}
-
+	std::cout<<"nodes created\n";
 
 	NS_LOG_INFO("Create nodes.");
 
@@ -730,11 +740,12 @@ int main(int argc, char *argv[])
 		if (n.Get(i)->GetNodeType() == 0){ // is server
 			serverAddress.resize(i + 1);
 			serverAddress[i] = node_id_to_ip(i);
+			std::cout<<"server addresss for "<<i<<"th node is "<<serverAddress[i]<<"\n";
 		}
 	}
 
 	NS_LOG_INFO("Create channels.");
-
+	std::cout<<"Create channels\n";
 	//
 	// Explicitly create the channels required by the topology.
 	//
@@ -817,7 +828,7 @@ int main(int argc, char *argv[])
 	}
 
 	nic_rate = get_nic_rate(n);
-
+	std::cout<<"get nic rate is "<<nic_rate<<"\n";
 	// config switch
 	for (uint32_t i = 0; i < node_num; i++){
 		if (n.Get(i)->GetNodeType() == 1){ // is switch
@@ -838,13 +849,16 @@ int main(int argc, char *argv[])
 
 				// set pfc alpha, proportional to link bw
 				sw->m_mmu->pfc_a_shift[j] = shift;
+				std::cout<<"rate and pfc_a_shift is "<<rate<<" "<<shift<<"\n";
 				while (rate > nic_rate && sw->m_mmu->pfc_a_shift[j] > 0){
 					sw->m_mmu->pfc_a_shift[j]--;
 					rate /= 2;
 				}
+				std::cout<<"rate and pfc_a_shift is "<<rate<<" "<<shift<<"\n";
 			}
 			sw->m_mmu->ConfigNPort(sw->GetNDevices()-1);
 			sw->m_mmu->ConfigBufferSize(buffer_size* 1024 * 1024);
+			std::cout<<"buffer size, ports and node id of the switch is "<<buffer_size<<" MB, "<<sw->GetNDevices()-1<<sw->GetId()<<"\n";
 			sw->m_mmu->node_id = sw->GetId();
 		}
 	}
@@ -925,6 +939,7 @@ int main(int argc, char *argv[])
 				maxBdp = bdp;
 			if (rtt > maxRtt)
 				maxRtt = rtt;
+			std::cout<<i<<" "<<j<< " bdp and delays are "<<delay<<" "<<txDelay<<" "<<rtt<<" "<<bw<<" "<<bdp<<"\n";
 		}
 	}
 	printf("maxRtt=%lu maxBdp=%lu\n", maxRtt, maxBdp);
@@ -979,7 +994,7 @@ int main(int argc, char *argv[])
 	NS_LOG_INFO("Create Applications.");
 
 	Time interPacketInterval = Seconds(0.0000005 / 2);
-
+	cout<<"interPacket interval is "<<interPacketInterval<<"\n";
 	// maintain port number for each host
 	for (uint32_t i = 0; i < node_num; i++){
 		if (n.Get(i)->GetNodeType() == 0)
@@ -988,7 +1003,7 @@ int main(int argc, char *argv[])
 					portNumder[i][j] = 10000; // each host pair use port number from 10000
 			}
 	}
-
+	cout<<"each host pair use port number from 10000\n";
 	flow_input.idx = 0;
 	if (flow_num > 0){
 		ReadFlowInput();
@@ -999,6 +1014,7 @@ int main(int argc, char *argv[])
 	tracef.close();
 
 	// schedule link down
+	std::cout<<"link_down_time "<<link_down_time<<"\n";
 	if (link_down_time > 0){
 		Simulator::Schedule(Seconds(2) + MicroSeconds(link_down_time), &TakeDownLink, n, n.Get(link_down_A), n.Get(link_down_B));
 	}
