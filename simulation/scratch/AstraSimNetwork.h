@@ -1,5 +1,5 @@
 //change style to take cpp classes
-#include "/Users/tarannumkhan/Desktop/astra-sim/astra-sim/system/AstraNetworkAPI.hh"
+#include "/home/lightkhan/ns3-interface/astra-sim/astra-sim/system/AstraNetworkAPI.hh"
 #include<iostream>
 using namespace std;
 class ASTRASimNetwork: AstraSim::AstraNetworkAPI{

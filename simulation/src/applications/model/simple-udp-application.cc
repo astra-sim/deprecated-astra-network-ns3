@@ -13,8 +13,8 @@
 #include <iostream>
 #include <queue>
 #include <thread>
-#include "/Users/tarannumkhan/Desktop/ns-allinone-3.34/ns-3.34/scratch/workerQueue.h"
-#include "/Users/tarannumkhan/Desktop/ns-allinone-3.34/ns-3.34/scratch/myHeader.h"
+#include "/home/lightkhan/ns3-interface/simulation/scratch/workerQueue.h"
+#include "/home/lightkhan/ns3-interface/simulation/scratch/myHeader.h"
 #define PURPLE_CODE "\033[95m"
 #define CYAN_CODE "\033[96m"
 #define TEAL_CODE "\033[36m"
