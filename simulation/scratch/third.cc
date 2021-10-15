@@ -280,16 +280,19 @@ void SetRoutingEntries(){
 	// For each node.
 	for (auto i = nextHop.begin(); i != nextHop.end(); i++){
 		Ptr<Node> node = i->first;
+		std::cout<<"src node "<<node->GetId()<<"\n";
 		auto &table = i->second;
 		for (auto j = table.begin(); j != table.end(); j++){
 			// The destination node.
 			Ptr<Node> dst = j->first;
+			std::cout<<"dst node "<<dst->GetId()<<"\n";
 			// The IP address of the dst.
 			Ipv4Address dstAddr = dst->GetObject<Ipv4>()->GetAddress(1, 0).GetLocal();
 			// The next hops towards the dst.
 			vector<Ptr<Node> > nexts = j->second;
 			for (int k = 0; k < (int)nexts.size(); k++){
 				Ptr<Node> next = nexts[k];
+				std::cout<<"hop "<<k<<" node is "<<next->GetId()<<"\n";
 				uint32_t interface = nbr2if[node][next].idx;
 				if (node->GetNodeType() == 1)
 					DynamicCast<SwitchNode>(node)->AddTableEntry(dstAddr, interface);
@@ -299,15 +302,15 @@ void SetRoutingEntries(){
 			}
 		}
 	}
-	for (auto i = nextHop.begin(); i != nextHop.end(); i++){
-		std::cout<<i->first<<" "<<i->second->first<<" "<<i->second->second.size()<<" next hops are\n";
-		vector<Ptr<Node> > nexts = i->second->second;
-		for (int k = 0; k < (int)nexts.size(); k++){
-			Ptr<Node> next = nexts[k];
-			uint32_t interface = nbr2if[node][next].idx;
-			std::cout<<next.getId()<<" "<<interface<<"\n";
-		}
-	}
+//for (auto i = nextHop.begin(); i != nextHop.end(); i++){
+//		std::cout<<i->first<<" "<<i->second->first<<" "<<i->second->second.size()<<" next hops are\n";
+//		vector<Ptr<Node> > nexts = i->second->second;
+//		for (int k = 0; k < (int)nexts.size(); k++){
+//			Ptr<Node> next = nexts[k];
+//			uint32_t interface = nbr2if[node][next].idx;
+//			std::cout<<next.getId()<<" "<<interface<<"\n";
+//		}
+//	}
 }
 
 // take down the link between a and b, and redo the routing
