@@ -12,7 +12,7 @@ struct task1{
     int count;
     void* fun_arg;
     void (*msg_handler)(void* fun_arg);
-    int schTime; //in sec
+    double schTime; //in sec
 };
 extern queue<struct task1> workerQueue;
 extern map<pair<int,int>, struct task1> expeRecvHash;

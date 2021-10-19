@@ -68,7 +68,7 @@ class ASTRASimNetwork: AstraSim::AstraNetworkAPI{
         AstraSim::timespec_t sim_get_time(){
             AstraSim::timespec_t timeSpec;
             // timeSpec.time_type_e = "SE";
-            timeSpec.time_val = 0.0;
+            timeSpec.time_val = Simulator::Now().GetNanoSeconds();
             return timeSpec;
         }
         virtual void sim_schedule(
