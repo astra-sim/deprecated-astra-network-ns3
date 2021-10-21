@@ -136,7 +136,7 @@ class ASTRASimNetwork:public AstraSim::AstraNetworkAPI{
                 // workerQueue.push(t);
                 if(recvHash.find(make_pair(t.src,t.dest))!=recvHash.end()){
                     int count = recvHash[make_pair(t.src,t.dest)];
-                    if(count == t1.count)
+                    if(count == t.count)
                     {
                         recvHash.erase(make_pair(t.src,t.dest));
                         t.msg_handler(t.fun_arg);
@@ -176,7 +176,7 @@ void fun_recv(void* a) {
 void fun_sch(void* a) {
     cout<<*(int *)a<<"Having fun in schedule!"<<"\n";
 }
-Ptr<SimpleUdpApplication> sim_init(int n){
+Ptr<SimpleUdpApplication>* sim_init(int n){
     cout<<"sim init is called"<<endl;
     NodeContainer nodes;
     nodes.Create (n);
@@ -202,7 +202,7 @@ Ptr<SimpleUdpApplication> sim_init(int n){
     //Create Two UDP applications
     // //Set the start & stop times
     //Ptr<SimpleUdpApplication> udp[n];
-    udp = new int[n];
+    udp = new Ptr<SimpleUdpApplication>[n];
     //assumes astra sim pass from index 0;
     for(int i = 0;i<n;i++){
         udp[i] = CreateObject <SimpleUdpApplication> ();
@@ -312,7 +312,7 @@ int main (int argc, char *argv[]){
     //network.sim_recv(nullptr,3000,-1,1,-1,nullptr,&fun_recv,&fun_arg);
     //network.sim_schedule(AstraSim::timespec_t(),&fun_sch,&fun_arg);
     //pass number of nodes
-    Ptr<SimpleUdpApplication> udp = sim_init(4);
+    Ptr<SimpleUdpApplication> *udp = sim_init(4);
     for(int i=0;i<4;i++){
 	systems[i]->workload->fire();	
     }
