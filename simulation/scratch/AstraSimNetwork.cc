@@ -77,13 +77,14 @@ class ASTRASimNetwork:public AstraSim::AstraNetworkAPI{
             AstraSim::timespec_t delta,
             void (*fun_ptr)(void* fun_arg),
             void* fun_arg){
-                delta.time_val = 5; //trial
+                //delta.time_val = 5; //trial
                 task1 t;
                 t.type = 2;
                 t.fun_arg = fun_arg;
                 t.msg_handler = fun_ptr;
                 t.schTime = delta.time_val;
                 workerQueue.push(t);
+		cout<<"sim schedule is called "<<endl;
                 return;
             }
         virtual int sim_send(
@@ -149,6 +150,7 @@ void fun_sch(void* a) {
     cout<<*(int *)a<<"Having fun in schedule!"<<"\n";
 }
 void sim_init(int n){
+    cout<<"sim init is called"<<endl;
     NodeContainer nodes;
     nodes.Create (n);
     CsmaHelper csma;  
@@ -190,9 +192,9 @@ void sim_init(int n){
     }
     // Ipv4Address dest_ip = ifaces.GetAddress(1);
     // cout<<"dest ip is "<<dest_ip<<"\n";
-
     while(!workerQueue.empty()){
         task1 t1 = workerQueue.front();
+        cout<<"woker queue with task id: "<<t1.type<<" is scheduled"<<endl;
         if(t1.type==0){
             Ipv4Address dest_ip1 = ifaces.GetAddress(t1.dest);
             cout<<"dest ip is "<<dest_ip1<<"\n";
@@ -227,7 +229,7 @@ void sim_init(int n){
             }
         }
         else{
-            Simulator::Schedule (Seconds (t1.schTime), t1.msg_handler, t1.fun_arg);
+            Simulator::Schedule (NanoSeconds (t1.schTime), t1.msg_handler, t1.fun_arg);
         }
         workerQueue.pop();
     }
@@ -260,7 +262,7 @@ int main (int argc, char *argv[]){
         	networks[i], // AstraNetworkAPI
         	nullptr, // AstraMemoryAPI
         	i, // id
-        	2, // num_passes
+        	1, // num_passes
         	physical_dims, // dimensions
         	queues_per_dim, // queues per corresponding dimension
         	"../astra-sim/inputs/system/sample_a2a_sys.txt", // system configuration
@@ -281,9 +283,10 @@ int main (int argc, char *argv[]){
     //network.sim_recv(nullptr,3000,-1,1,-1,nullptr,&fun_recv,&fun_arg);
     //network.sim_schedule(AstraSim::timespec_t(),&fun_sch,&fun_arg);
     //pass number of nodes
-    sim_init(4);
+    //sim_init(4);
     for(int i=0;i<4;i++){
 	systems[i]->workload->fire();	
     }
+    sim_init(4);
     return 0;
 }
