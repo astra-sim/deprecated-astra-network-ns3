@@ -13,8 +13,8 @@
 #include <iostream>
 #include <queue>
 #include <thread>
-#include "/home/lightkhan/ns3-interface/simulation/scratch/workerQueue.h"
-#include "/home/lightkhan/ns3-interface/simulation/scratch/myHeader.h"
+#include "ns3/workerQueue.h"
+#include "ns3/myHeader.h"
 #define PURPLE_CODE "\033[95m"
 #define CYAN_CODE "\033[96m"
 #define TEAL_CODE "\033[36m"

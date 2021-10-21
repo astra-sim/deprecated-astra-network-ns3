@@ -1,4 +1,4 @@
-#include "/home/lightkhan/ns3-interface/astra-sim/astra-sim/system/AstraNetworkAPI.hh"
+#include "ns3/AstraNetworkAPI.hh"
 #include<iostream>
 #include <stdio.h>
 #include <execinfo.h>
@@ -7,12 +7,14 @@
 #include <thread>
 #include <unistd.h>
 #include "workerQueue.h"
+#include <vector>
 // #include "myTCPMultiple.h"
 #include "ns3/core-module.h"
 #include "ns3/network-module.h"
 #include "ns3/applications-module.h"
 #include "ns3/internet-module.h"
 #include "ns3/csma-module.h"
+#include "ns3/Sys.hh"
 
 // #include "RoCE.h"
 //#include<type_info>
@@ -42,7 +44,7 @@ struct sim_event {
     // void* fun_arg;
     string fnType;
 };
-class ASTRASimNetwork: AstraSim::AstraNetworkAPI{
+class ASTRASimNetwork:public AstraSim::AstraNetworkAPI{
 
     public:
         queue<sim_event> sim_event_queue;
@@ -247,12 +249,41 @@ int main (int argc, char *argv[]){
     // LogComponentEnable("myTCPMultiple",LOG_LEVEL_INFO);
     LogComponentEnable("OnOffApplication", LOG_LEVEL_INFO);
     LogComponentEnable("PacketSink", LOG_LEVEL_INFO);
-    ASTRASimNetwork network = ASTRASimNetwork(1);
-    int fun_arg=1;
-    network.sim_send(nullptr,3000,-1,2,-1,nullptr,&fun_send,&fun_arg);
-    network.sim_recv(nullptr,3000,-1,1,-1,nullptr,&fun_recv,&fun_arg);
-    network.sim_schedule(AstraSim::timespec_t(),&fun_sch,&fun_arg);
+    //ASTRASimNetwork network = ASTRASimNetwork(1);
+    std::vector<ASTRASimNetwork*> networks(4,nullptr);
+    std::vector<AstraSim::Sys*> systems(4,nullptr);
+    std::vector<int> physical_dims(1,4);
+    std::vector<int> queues_per_dim(1,2);
+    for(int i=0;i<4;i++){
+	networks[i]=new ASTRASimNetwork(i);	
+	systems[i] = new AstraSim::Sys(
+        	networks[i], // AstraNetworkAPI
+        	nullptr, // AstraMemoryAPI
+        	i, // id
+        	2, // num_passes
+        	physical_dims, // dimensions
+        	queues_per_dim, // queues per corresponding dimension
+        	"../astra-sim/inputs/system/sample_a2a_sys.txt", // system configuration
+        	"../astra-sim/inputs/workload/microAllReduce.txt", // workload configuration
+        	1,
+        	1,
+        	1, // communication, computation, injection scale
+        	1,
+        	0, // total_stat_rows and stat_row
+        	"scratch/results/", // stat file path
+        	"test1", // run name
+        	true, // separate_log
+        	false // randezvous protocol
+    	);	    
+    }	
+    //int fun_arg=1;
+    //network.sim_send(nullptr,3000,-1,2,-1,nullptr,&fun_send,&fun_arg);
+    //network.sim_recv(nullptr,3000,-1,1,-1,nullptr,&fun_recv,&fun_arg);
+    //network.sim_schedule(AstraSim::timespec_t(),&fun_sch,&fun_arg);
     //pass number of nodes
     sim_init(4);
+    for(int i=0;i<4;i++){
+	systems[i]->workload->fire();	
+    }
     return 0;
 }

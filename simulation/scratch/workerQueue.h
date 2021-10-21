@@ -1,3 +1,5 @@
+#ifndef __WORKERQEUE_HH__
+#define __WORKERQEUE_HH__
 #include <queue>
 #include <iostream> 
 #include <string>
@@ -40,3 +42,4 @@ extern map<pair<int,int>,int > recvHash;
 //         que.q.pop();
 //     }
 // }
+#endif
