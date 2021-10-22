@@ -111,7 +111,7 @@ class ASTRASimNetwork:public AstraSim::AstraNetworkAPI{
                 t.fun_arg = fun_arg;
                 t.msg_handler = msg_handler;
                 // workerQueue.push(t); 
-                udp[t.src]->SendPacket(t.dest, t.fun_arg, t.msg_handler, t.count);
+                udp[t.src]->SendPacket(t.dest, t.fun_arg, t.msg_handler, t.count, tag);
                 cout<<"event at sender pushed\n";
                 return 0;
             }
@@ -135,28 +135,28 @@ class ASTRASimNetwork:public AstraSim::AstraNetworkAPI{
                 t.fun_arg = fun_arg;
                 t.msg_handler = msg_handler;
                 // workerQueue.push(t);
-                if(recvHash.find(make_pair(t.src,t.dest))!=recvHash.end()){
-                    int count = recvHash[make_pair(t.src,t.dest)];
+                if(recvHash.find(make_pair(tag,make_pair(t.src,t.dest)))!=recvHash.end()){
+                    int count = recvHash[make_pair(tag,make_pair(t.src,t.dest))];
                     if(count == t.count)
                     {
-                        recvHash.erase(make_pair(t.src,t.dest));
-                        t.msg_handler(t.fun_arg);
+                        recvHash.erase(make_pair(tag,make_pair(t.src,t.dest)));
                         cout<<"already in recv hash\n";
+                        t.msg_handler(t.fun_arg);
                     }
                     else if (count > t.count){
-                        recvHash[make_pair(t.src,t.dest)] = count - t.count;
-                        t.msg_handler(t.fun_arg);
+                        recvHash[make_pair(make_pair(tag,make_pair(t.src,t.dest))] = count - t.count;
                         cout<<"already in recv hash with more data\n";
+                        t.msg_handler(t.fun_arg);
                     }
                     else{
-                        recvHash.erase(make_pair(t.src,t.dest));
+                        recvHash.erase(make_pair(tag,make_pair(t.src,t.dest)));
                         t.count -= count;
-                        expeRecvHash[make_pair(t.src,t.dest)] = t;
+                        expeRecvHash[make_pair(tag,make_pair(t.src,t.dest))] = t;
                         cout<<"partially in recv hash\n";
                     }
                 }
                 else{
-                    expeRecvHash[make_pair(t.src,t.dest)] = t;
+                    expeRecvHash[make_pair(tag,make_pair(t.src,t.dest))] = t;
                     cout<<"not in recv hash\n";
                 }
                 cout<<"event at receiver pushed\n";

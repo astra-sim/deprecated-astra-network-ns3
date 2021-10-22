@@ -25,8 +25,8 @@
 #define RED_CODE "\033[91m"
 #define BOLD_CODE "\033[1m"
 #define END_CODE "\033[0m"
-map<pair<int,int>,int > recvHash;
-map<pair<int,int>, struct task1> expeRecvHash;
+map<pair<int,pair<int,int> >,int > recvHash;
+map<pair<int,pair<int,int> >, struct task1> expeRecvHash;
 namespace ns3
 {
   NS_LOG_COMPONENT_DEFINE("SimpleUdpApplication");
@@ -108,66 +108,85 @@ namespace ns3
     std::cout<<"receiver node "<<receiver_node<<"\n";
     int sender_node;
     // std::cout<<socket->GetBoundNetDevice()->GetAddress()<<"\n";
-    int count=0; //data in bytes
+    // int count=0; //data in bytes
+    map<int,int> tagMap; //data in bytes corresponding to the tag for the same src and dst. 
     while ((packet = socket->RecvFrom(from)))
     {
       MyHeader destinationHeader;
       packet->RemoveHeader (destinationHeader);
       sender_node = destinationHeader.GetData ();
-      cout<<"sender node is" << sender_node<<"\n";
+      int tag = destinationHeader.GetTag();
+      cout<<"sender node and tag is" << sender_node<<" "<<tag<<"\n";
       NS_LOG_INFO(PURPLE_CODE << "HandleRead : Received a Packet of size: " << packet->GetSize() << " at time " << Now().GetSeconds() << END_CODE);
       //NS_LOG_INFO("Content: " << packet->ToString());
       // std::cout<<"handleread "<<packet->GetSize() << " at time " << Now().GetSeconds()<<"\n";
-      count+= packet->GetSize();
-      std::cout<<count<<"\n";
-    }
-    for(std::map<std::pair<int, int>, struct task1>::iterator it = expeRecvHash.begin();it!=expeRecvHash.end();it++){
-        std::cout<<it->first.first<<" "<<it->first.second<<"\n";
-    }
-    if(expeRecvHash.find(make_pair(sender_node, receiver_node))!=expeRecvHash.end()){
-      task1 t2 = expeRecvHash[make_pair(sender_node, receiver_node)];
-      cout<<"count and t2.count is"<<count<<" "<<t2.count<<"\n";
-      if(count == t2.count)
-      {
-        t2.msg_handler(t2.fun_arg);
-        expeRecvHash.erase(make_pair(sender_node, receiver_node));
-        cout<<"already in expected recv hash\n";
-      }
-      else if (count > t2.count){
-          recvHash[make_pair(1,2)] = count - t2.count;
-          t2.msg_handler(t2.fun_arg);
-          expeRecvHash.erase(make_pair(sender_node, receiver_node));
-          cout<<"already in recv hash with more data\n";
+      // count+= packet->GetSize();
+      if(tagMap.find(tag)==tagMap.end()){
+        tagMap[tag] = packet->GetSize();
       }
       else{
-          t2.count -=count;
-          expeRecvHash[make_pair(sender_node, receiver_node)] = t2;
-          cout<<"t2.count is"<<t2.count<<"\n";
-          cout<<"partially in recv hash \n";
+        tagMap[tag] = tagMap[tag] + packet->GetSize();
       }
+      std::cout<<"for tag, packet size is "<<tag<<" "<<tagMap[tag]<<"\n";
     }
-    else{
-      recvHash[make_pair(sender_node, receiver_node)]=count;
-      cout<<"not in expected recv hash\n";
-    }
+    // for(std::map<std::pair<int, int>, struct task1>::iterator it = expeRecvHash.begin();it!=expeRecvHash.end();it++){
+    //     std::cout<<it->first.first<<" "<<it->first.second<<"\n";
+    // }
+    for(auto it = tagMap.begin();it!=tagMap.end();it++){
+      int tag = it->first;int count = it->second;
+      if(expeRecvHash.find(make_pair(tag,make_pair(sender_node, receiver_node)))!=expeRecvHash.end()){
+        task1 t2 = expeRecvHash[make_pair(tag,make_pair(sender_node, receiver_node))];
+        cout<<"count and t2.count is"<<count<<" "<<t2.count<<"\n";
+        if(count == t2.count)
+        {
+          expeRecvHash.erase(make_pair(tag,make_pair(sender_node, receiver_node)));
+          cout<<"already in expected recv hash\n";
+          t2.msg_handler(t2.fun_arg);
+        }
+        else if (count > t2.count){
+            recvHash[make_pair(tag,make_pair(sender_node, receiver_node))] = count - t2.count;
+            expeRecvHash.erase(make_pair(tag,make_pair(sender_node, receiver_node)));
+            cout<<"already in recv hash with more data\n";
+            t2.msg_handler(t2.fun_arg);
+        }
+        else{
+            t2.count -=count;
+            expeRecvHash[make_pair(tag,make_pair(sender_node, receiver_node))] = t2;
+            cout<<"t2.count is"<<t2.count<<"\n";
+            cout<<"partially in recv hash \n";
+        }
+      }
+      else{
+        if(recvHash.find(make_pair(tag,make_pair(sender_node, receiver_node)))==recvHash.end()){
+          recvHash[make_pair(tag,make_pair(sender_node, receiver_node))]=count;
+          cout<<"not in expected recv hash\n";
+        }
+        else{
+          //TODO: is this really required?
+          recvHash[make_pair(tag,make_pair(sender_node, receiver_node))]+=count;
+          cout<<"in recv hash already maybe from previous flows\n";
+        }
+      }
     // recvHash.insert();
+    }
   }
   // void SimpleUdpApplication::SendPacketInternal(){
   //    m_send_socket[dest]->Send(packet1);
 
   // }
   void SimpleUdpApplication::ScheduleTransmit (Time dt, int dest, void* fun_arg,
-    void (*msg_handler)(void* fun_arg), int count)
+    void (*msg_handler)(void* fun_arg), int count, int tag)
   {
     Simulator::Schedule (dt, &SimpleUdpApplication::SendPacket, this, dest, fun_arg,msg_handler, count);
   }
 
   void SimpleUdpApplication::SendPacket(int dest, void* fun_arg,
-    void (*msg_handler)(void* fun_arg), int count){
+    void (*msg_handler)(void* fun_arg), int count, int tag){
     // while(count>0){
       Ptr<Packet> packet1 = Create <Packet> (mtu);
       MyHeader sourceHeader;
       sourceHeader.SetData (GetNode()->GetId());
+      sourceHeader.SetTag(tag);
       packet1->AddHeader (sourceHeader);
       packet1->Print (std::cout);
       std::cout << std::endl;
@@ -178,7 +197,7 @@ namespace ns3
       if(count>0)
       {
         Time m_interval = MilliSeconds (5.0); //delay between packet 5 sec
-        ScheduleTransmit (m_interval,dest,fun_arg, msg_handler, count);
+        ScheduleTransmit (m_interval,dest,fun_arg, msg_handler, count, tag);
       }
     // }
     if(count<=0)
