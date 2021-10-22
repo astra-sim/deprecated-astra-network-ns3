@@ -12,6 +12,8 @@ class MyHeader : public Header
   
    void SetData (uint16_t data);
    uint16_t GetData (void) const;
+   void SetTag (int data);
+   int GetTag (void) const;
   
    static TypeId GetTypeId (void);
    virtual TypeId GetInstanceTypeId (void) const;
@@ -20,7 +22,8 @@ class MyHeader : public Header
    virtual uint32_t Deserialize (Buffer::Iterator start);
    virtual uint32_t GetSerializedSize (void) const;
  private:
-   uint16_t m_data;  
+   uint16_t m_data;
+   int m_tag;  
  };
   
  MyHeader::MyHeader ()
@@ -68,7 +71,7 @@ class MyHeader : public Header
    // we write them in network byte order.
    start.WriteHtonU16 (m_data);
  }
- uint32_t
+uint32_t
  MyHeader::Deserialize (Buffer::Iterator start)
  {
    // we can deserialize two bytes from the start of the buffer.
@@ -89,4 +92,15 @@ class MyHeader : public Header
  MyHeader::GetData (void) const
  {
    return m_data;
+ }
+
+ void
+ MyHeader::SetTag (int tag)
+ {
+   m_tag = tag;
+ }
+ int
+ MyHeader::GetTag (void) const
+ {
+   return m_tag;
  }

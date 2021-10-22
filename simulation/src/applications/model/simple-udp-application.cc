@@ -177,7 +177,7 @@ namespace ns3
   void SimpleUdpApplication::ScheduleTransmit (Time dt, int dest, void* fun_arg,
     void (*msg_handler)(void* fun_arg), int count, int tag)
   {
-    Simulator::Schedule (dt, &SimpleUdpApplication::SendPacket, this, dest, fun_arg,msg_handler, count);
+    Simulator::Schedule (dt, &SimpleUdpApplication::SendPacket, this, dest, fun_arg,msg_handler, count, tag);
   }
 
   void SimpleUdpApplication::SendPacket(int dest, void* fun_arg,

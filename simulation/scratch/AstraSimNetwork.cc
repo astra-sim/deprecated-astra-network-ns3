@@ -144,7 +144,7 @@ class ASTRASimNetwork:public AstraSim::AstraNetworkAPI{
                         t.msg_handler(t.fun_arg);
                     }
                     else if (count > t.count){
-                        recvHash[make_pair(make_pair(tag,make_pair(t.src,t.dest))] = count - t.count;
+                        recvHash[make_pair(tag,make_pair(t.src,t.dest))] = count - t.count;
                         cout<<"already in recv hash with more data\n";
                         t.msg_handler(t.fun_arg);
                     }
@@ -156,8 +156,17 @@ class ASTRASimNetwork:public AstraSim::AstraNetworkAPI{
                     }
                 }
                 else{
-                    expeRecvHash[make_pair(tag,make_pair(t.src,t.dest))] = t;
-                    cout<<"not in recv hash\n";
+		    if(expeRecvHash.find(make_pair(tag,make_pair(t.src,t.dest)))==expeRecvHash.end()){
+                        expeRecvHash[make_pair(tag,make_pair(t.src,t.dest))] = t;
+                        cout<<"not in recv hash\n";
+                    }
+                    else{
+                        int expecount = expeRecvHash[make_pair(tag,make_pair(t.src,t.dest))].count;
+                        t.count += expecount;
+                        expeRecvHash[make_pair(tag,make_pair(t.src,t.dest))] = t;
+                        cout<<"not in recv hash but in expected recv hash\n";
+                    }
+                    //expeRecvHash[make_pair(tag,make_pair(t.src,t.dest))] = t;
                 }
                 cout<<"event at receiver pushed\n";
                 return 0;
