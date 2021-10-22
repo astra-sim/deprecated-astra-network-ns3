@@ -183,9 +183,13 @@ namespace ns3
   void SimpleUdpApplication::SendPacket(int dest, void* fun_arg,
     void (*msg_handler)(void* fun_arg), int count, int tag){
     // while(count>0){
-      Ptr<Packet> packet1 = Create <Packet> (mtu);
+      int pktSize = mtu;
+      if(mtu > count)
+	pktSize = count;
+      Ptr<Packet> packet1 = Create <Packet> (pktSize);
       MyHeader sourceHeader;
       sourceHeader.SetData (GetNode()->GetId());
+      //cout<<"tag is "<<tag<<"\n";
       sourceHeader.SetTag(tag);
       packet1->AddHeader (sourceHeader);
       packet1->Print (std::cout);

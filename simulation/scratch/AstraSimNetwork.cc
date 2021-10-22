@@ -112,7 +112,7 @@ class ASTRASimNetwork:public AstraSim::AstraNetworkAPI{
                 t.msg_handler = msg_handler;
                 // workerQueue.push(t); 
                 udp[t.src]->SendPacket(t.dest, t.fun_arg, t.msg_handler, t.count, tag);
-                cout<<"event at sender pushed\n";
+	        cout<<"event at sender pushed "<<t.src<<" "<<" "<<t.dest<<" "<<tag<<"\n";
                 return 0;
             }
         virtual int sim_recv(
@@ -140,31 +140,31 @@ class ASTRASimNetwork:public AstraSim::AstraNetworkAPI{
                     if(count == t.count)
                     {
                         recvHash.erase(make_pair(tag,make_pair(t.src,t.dest)));
-                        cout<<"already in recv hash\n";
+                        cout<<"already in recv hash "<<t.src<<" "<<t.dest<<" "<<tag<<"\n";
                         t.msg_handler(t.fun_arg);
                     }
                     else if (count > t.count){
                         recvHash[make_pair(tag,make_pair(t.src,t.dest))] = count - t.count;
-                        cout<<"already in recv hash with more data\n";
+                        cout<<"already in recv hash with more data "<<t.src<<" "<<t.dest<<" "<<tag<<"\n";
                         t.msg_handler(t.fun_arg);
                     }
                     else{
                         recvHash.erase(make_pair(tag,make_pair(t.src,t.dest)));
                         t.count -= count;
                         expeRecvHash[make_pair(tag,make_pair(t.src,t.dest))] = t;
-                        cout<<"partially in recv hash\n";
+                        cout<<"partially in recv hash "<<t.src<<" "<<t.dest<<" "<<tag<<"\n";
                     }
                 }
                 else{
 		    if(expeRecvHash.find(make_pair(tag,make_pair(t.src,t.dest)))==expeRecvHash.end()){
                         expeRecvHash[make_pair(tag,make_pair(t.src,t.dest))] = t;
-                        cout<<"not in recv hash\n";
+                        cout<<"not in recv hash "<<t.src<<" "<<t.dest<<"  "<<tag<<"\n";
                     }
                     else{
                         int expecount = expeRecvHash[make_pair(tag,make_pair(t.src,t.dest))].count;
                         t.count += expecount;
                         expeRecvHash[make_pair(tag,make_pair(t.src,t.dest))] = t;
-                        cout<<"not in recv hash but in expected recv hash\n";
+                        cout<<"not in recv hash but in expected recv hash "<<t.src<<" "<<t.dest<<" "<<tag<<"\n";
                     }
                     //expeRecvHash[make_pair(tag,make_pair(t.src,t.dest))] = t;
                 }
@@ -314,7 +314,7 @@ int main (int argc, char *argv[]){
         	"scratch/results/", // stat file path
         	"test1", // run name
         	true, // separate_log
-        	true  // randezvous protocol
+        	false  // randezvous protocol
     	);	    
     }	
     //int fun_arg=1;

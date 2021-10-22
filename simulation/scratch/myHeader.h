@@ -12,8 +12,8 @@ class MyHeader : public Header
   
    void SetData (uint16_t data);
    uint16_t GetData (void) const;
-   void SetTag (int data);
-   int GetTag (void) const;
+   void SetTag (uint16_t data);
+   uint16_t GetTag (void) const;
   
    static TypeId GetTypeId (void);
    virtual TypeId GetInstanceTypeId (void) const;
@@ -23,7 +23,7 @@ class MyHeader : public Header
    virtual uint32_t GetSerializedSize (void) const;
  private:
    uint16_t m_data;
-   int m_tag;  
+   uint16_t m_tag;  
  };
   
  MyHeader::MyHeader ()
@@ -57,12 +57,13 @@ class MyHeader : public Header
    // routines to print the content of my header.
    //os << "data=" << m_data << std::endl;
    os << "data=" << m_data;
+   os << "tag=" << m_tag;
  }
  uint32_t
  MyHeader::GetSerializedSize (void) const
  {
-   // we reserve 2 bytes for our header.
-   return 2;
+   // we reserve 4 bytes for our header.
+   return 4;
  }
  void
  MyHeader::Serialize (Buffer::Iterator start) const
@@ -70,6 +71,7 @@ class MyHeader : public Header
    // we can serialize two bytes at the start of the buffer.
    // we write them in network byte order.
    start.WriteHtonU16 (m_data);
+   start.WriteHtonU16 (m_tag);
  }
 uint32_t
  MyHeader::Deserialize (Buffer::Iterator start)
@@ -78,9 +80,10 @@ uint32_t
    // we read them in network byte order and store them
    // in host byte order.
    m_data = start.ReadNtohU16 ();
+   m_tag = start.ReadNtohU16();
   
    // we return the number of bytes effectively read.
-   return 2;
+   return 4;
  }
   
  void 
@@ -95,11 +98,11 @@ uint32_t
  }
 
  void
- MyHeader::SetTag (int tag)
+ MyHeader::SetTag (uint16_t tag)
  {
    m_tag = tag;
  }
- int
+ uint16_t
  MyHeader::GetTag (void) const
  {
    return m_tag;
