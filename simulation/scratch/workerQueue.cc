@@ -15,8 +15,8 @@ struct task1{
     double schTime; //in sec
 };
 extern queue<struct task1> workerQueue;
-extern map<pair<int,int>, struct task1> expeRecvHash;
-extern map<pair<int,int>,int > recvHash;
+extern map<pair<int,pair<int,int> >, struct task1> expeRecvHash;
+extern map<pair<int,pair<int,int> >,int > recvHash;
 // class workerQueue{
 //     public:
 //         static queue<string> q;

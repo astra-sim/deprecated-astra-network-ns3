@@ -38,12 +38,12 @@ namespace ns3
       void HandleRead (Ptr<Socket> socket);
 
       void ScheduleTransmit(Time dt, int dest, void* fun_arg,
-          void (*msg_handler)(void* fun_arg), int count);
+          void (*msg_handler)(void* fun_arg), int count, int tag);
 
       /** \brief Send an outgoing packet. This creates a new socket every time
       */
       void SendPacket(int dest, void* fun_arg,
-          void (*msg_handler)(void* fun_arg), int count);
+          void (*msg_handler)(void* fun_arg), int count, int tag);
 
       void InitializeAppSend(int nodes, int index, Ipv4InterfaceContainer interfaces);
 
