@@ -31,6 +31,7 @@ NS_LOG_COMPONENT_DEFINE ("ASTRASimNetwork");
 //   double time_val;
 // };
 // extern int global_variable;
+const int num_gpus = 8;
 queue<struct task1> workerQueue;
 // map<pair<int,int>, struct task1> expeRecvHash;
 struct sim_event {
@@ -126,7 +127,7 @@ class ASTRASimNetwork:public AstraSim::AstraNetworkAPI{
                 //populate task1 with the required arguments
                 task1 t;
                 t.src = src;
-                t.dest = 2; //how to get dest, is it the rank (starts from 0?)
+                t.dest = rank; //how to get dest, is it the rank (starts from 0?)
                 // int a = 1;
                 t.count = count; 
                 //t.fun_arg = &a;
@@ -281,11 +282,11 @@ int main (int argc, char *argv[]){
     LogComponentEnable("OnOffApplication", LOG_LEVEL_INFO);
     LogComponentEnable("PacketSink", LOG_LEVEL_INFO);
     //ASTRASimNetwork network = ASTRASimNetwork(1);
-    std::vector<ASTRASimNetwork*> networks(4,nullptr);
-    std::vector<AstraSim::Sys*> systems(4,nullptr);
-    std::vector<int> physical_dims(1,4);
-    std::vector<int> queues_per_dim(1,2);
-    for(int i=0;i<4;i++){
+    std::vector<ASTRASimNetwork*> networks(num_gpus,nullptr);
+    std::vector<AstraSim::Sys*> systems(num_gpus,nullptr);
+    std::vector<int> physical_dims(1,num_gpus);
+    std::vector<int> queues_per_dim(1,1);
+    for(int i=0;i<num_gpus;i++){
 	networks[i]=new ASTRASimNetwork(i);	
 	systems[i] = new AstraSim::Sys(
         	networks[i], // AstraNetworkAPI
@@ -296,9 +297,9 @@ int main (int argc, char *argv[]){
         	queues_per_dim, // queues per corresponding dimension
         	"../astra-sim/inputs/system/sample_a2a_sys.txt", // system configuration
         	"../astra-sim/inputs/workload/microAllReduce.txt", // workload configuration
-        	1,
-        	1,
-        	1, // communication, computation, injection scale
+        	1, // communication scale
+        	1, // computation scale
+        	1, // injection scale
         	1,
         	0, // total_stat_rows and stat_row
         	"scratch/results/", // stat file path
@@ -312,11 +313,11 @@ int main (int argc, char *argv[]){
     //network.sim_recv(nullptr,3000,-1,1,-1,nullptr,&fun_recv,&fun_arg);
     //network.sim_schedule(AstraSim::timespec_t(),&fun_sch,&fun_arg);
     //pass number of nodes
-    Ptr<SimpleUdpApplication> *udp = sim_init(4);
-    for(int i=0;i<4;i++){
+    Ptr<SimpleUdpApplication> *udp = sim_init(num_gpus);
+    for(int i=0;i<num_gpus;i++){
 	systems[i]->workload->fire();	
     }
     Simulator::Run ();
-    Simulator::Stop (Seconds (100));
+    Simulator::Stop (Seconds (1000));
     return 0;
 }
