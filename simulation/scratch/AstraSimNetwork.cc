@@ -31,7 +31,7 @@ NS_LOG_COMPONENT_DEFINE ("ASTRASimNetwork");
 //   double time_val;
 // };
 // extern int global_variable;
-const int num_gpus = 8;
+const int num_gpus = 4;
 queue<struct task1> workerQueue;
 // map<pair<int,int>, struct task1> expeRecvHash;
 struct sim_event {
@@ -297,7 +297,7 @@ int main (int argc, char *argv[]){
         	queues_per_dim, // queues per corresponding dimension
         	"../astra-sim/inputs/system/sample_a2a_sys.txt", // system configuration
         	"../astra-sim/inputs/workload/microAllReduce.txt", // workload configuration
-        	1, // communication scale
+        	4, // communication scale
         	1, // computation scale
         	1, // injection scale
         	1,
@@ -305,7 +305,7 @@ int main (int argc, char *argv[]){
         	"scratch/results/", // stat file path
         	"test1", // run name
         	true, // separate_log
-        	false // randezvous protocol
+        	true  // randezvous protocol
     	);	    
     }	
     //int fun_arg=1;
