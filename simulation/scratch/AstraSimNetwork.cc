@@ -116,7 +116,7 @@ class ASTRASimNetwork:public AstraSim::AstraNetworkAPI{
                 int maxPacketCount = count/1500;
                 if(count%1500!=0)
                     maxPacketCount++;
-                SendFlow(rank, dst , maxPacketCount, msg_handler, fun_arg);
+                SendFlow(rank, dst , maxPacketCount, msg_handler, fun_arg,tag);
 	        cout<<"event at sender pushed "<<t.src<<" "<<" "<<t.dest<<" "<<tag<<"\n";
                 return 0;
             }

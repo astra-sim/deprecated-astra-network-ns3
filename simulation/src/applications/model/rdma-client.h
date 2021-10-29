@@ -79,6 +79,9 @@ private:
   uint64_t m_baseRtt; // base Rtt
   void (*msg_handler)(void* fun_arg);
   void* fun_arg;
+  uint64_t tag; 
+  uint64_t src; 
+  uint64_t dest; 
 };
 
 } // namespace ns3
