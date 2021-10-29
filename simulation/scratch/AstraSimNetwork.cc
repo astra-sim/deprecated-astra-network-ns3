@@ -21,7 +21,7 @@
 //#include<type_info>
 using namespace std;
 using namespace ns3;
-NS_LOG_COMPONENT_DEFINE ("ASTRASimNetwork");
+//NS_LOG_COMPONENT_DEFINE ("ASTRASimNetwork");
 // struct sim_comm {
 //   std::string comm_name;
 // };
@@ -113,11 +113,11 @@ class ASTRASimNetwork:public AstraSim::AstraNetworkAPI{
                 t.msg_handler = msg_handler;
                 // workerQueue.push(t); 
                 // udp[t.src]->SendPacket(t.dest, t.fun_arg, t.msg_handler, t.count, tag);
-                maxPacketCount = count/1500;
+                int maxPacketCount = count/1500;
                 if(count%1500!=0)
                     maxPacketCount++;
-                SendFlow(rank, dst , maxPacketCount, msg_handler, fun_arg)
-	            cout<<"event at sender pushed "<<t.src<<" "<<" "<<t.dest<<" "<<tag<<"\n";
+                SendFlow(rank, dst , maxPacketCount, msg_handler, fun_arg);
+	        cout<<"event at sender pushed "<<t.src<<" "<<" "<<t.dest<<" "<<tag<<"\n";
                 return 0;
             }
         virtual int sim_recv(
@@ -328,7 +328,7 @@ int main (int argc, char *argv[]){
     //network.sim_schedule(AstraSim::timespec_t(),&fun_sch,&fun_arg);
     //pass number of nodes
     // Ptr<SimpleUdpApplication> *udp = sim_init(num_gpus);
-    main1();
+    main1(argc, argv);
     for(int i=0;i<num_gpus;i++){
 	systems[i]->workload->fire();	
     }

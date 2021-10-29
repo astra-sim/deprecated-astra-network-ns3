@@ -89,7 +89,6 @@ def build(bld):
     headers.source = [
         'model/bulk-send-application.h',
         '../../scratch/workerQueue.h',
-	'../../scratch/myHeader.h',
 	'../../../astra-sim/astra-sim/workload/CSVWriter.hh',
 	'../../../astra-sim/astra-sim/workload/Layer.hh',
 	'../../../astra-sim/astra-sim/workload/Workload.hh',
