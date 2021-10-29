@@ -7,6 +7,7 @@
 #include <thread>
 #include <unistd.h>
 #include "workerQueue.h"
+#include "third.cc"
 #include <vector>
 // #include "myTCPMultiple.h"
 #include "ns3/core-module.h"
@@ -60,7 +61,7 @@ class ASTRASimNetwork:public AstraSim::AstraNetworkAPI{
         }
         int sim_finish(){
             cout<<"sim finish\n";
-            Simulator::Destroy ();
+            // Simulator::Destroy ();
             return 0;
         }
         double sim_time_resolution(){
@@ -111,8 +112,12 @@ class ASTRASimNetwork:public AstraSim::AstraNetworkAPI{
                 t.fun_arg = fun_arg;
                 t.msg_handler = msg_handler;
                 // workerQueue.push(t); 
-                udp[t.src]->SendPacket(t.dest, t.fun_arg, t.msg_handler, t.count, tag);
-	        cout<<"event at sender pushed "<<t.src<<" "<<" "<<t.dest<<" "<<tag<<"\n";
+                // udp[t.src]->SendPacket(t.dest, t.fun_arg, t.msg_handler, t.count, tag);
+                maxPacketCount = count/1500;
+                if(count%1500!=0)
+                    maxPacketCount++;
+                SendFlow(rank, dst , maxPacketCount, msg_handler, fun_arg)
+	            cout<<"event at sender pushed "<<t.src<<" "<<" "<<t.dest<<" "<<tag<<"\n";
                 return 0;
             }
         virtual int sim_recv(
@@ -322,11 +327,13 @@ int main (int argc, char *argv[]){
     //network.sim_recv(nullptr,3000,-1,1,-1,nullptr,&fun_recv,&fun_arg);
     //network.sim_schedule(AstraSim::timespec_t(),&fun_sch,&fun_arg);
     //pass number of nodes
-    Ptr<SimpleUdpApplication> *udp = sim_init(num_gpus);
+    // Ptr<SimpleUdpApplication> *udp = sim_init(num_gpus);
+    main1();
     for(int i=0;i<num_gpus;i++){
 	systems[i]->workload->fire();	
     }
     Simulator::Run ();
     Simulator::Stop (Seconds (1000));
+    Simulator::Destroy();
     return 0;
 }

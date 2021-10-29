@@ -153,6 +153,16 @@ void ScheduleFlowInputs(){
 	}
 }
 
+void SendFlow(int src, int dst , int maxPacketCount, void (*msg_handler)(void* fun_arg), void* fun_arg){
+    uint32_t port = portNumder[src][dst]++; // get a new port number
+    int pg = 3,dport = 100;
+    RdmaClientHelper clientHelper(pg, serverAddress[src], serverAddress[dst], port, dport, maxPacketCount, has_win?(global_t==1?maxBdp:pairBdp[n.Get(src)][n.Get(dst)]):0, global_t==1?maxRtt:pairRtt[src][dst],
+    msg_handler, fun_arg);
+    ApplicationContainer appCon = clientHelper.Install(n.Get(src));
+    appCon.Start(Time(0));
+}
+
+
 Ipv4Address node_id_to_ip(uint32_t id){
 	return Ipv4Address(0x0b000001 + ((id / 256) * 0x00010000) + ((id % 256) * 0x00000100));
 }
@@ -346,10 +356,12 @@ uint64_t get_nic_rate(NodeContainer &n){
 			return DynamicCast<QbbNetDevice>(n.Get(i)->GetDevice(1))->GetDataRate().GetBitRate();
 }
 
-int main(int argc, char *argv[])
+void main1()
 {
 	clock_t begint, endt;
 	begint = clock();
+	int argc = 2;
+	char *argv[] = ['scratch/third','mix/config.txt'];
 #ifndef PGO_TRAINING
 	if (argc > 1)
 #else
@@ -1008,10 +1020,10 @@ int main(int argc, char *argv[])
 	}
 	cout<<"each host pair use port number from 10000\n";
 	flow_input.idx = 0;
-	if (flow_num > 0){
-		ReadFlowInput();
-		Simulator::Schedule(Seconds(flow_input.start_time)-Simulator::Now(), ScheduleFlowInputs);
-	}
+	// if (flow_num > 0){
+	// 	ReadFlowInput();
+	// 	Simulator::Schedule(Seconds(flow_input.start_time)-Simulator::Now(), ScheduleFlowInputs);
+	// }
 
 	topof.close();
 	tracef.close();
@@ -1023,8 +1035,8 @@ int main(int argc, char *argv[])
 	}
 
 	// schedule buffer monitor
-	FILE* qlen_output = fopen(qlen_mon_file.c_str(), "w");
-	Simulator::Schedule(NanoSeconds(qlen_mon_start), &monitor_buffer, qlen_output, &n);
+	// FILE* qlen_output = fopen(qlen_mon_file.c_str(), "w");
+	// Simulator::Schedule(NanoSeconds(qlen_mon_start), &monitor_buffer, qlen_output, &n);
 
 	//
 	// Now, do the actual simulation.
@@ -1032,11 +1044,11 @@ int main(int argc, char *argv[])
 	std::cout << "Running Simulation.\n";
 	fflush(stdout);
 	NS_LOG_INFO("Run Simulation.");
-	Simulator::Stop(Seconds(simulator_stop_time));
-	Simulator::Run();
-	Simulator::Destroy();
-	NS_LOG_INFO("Done.");
-	fclose(trace_output);
+	// Simulator::Stop(Seconds(simulator_stop_time));
+	// Simulator::Run();
+	// Simulator::Destroy();
+	// NS_LOG_INFO("Done.");
+	// fclose(trace_output);
 
 	endt = clock();
 	std::cout << (double)(endt - begint) / CLOCKS_PER_SEC << "\n";

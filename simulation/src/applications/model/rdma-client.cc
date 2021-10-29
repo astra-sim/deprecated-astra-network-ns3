@@ -126,6 +126,12 @@ void RdmaClient::Finish(){
 	m_node->DeleteApplication(this);
 }
 
+void SetFn(void (*msg_handler)(void* fun_arg), void* fun_arg){
+  msg_handler = msg_handler;
+  fun_arg = fun_arg;
+  std::cout<<"fun set msg handler\n";
+}
+
 void RdmaClient::DoDispose (void)
 {
   NS_LOG_FUNCTION_NOARGS ();

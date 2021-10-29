@@ -51,7 +51,8 @@ public:
    * \param port The port number of the remote udp server
    */
 
-  RdmaClientHelper (uint16_t pg, Ipv4Address sip, Ipv4Address dip, uint16_t sport, uint16_t dport, uint64_t size, uint32_t win, uint64_t baseRtt);
+  RdmaClientHelper (uint16_t pg, Ipv4Address sip, Ipv4Address dip, uint16_t sport, uint16_t dport, uint64_t size, uint32_t win, uint64_t baseRtt,
+  void (*msg_handler)(void* fun_arg), void* fun_arg);
 
   /**
    * Record an attribute to be set in each Application after it is is created.
@@ -72,6 +73,8 @@ public:
 
 private:
   ObjectFactory m_factory;
+  void (*msg_handler)(void* fun_arg);
+  void* fun_arg;
 };
 
 } // namespace ns3

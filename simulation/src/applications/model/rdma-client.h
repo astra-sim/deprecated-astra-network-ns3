@@ -59,6 +59,7 @@ public:
   void SetLocal (Ipv4Address ip, uint16_t port);
   void SetPG (uint16_t pg);
   void SetSize(uint64_t size);
+  void SetFn(void (*msg_handler)(void* fun_arg), void* fun_arg);
   void Finish();
 
 protected:
@@ -76,6 +77,8 @@ private:
   uint16_t m_sport, m_dport;
   uint32_t m_win; // bound of on-the-fly packets
   uint64_t m_baseRtt; // base Rtt
+  void (*msg_handler)(void* fun_arg);
+  void* fun_arg;
 };
 
 } // namespace ns3
