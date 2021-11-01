@@ -311,7 +311,7 @@ int main (int argc, char *argv[]){
         	queues_per_dim, // queues per corresponding dimension
         	"../astra-sim/inputs/system/sample_a2a_sys.txt", // system configuration
         	"../astra-sim/inputs/workload/microAllReduce.txt", // workload configuration
-        	4, // communication scale
+        	64, // communication scale
         	1, // computation scale
         	1, // injection scale
         	1,

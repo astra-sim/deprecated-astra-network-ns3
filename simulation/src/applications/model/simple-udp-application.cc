@@ -14,7 +14,8 @@
 #include <queue>
 #include <thread>
 #include "ns3/workerQueue.h"
-#include "ns3/myHeader.h"
+//#include "ns3/myHeader.h"
+#include "/home/lightkhan/ns3-interface/simulation/scratch/myHeader.h"
 #define PURPLE_CODE "\033[95m"
 #define CYAN_CODE "\033[96m"
 #define TEAL_CODE "\033[36m"
@@ -25,8 +26,8 @@
 #define RED_CODE "\033[91m"
 #define BOLD_CODE "\033[1m"
 #define END_CODE "\033[0m"
-map<pair<int,pair<int,int> >,int > recvHash;
-map<pair<int,pair<int,int> >, struct task1> expeRecvHash;
+//map<pair<int,pair<int,int> >,int > recvHash;
+//map<pair<int,pair<int,int> >, struct task1> expeRecvHash;
 namespace ns3
 {
   NS_LOG_COMPONENT_DEFINE("SimpleUdpApplication");

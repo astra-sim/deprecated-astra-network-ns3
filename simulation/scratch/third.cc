@@ -135,10 +135,10 @@ void ReadFlowInput(){
 void ScheduleFlowInputs(){
 	while (flow_input.idx < flow_num && Seconds(flow_input.start_time) == Simulator::Now()){
 		uint32_t port = portNumder[flow_input.src][flow_input.dst]++; // get a new port number 
-		RdmaClientHelper clientHelper(flow_input.pg, serverAddress[flow_input.src], serverAddress[flow_input.dst], port, flow_input.dport, flow_input.maxPacketCount, has_win?(global_t==1?maxBdp:pairBdp[n.Get(flow_input.src)][n.Get(flow_input.dst)]):0, global_t==1?maxRtt:pairRtt[flow_input.src][flow_input.dst]);
+		//RdmaClientHelper clientHelper(flow_input.pg, serverAddress[flow_input.src], serverAddress[flow_input.dst], port, flow_input.dport, flow_input.maxPacketCount, has_win?(global_t==1?maxBdp:pairBdp[n.Get(flow_input.src)][n.Get(flow_input.dst)]):0, global_t==1?maxRtt:pairRtt[flow_input.src][flow_input.dst]);
 		std::cout<<flow_input.src<<" "<<flow_input.dst<<" "<<flow_input.pg<<" "<<serverAddress[flow_input.src]<<" "<<serverAddress[flow_input.dst]<<" "<<port<<" "<<flow_input.dport<<" "<<flow_input.maxPacketCount<<"\n";
-		ApplicationContainer appCon = clientHelper.Install(n.Get(flow_input.src));
-		appCon.Start(Time(0));
+		//ApplicationContainer appCon = clientHelper.Install(n.Get(flow_input.src));
+		//appCon.Start(Time(0));
 
 		// get the next flow input
 		flow_input.idx++;
@@ -153,11 +153,11 @@ void ScheduleFlowInputs(){
 	}
 }
 
-void SendFlow(int src, int dst , int maxPacketCount, void (*msg_handler)(void* fun_arg), void* fun_arg){
+void SendFlow(int src, int dst , int maxPacketCount, void (*msg_handler)(void* fun_arg), void* fun_arg, int tag){
     uint32_t port = portNumder[src][dst]++; // get a new port number
     int pg = 3,dport = 100;
     RdmaClientHelper clientHelper(pg, serverAddress[src], serverAddress[dst], port, dport, maxPacketCount, has_win?(global_t==1?maxBdp:pairBdp[n.Get(src)][n.Get(dst)]):0, global_t==1?maxRtt:pairRtt[src][dst],
-    msg_handler, fun_arg);
+    msg_handler, fun_arg, tag, src, dst);
     ApplicationContainer appCon = clientHelper.Install(n.Get(src));
     appCon.Start(Time(0));
 }
@@ -356,12 +356,12 @@ uint64_t get_nic_rate(NodeContainer &n){
 			return DynamicCast<QbbNetDevice>(n.Get(i)->GetDevice(1))->GetDataRate().GetBitRate();
 }
 
-void main1()
+int main1(int argc, char *argv[])
 {
 	clock_t begint, endt;
 	begint = clock();
-	int argc = 2;
-	char *argv[] = ['scratch/third','mix/config.txt'];
+	//int argc = 2;
+	//char *argv[] = ['scratch/third','mix/config.txt'];
 #ifndef PGO_TRAINING
 	if (argc > 1)
 #else
