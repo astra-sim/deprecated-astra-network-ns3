@@ -156,7 +156,7 @@ void ScheduleFlowInputs(){
 void SendFlow(int src, int dst , int maxPacketCount, void (*msg_handler)(void* fun_arg), void* fun_arg, int tag){
     uint32_t port = portNumder[src][dst]++; // get a new port number
     int pg = 3,dport = 100;
-    RdmaClientHelper clientHelper(pg, serverAddress[src], serverAddress[dst], port, dport, maxPacketCount, has_win?(global_t==1?maxBdp:pairBdp[n.Get(src)][n.Get(dst)]):0, global_t==1?maxRtt:pairRtt[src][dst],
+    RdmaClientHelper clientHelper(pg, serverAddress[src], serverAddress[dst], port, dport, 100, has_win?(global_t==1?maxBdp:pairBdp[n.Get(src)][n.Get(dst)]):0, global_t==1?maxRtt:pairRtt[src][dst],
     msg_handler, fun_arg, tag, src, dst);
     ApplicationContainer appCon = clientHelper.Install(n.Get(src));
     appCon.Start(Time(0));

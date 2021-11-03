@@ -116,6 +116,7 @@ class ASTRASimNetwork:public AstraSim::AstraNetworkAPI{
                 int maxPacketCount = count/1500;
                 if(count%1500!=0)
                     maxPacketCount++;
+		cout<<"COUNT and PACKET is "<<count<<" "<<maxPacketCount<<"\n";
                 SendFlow(rank, dst , maxPacketCount, msg_handler, fun_arg,tag);
 	        cout<<"event at sender pushed "<<t.src<<" "<<" "<<t.dest<<" "<<tag<<"\n";
                 return 0;
@@ -311,7 +312,7 @@ int main (int argc, char *argv[]){
         	queues_per_dim, // queues per corresponding dimension
         	"../astra-sim/inputs/system/sample_a2a_sys.txt", // system configuration
         	"../astra-sim/inputs/workload/microAllReduce.txt", // workload configuration
-        	64, // communication scale
+        	1, // communication scale
         	1, // computation scale
         	1, // injection scale
         	1,
