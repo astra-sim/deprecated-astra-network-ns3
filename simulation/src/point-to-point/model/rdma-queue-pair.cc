@@ -89,6 +89,7 @@ void RdmaQueuePair::SetAppNotifyCallback(Callback<void> notifyAppFinish){
 }
 
 uint64_t RdmaQueuePair::GetBytesLeft(){
+	std::cout<<"byte left is "<<m_size - snd_nxt<<"\n";
 	return m_size >= snd_nxt ? m_size - snd_nxt : 0;
 }
 
