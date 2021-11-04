@@ -237,7 +237,7 @@ void RdmaHw::AddQueuePair(uint64_t size, uint16_t pg, Ipv4Address sip, Ipv4Addre
 
 	// set init variables
 	DataRate m_bps = m_nic[nic_idx].dev->GetDataRate();
-	cout<<"data rate in addqueuepair is "<<m_bps<<"\n";
+	std::cout<<"data rate in addqueuepair is "<<m_bps<<"\n";
 	qp->m_rate = m_bps;
 	qp->m_max_rate = m_bps;
 	if (m_cc_mode == 1){

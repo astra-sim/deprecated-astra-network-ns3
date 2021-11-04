@@ -104,14 +104,14 @@ namespace ns3 {
 			uint32_t idx = (qIndex + m_rrlast) % fcount;
 			Ptr<RdmaQueuePair> qp = m_qpGrp->Get(idx);
 			if (!paused[qp->m_pg] && qp->GetBytesLeft() > 0 && !qp->IsWinBound()){
-				cout<<"there is byte left \n";
+				std::cout<<"there is byte left \n";
 				if (m_qpGrp->Get(idx)->m_nextAvail.GetTimeStep() > Simulator::Now().GetTimeStep()) //not available now
 					continue;
 				res = idx;
 				break;
 			}else if (qp->IsFinished()){
 				min_finish_id = idx < min_finish_id ? idx : min_finish_id;
-				cout<<"finished id  is "<<min_finish_id<<"\n";
+				std::cout<<"finished id  is "<<min_finish_id<<"\n";
 			}
 		}
 
@@ -127,7 +127,7 @@ namespace ns3 {
 			}
 			qps.resize(nxt);
 		}
-		cout<<"clear the finished qp \n";
+		std::cout<<"clear the finished qp \n";
 		return res;
 	}
 
@@ -284,7 +284,7 @@ namespace ns3 {
 				// a qp dequeue a packet
 				Ptr<RdmaQueuePair> lastQp = m_rdmaEQ->GetQp(qIndex);
 				p = m_rdmaEQ->DequeueQindex(qIndex);
-				std::cout<<"packet size is "<<p.GetSize()<<"\n";
+				//std::cout<<"packet size is "<<p.GetSize()<<"\n";
 				// transmit
 				m_traceQpDequeue(p, lastQp);
 				std::cout<<"transmit started \n";
@@ -307,7 +307,7 @@ namespace ns3 {
 				}
 				if (m_nextSend.IsExpired() && t < Simulator::GetMaximumSimulationTime() && t > Simulator::Now()){
 					std::cout<<"send next packet in else \n";
-					std::cout<<"bytes left to transmit "<<qp->GetBytesLeft()<<"\n";
+					//std::cout<<"bytes left to transmit "<<qp->GetBytesLeft()<<"\n";
 					m_nextSend = Simulator::Schedule(t - Simulator::Now(), &QbbNetDevice::DequeueAndTransmit, this);
 				}
 			}
@@ -368,7 +368,7 @@ namespace ns3 {
 		QbbNetDevice::Receive(Ptr<Packet> packet)
 	{
 		NS_LOG_FUNCTION(this << packet);
-		cout<<"receive packet \n";
+		std::cout<<"receive packet \n";
 		if (!m_linkUp){
 			m_traceDrop(packet, 0);
 			return;
@@ -389,7 +389,7 @@ namespace ns3 {
 		ch.getInt = 1; // parse INT header
 		packet->PeekHeader(ch);
 		if (ch.l3Prot == 0xFE){ // PFC
-			cout<<"receive pfc packet \n";
+			std::cout<<"receive pfc packet \n";
 			if (!m_qbbEnabled) return;
 			unsigned qIndex = ch.pfc.qIndex;
 			if (ch.pfc.time > 0){
@@ -400,13 +400,13 @@ namespace ns3 {
 				Resume(qIndex);
 			}
 		}else { // non-PFC packets (data, ACK, NACK, CNP...)
-			cout<<"receive normal packet \n";
+			std::cout<<"receive normal packet \n";
 			if (m_node->GetNodeType() > 0){ // switch
 				packet->AddPacketTag(FlowIdTag(m_ifIndex));
 				m_node->SwitchReceiveFromDevice(this, packet, ch);
 			}else { // NIC
 				// send to RdmaHw
-				cout<<"receive normal packet at normal node rdma hw \n";
+				std::cout<<"receive normal packet at normal node rdma hw \n";
 				int ret = m_rdmaReceiveCb(packet, ch);
 				// TODO we may based on the ret do something
 			}
@@ -483,7 +483,7 @@ namespace ns3 {
 		bool result = m_channel->TransmitStart(p, this, txTime);
 		if (result == false)
 		{
-			cout<<"result is false\n";
+			std::cout<<"result is false\n";
 			m_phyTxDropTrace(p);
 		}
 		return result;

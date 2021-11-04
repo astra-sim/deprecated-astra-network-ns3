@@ -157,7 +157,8 @@ void SendFlow(int src, int dst , int maxPacketCount, void (*msg_handler)(void* f
     uint32_t port = portNumder[src][dst]++; // get a new port number
     int pg = 3,dport = 100;
 	flow_input.idx++;
-    RdmaClientHelper clientHelper(pg, serverAddress[src], serverAddress[dst], port, dport, 100, has_win?(global_t==1?maxBdp:pairBdp[n.Get(src)][n.Get(dst)]):0, global_t==1?maxRtt:pairRtt[src][dst],
+	std::cout<<"flow input is "<<flow_input.idx<<"\n";
+    RdmaClientHelper clientHelper(pg, serverAddress[src], serverAddress[dst], port, dport, maxPacketCount, has_win?(global_t==1?maxBdp:pairBdp[n.Get(src)][n.Get(dst)]):0, global_t==1?maxRtt:pairRtt[src][dst],
     msg_handler, fun_arg, tag, src, dst);
     ApplicationContainer appCon = clientHelper.Install(n.Get(src));
     appCon.Start(Time(0));
@@ -783,7 +784,7 @@ int main1(int argc, char *argv[])
 		std::string data_rate, link_delay;
 		double error_rate;
 		topof >> src >> dst >> data_rate >> link_delay >> error_rate;
-
+		data_rate = "200Gbps";
 		Ptr<Node> snode = n.Get(src), dnode = n.Get(dst);
 
 		qbb.SetDeviceAttribute("DataRate", StringValue(data_rate));
