@@ -32,7 +32,7 @@ using namespace ns3;
 //   double time_val;
 // };
 // extern int global_variable;
-const int num_gpus = 4;
+const int num_gpus = 2;
 queue<struct task1> workerQueue;
 // map<pair<int,int>, struct task1> expeRecvHash;
 struct sim_event {
@@ -113,10 +113,8 @@ class ASTRASimNetwork:public AstraSim::AstraNetworkAPI{
                 t.msg_handler = msg_handler;
                 // workerQueue.push(t); 
                 // udp[t.src]->SendPacket(t.dest, t.fun_arg, t.msg_handler, t.count, tag);
-                int maxPacketCount = count/1500;
-                if(count%1500!=0)
-                    maxPacketCount++;
 		cout<<"COUNT and PACKET is "<<count<<" "<<maxPacketCount<<"\n";
+                sentHash[make_pair(tag,make_pair(t.src,t.dest)] = t;
                 SendFlow(rank, dst , count, msg_handler, fun_arg,tag);
 	        cout<<"event at sender pushed "<<t.src<<" "<<" "<<t.dest<<" "<<tag<<"\n";
                 return 0;
@@ -296,7 +294,8 @@ int main (int argc, char *argv[]){
     // LogComponentEnable("myTCPMultiple",LOG_LEVEL_INFO);
     LogComponentEnable("OnOffApplication", LOG_LEVEL_INFO);
     LogComponentEnable("PacketSink", LOG_LEVEL_INFO);
-    //ASTRASimNetwork network = ASTRASimNetwork(1);
+    ASTRASimNetwork network0 = ASTRASimNetwork(0);
+    ASTRASimNetwork network1 = ASTRASimNetwork(1);
     std::vector<ASTRASimNetwork*> networks(num_gpus,nullptr);
     std::vector<AstraSim::Sys*> systems(num_gpus,nullptr);
     std::vector<int> physical_dims(1,num_gpus);
@@ -324,15 +323,15 @@ int main (int argc, char *argv[]){
     	);	    
     }	
     //int fun_arg=1;
-    //network.sim_send(nullptr,3000,-1,2,-1,nullptr,&fun_send,&fun_arg);
-    //network.sim_recv(nullptr,3000,-1,1,-1,nullptr,&fun_recv,&fun_arg);
+    main1(argc, argv);
+    network0.sim_send(nullptr,3000,-1,1,100,nullptr,&fun_send,&fun_arg);
+    network1.sim_recv(nullptr,3000,-1,0,100,nullptr,&fun_recv,&fun_arg);
     //network.sim_schedule(AstraSim::timespec_t(),&fun_sch,&fun_arg);
     //pass number of nodes
     // Ptr<SimpleUdpApplication> *udp = sim_init(num_gpus);
-    main1(argc, argv);
-    for(int i=0;i<num_gpus;i++){
-	systems[i]->workload->fire();	
-    }
+    // for(int i=0;i<num_gpus;i++){
+	// systems[i]->workload->fire();	
+    // }
     Simulator::Run ();
     Simulator::Stop (Seconds (1000));
     Simulator::Destroy();

@@ -103,9 +103,6 @@ namespace ns3 {
 		for (qIndex = 1; qIndex <= fcount; qIndex++){
 			uint32_t idx = (qIndex + m_rrlast) % fcount;
 			Ptr<RdmaQueuePair> qp = m_qpGrp->Get(idx);
-			if(qp->GetBytesLeft() == 0){
-				std::cout<<"get byte left in getnextqindex\n";
-			}
 			if (!paused[qp->m_pg] && qp->GetBytesLeft() > 0 && !qp->IsWinBound()){
 				std::cout<<"there is byte left \n";
 				if (m_qpGrp->Get(idx)->m_nextAvail.GetTimeStep() > Simulator::Now().GetTimeStep()) //not available now
@@ -263,7 +260,6 @@ namespace ns3 {
 		m_currentPkt = 0;
 		DequeueAndTransmit();
 		std::cout<<"transmit complete qbbnetdevice \n";
-		
 	}
 
 	void
@@ -307,6 +303,7 @@ namespace ns3 {
 					Ptr<RdmaQueuePair> qp = m_rdmaEQ->GetQp(i);
 					if (qp->GetBytesLeft() == 0){
 						std::cout<<"get byte left in dequeue transmit\n";
+						qp->m_notifyAppSent();
 						continue;
 					}
 					t = Min(qp->m_nextAvail, t);
@@ -348,6 +345,7 @@ namespace ns3 {
 						Ptr<RdmaQueuePair> qp = m_rdmaEQ->GetQp(i);
 						if (qp->GetBytesLeft() == 0){
 							std::cout<<"get byte left in dequeue transmit in switch\n";
+							qp->m_notifyAppSent();
 							continue;
 						}	
 						t = Min(qp->m_nextAvail, t);

@@ -39,6 +39,7 @@
 #include "ns3/workerQueue.h"
 map<pair<int,pair<int,int> >,int > recvHash;
 map<pair<int,pair<int,int> >, struct task1> expeRecvHash;
+map<pair<int,pair<int,int> >, struct task1> sentHash;
 namespace ns3 {
 
 NS_LOG_COMPONENT_DEFINE ("RdmaClient");
@@ -141,6 +142,17 @@ void RdmaClient::SetSize(uint64_t size){
 
 void RdmaClient::Sent(){
    std::cout<<"sim sent \n";
+   int sender_node = src;
+   int receiver_node = dest;
+   if(sentHash.find(make_pair(tag,make_pair(sender_node, receiver_node)))!=sentHash.end()){
+     std::cout<<"in senthash "<<src<<" "<<dest<<" "<<tag<<"\n";
+     task1 t2 = sentHash[make_pair(tag,make_pair(sender_node, receiver_node))];
+     sentHash.erase(make_pair(tag,make_pair(sender_node, receiver_node)));
+     t2.msg_handler(t2.fun_arg);
+   }
+   else{
+     std::cout<<"not in senthash "<<src<<" "<<dest<<" "<<tag<<"\n";
+   }
 }
 
 void RdmaClient::Finish(){
@@ -159,13 +171,13 @@ void RdmaClient::Finish(){
         {
           expeRecvHash.erase(make_pair(tag,make_pair(sender_node, receiver_node)));
 	  std::cout<<"already in expected recv hash\n";
-          //t2.msg_handler(t2.fun_arg);
+          t2.msg_handler(t2.fun_arg);
         }
         else if (count > t2.count){
             recvHash[make_pair(tag,make_pair(sender_node, receiver_node))] = count - t2.count;
             expeRecvHash.erase(make_pair(tag,make_pair(sender_node, receiver_node)));
 	    std::cout<<"already in recv hash with more data\n";
-	    //t2.msg_handler(t2.fun_arg);
+	    t2.msg_handler(t2.fun_arg);
         }
         else{
             t2.count -=count;
@@ -173,7 +185,7 @@ void RdmaClient::Finish(){
 	    std::cout<<"t2.count is"<<t2.count<<"\n";
 	    std::cout<<"partially in recv hash \n";
         }
-	t2.msg_handler(t2.fun_arg);
+	// t2.msg_handler(t2.fun_arg);
       }
       else{
         if(recvHash.find(make_pair(tag,make_pair(sender_node, receiver_node)))==recvHash.end()){
