@@ -103,6 +103,9 @@ namespace ns3 {
 		for (qIndex = 1; qIndex <= fcount; qIndex++){
 			uint32_t idx = (qIndex + m_rrlast) % fcount;
 			Ptr<RdmaQueuePair> qp = m_qpGrp->Get(idx);
+			if(qp->GetBytesLeft() == 0){
+				std::cout<<"get byte left in getnextqindex\n";
+			}
 			if (!paused[qp->m_pg] && qp->GetBytesLeft() > 0 && !qp->IsWinBound()){
 				std::cout<<"there is byte left \n";
 				if (m_qpGrp->Get(idx)->m_nextAvail.GetTimeStep() > Simulator::Now().GetTimeStep()) //not available now
@@ -260,6 +263,7 @@ namespace ns3 {
 		m_currentPkt = 0;
 		DequeueAndTransmit();
 		std::cout<<"transmit complete qbbnetdevice \n";
+		
 	}
 
 	void
@@ -301,8 +305,10 @@ namespace ns3 {
 				std::cout<<"maximum simulation time is "<<t<<"\n";
 				for (uint32_t i = 0; i < m_rdmaEQ->GetFlowCount(); i++){
 					Ptr<RdmaQueuePair> qp = m_rdmaEQ->GetQp(i);
-					if (qp->GetBytesLeft() == 0)
+					if (qp->GetBytesLeft() == 0){
+						std::cout<<"get byte left in dequeue transmit\n";
 						continue;
+					}
 					t = Min(qp->m_nextAvail, t);
 				}
 				if (m_nextSend.IsExpired() && t < Simulator::GetMaximumSimulationTime() && t > Simulator::Now()){
@@ -340,8 +346,10 @@ namespace ns3 {
 					Time t = Simulator::GetMaximumSimulationTime();
 					for (uint32_t i = 0; i < m_rdmaEQ->GetFlowCount(); i++){
 						Ptr<RdmaQueuePair> qp = m_rdmaEQ->GetQp(i);
-						if (qp->GetBytesLeft() == 0)
+						if (qp->GetBytesLeft() == 0){
+							std::cout<<"get byte left in dequeue transmit in switch\n";
 							continue;
+						}	
 						t = Min(qp->m_nextAvail, t);
 					}
 					if (m_nextSend.IsExpired() && t < Simulator::GetMaximumSimulationTime() && t > Simulator::Now()){
