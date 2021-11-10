@@ -61,6 +61,7 @@ public:
   void SetSize(uint64_t size);
   void SetFn(void (*msg_handler)(void* fun_arg), void* fun_arg);
   void Finish();
+  void Sent();
 
 protected:
   virtual void DoDispose (void);

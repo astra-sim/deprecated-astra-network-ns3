@@ -56,7 +56,7 @@ RdmaClient::GetTypeId (void)
                    MakeUintegerAccessor (&RdmaClient::m_size),
                    MakeUintegerChecker<uint64_t> ())
     .AddAttribute ("SourceIP",
-                   "Source IP",
+                   "Source IP",m
                    Ipv4AddressValue ("0.0.0.0"),
                    MakeIpv4AddressAccessor (&RdmaClient::m_sip),
                    MakeIpv4AddressChecker ())
@@ -139,6 +139,10 @@ void RdmaClient::SetSize(uint64_t size){
 	m_size = size;
 }
 
+void RdmaClient::Sent(){
+   std::cout<<"sim sent \n";
+}
+
 void RdmaClient::Finish(){
   //for send msg_handler
   std::cout<<"in finish rdmaclient\n";
@@ -204,7 +208,7 @@ void RdmaClient::StartApplication (void)
   Ptr<Node> node = GetNode();
   Ptr<RdmaDriver> rdma = node->GetObject<RdmaDriver>();
   cout<<"size in rdmaclient is "<<m_size<<"\n";
-  rdma->AddQueuePair(m_size, m_pg, m_sip, m_dip, m_sport, m_dport, m_win, m_baseRtt, MakeCallback(&RdmaClient::Finish, this));
+  rdma->AddQueuePair(m_size, m_pg, m_sip, m_dip, m_sport, m_dport, m_win, m_baseRtt, MakeCallback(&RdmaClient::Finish, this), MakeCallback(&RdmaClient::Sent, this));
 }
 
 void RdmaClient::StopApplication ()
