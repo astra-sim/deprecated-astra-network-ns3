@@ -56,7 +56,7 @@ RdmaClient::GetTypeId (void)
                    MakeUintegerAccessor (&RdmaClient::m_size),
                    MakeUintegerChecker<uint64_t> ())
     .AddAttribute ("SourceIP",
-                   "Source IP",m
+                   "Source IP",
                    Ipv4AddressValue ("0.0.0.0"),
                    MakeIpv4AddressAccessor (&RdmaClient::m_sip),
                    MakeIpv4AddressChecker ())

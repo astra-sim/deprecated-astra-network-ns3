@@ -86,20 +86,18 @@ void RdmaQueuePair::SetVarWin(bool v){
 
 void RdmaQueuePair::SetAppNotifyCallback(Callback<void> notifyAppFinish){
 	std::cout<<"notify to finish\n";
-	m_notifyApp
-	Finish = notifyAppFinish;
+	m_notifyAppFinish = notifyAppFinish;
 }
 
 void RdmaQueuePair::SetAppSentCallback(Callback<void> notifyAppSent){
 	std::cout<<"notify to sent\n";
-	m_notifyApp
-	Sent = notifyAppSent;
+	m_notifyAppSent = notifyAppSent;
 }
 
 
 uint64_t RdmaQueuePair::GetBytesLeft(){
 	std::cout<<"byte left is "<<m_size - snd_nxt<<"\n";
-	if(msize-snd_nxt<=0){
+	if(m_size-snd_nxt<=0){
 		std::cout<<"inside byte 0 "<<m_size - snd_nxt<<"\n";
 		m_notifyAppSent();
 	}
