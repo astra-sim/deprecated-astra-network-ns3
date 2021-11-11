@@ -7,6 +7,7 @@
 #include <thread>
 #include <unistd.h>
 #include "workerQueue.h"
+#include "third.cc"
 #include <vector>
 // #include "myTCPMultiple.h"
 #include "ns3/core-module.h"
@@ -20,7 +21,7 @@
 //#include<type_info>
 using namespace std;
 using namespace ns3;
-NS_LOG_COMPONENT_DEFINE ("ASTRASimNetwork");
+//NS_LOG_COMPONENT_DEFINE ("ASTRASimNetwork");
 // struct sim_comm {
 //   std::string comm_name;
 // };
@@ -60,7 +61,7 @@ class ASTRASimNetwork:public AstraSim::AstraNetworkAPI{
         }
         int sim_finish(){
             cout<<"sim finish\n";
-            Simulator::Destroy ();
+            // Simulator::Destroy ();
             return 0;
         }
         double sim_time_resolution(){
@@ -111,7 +112,10 @@ class ASTRASimNetwork:public AstraSim::AstraNetworkAPI{
                 t.fun_arg = fun_arg;
                 t.msg_handler = msg_handler;
                 // workerQueue.push(t); 
-                udp[t.src]->SendPacket(t.dest, t.fun_arg, t.msg_handler, t.count, tag);
+                // udp[t.src]->SendPacket(t.dest, t.fun_arg, t.msg_handler, t.count, tag);
+		//cout<<"COUNT and PACKET is "<<count<<" "<<maxPacketCount<<"\n";
+                sentHash[make_pair(tag,make_pair(t.src,t.dest))] = t;
+                SendFlow(rank, dst , count, msg_handler, fun_arg,tag);
 	        cout<<"event at sender pushed "<<t.src<<" "<<" "<<t.dest<<" "<<tag<<"\n";
                 return 0;
             }
@@ -290,7 +294,8 @@ int main (int argc, char *argv[]){
     // LogComponentEnable("myTCPMultiple",LOG_LEVEL_INFO);
     LogComponentEnable("OnOffApplication", LOG_LEVEL_INFO);
     LogComponentEnable("PacketSink", LOG_LEVEL_INFO);
-    //ASTRASimNetwork network = ASTRASimNetwork(1);
+    //ASTRASimNetwork network0 = ASTRASimNetwork(0);
+    //ASTRASimNetwork network1 = ASTRASimNetwork(1);
     std::vector<ASTRASimNetwork*> networks(num_gpus,nullptr);
     std::vector<AstraSim::Sys*> systems(num_gpus,nullptr);
     std::vector<int> physical_dims(1,num_gpus);
@@ -306,7 +311,7 @@ int main (int argc, char *argv[]){
         	queues_per_dim, // queues per corresponding dimension
         	"../astra-sim/inputs/system/sample_a2a_sys.txt", // system configuration
         	"../astra-sim/inputs/workload/microAllReduce.txt", // workload configuration
-        	4, // communication scale
+        	1, // communication scale
         	1, // computation scale
         	1, // injection scale
         	1,
@@ -318,15 +323,17 @@ int main (int argc, char *argv[]){
     	);	    
     }	
     //int fun_arg=1;
-    //network.sim_send(nullptr,3000,-1,2,-1,nullptr,&fun_send,&fun_arg);
-    //network.sim_recv(nullptr,3000,-1,1,-1,nullptr,&fun_recv,&fun_arg);
+    main1(argc, argv);
+    //network0.sim_send(nullptr,3000,-1,1,100,nullptr,&fun_send,&fun_arg);
+    //network1.sim_recv(nullptr,3000,-1,0,100,nullptr,&fun_recv,&fun_arg);
     //network.sim_schedule(AstraSim::timespec_t(),&fun_sch,&fun_arg);
     //pass number of nodes
-    Ptr<SimpleUdpApplication> *udp = sim_init(num_gpus);
+    // Ptr<SimpleUdpApplication> *udp = sim_init(num_gpus);
     for(int i=0;i<num_gpus;i++){
 	systems[i]->workload->fire();	
     }
     Simulator::Run ();
     Simulator::Stop (Seconds (1000));
+    Simulator::Destroy();
     return 0;
 }

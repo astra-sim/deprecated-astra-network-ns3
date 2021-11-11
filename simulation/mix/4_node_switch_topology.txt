@@ -1,7 +1,9 @@
-5 1 4 
-0
-0 1 100Gbps 0.001ms 0
-0 2 100Gbps 0.001ms 0
-0 3 100Gbps 0.001ms 0
-0 4 100Gbps 0.001ms 0
-0 5 100Gbps 0.001ms 0
+4 0 6 
+
+0 1 200Gbps 500ns 0
+0 2 200Gbps 500ns 0
+0 3 200Gbps 500ns 0
+1 2 200Gbps 500ns 0
+1 3 200Gbps 500ns 0
+2 3 200Gbps 500ns 0
+

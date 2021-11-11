@@ -19,6 +19,7 @@ struct task1{
 extern queue<struct task1> workerQueue;
 extern map<pair<int,pair<int,int> >, struct task1> expeRecvHash;
 extern map<pair<int,pair<int,int> >,int > recvHash;
+extern map<pair<int,pair<int,int> >,struct task1> sentHash;
 //extern map<pair<int,int>, struct task1> expeRecvHash;
 //extern map<pair<int,int>,int > recvHash;
 

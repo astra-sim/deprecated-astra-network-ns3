@@ -29,7 +29,7 @@ public:
 	uint32_t wp; // current window of packets
 	uint32_t lastPktSize;
 	Callback<void> m_notifyAppFinish;
-
+	Callback<void> m_notifyAppSent;
 	/******************************
 	 * runtime states
 	 *****************************/
@@ -90,6 +90,7 @@ public:
 	void SetBaseRtt(uint64_t baseRtt);
 	void SetVarWin(bool v);
 	void SetAppNotifyCallback(Callback<void> notifyAppFinish);
+	void SetAppSentCallback(Callback<void> notifyAppSent);
 
 	uint64_t GetBytesLeft();
 	uint32_t GetHash(void);
