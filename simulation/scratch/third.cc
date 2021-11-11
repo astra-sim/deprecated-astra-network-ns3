@@ -360,11 +360,13 @@ uint64_t get_nic_rate(NodeContainer &n){
 
 int main1(int argc, char *argv[])
 {
+	//std::cout<<"testThird\n"
 	clock_t begint, endt;
 	begint = clock();
 	//int argc = 2;
 	//char *argv[] = ['scratch/third','mix/config.txt'];
 #ifndef PGO_TRAINING
+	//std::cout<<"Argc "<<argc<<" argv "<<argv<<"\n";
 	if (argc > 1)
 #else
 	if (true)

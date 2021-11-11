@@ -322,7 +322,7 @@ int main (int argc, char *argv[]){
         	false  // randezvous protocol
     	);	    
     }	
-    int fun_arg=1;
+    //int fun_arg=1;
     main1(argc, argv);
     //network0.sim_send(nullptr,3000,-1,1,100,nullptr,&fun_send,&fun_arg);
     //network1.sim_recv(nullptr,3000,-1,0,100,nullptr,&fun_recv,&fun_arg);
