@@ -1,7 +1,8 @@
  #include "ns3/ptr.h"
  #include "ns3/packet.h"
  #include "ns3/header.h"
- #include <iostream>
+#pragma once
+#include <iostream>
  using namespace ns3;
 class MyHeader : public Header 
  {

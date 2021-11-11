@@ -25,8 +25,8 @@
 #define RED_CODE "\033[91m"
 #define BOLD_CODE "\033[1m"
 #define END_CODE "\033[0m"
-map<pair<int,pair<int,int> >,int > recvHash;
-map<pair<int,pair<int,int> >, struct task1> expeRecvHash;
+//map<pair<int,pair<int,int> >,int > recvHash;
+//map<pair<int,pair<int,int> >, struct task1> expeRecvHash;
 namespace ns3
 {
   NS_LOG_COMPONENT_DEFINE("SimpleUdpApplication");
