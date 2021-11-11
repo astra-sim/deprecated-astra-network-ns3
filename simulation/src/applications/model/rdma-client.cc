@@ -36,7 +36,10 @@
 #include <ns3/rdma-driver.h>
 #include <stdlib.h>
 #include <stdio.h>
-
+#include "ns3/workerQueue.h"
+map<pair<int,pair<int,int> >,int > recvHash;
+map<pair<int,pair<int,int> >, struct task1> expeRecvHash;
+map<pair<int,pair<int,int> >, struct task1> sentHash;
 namespace ns3 {
 
 NS_LOG_COMPONENT_DEFINE ("RdmaClient");
@@ -87,6 +90,21 @@ RdmaClient::GetTypeId (void)
                    UintegerValue (0),
                    MakeUintegerAccessor (&RdmaClient::m_baseRtt),
                    MakeUintegerChecker<uint64_t> ())
+    .AddAttribute ("Tag",
+                   "Tag",
+                   UintegerValue (0),
+                   MakeUintegerAccessor (&RdmaClient::tag),
+                   MakeUintegerChecker<uint64_t> ())
+    .AddAttribute ("Src",
+                   "Src",
+                   UintegerValue (0),
+                   MakeUintegerAccessor (&RdmaClient::src),
+                   MakeUintegerChecker<uint64_t> ())
+    .AddAttribute ("Dest",
+                   "Dest",
+                   UintegerValue (0),
+                   MakeUintegerAccessor (&RdmaClient::dest),
+                   MakeUintegerChecker<uint64_t> ())               
   ;
   return tid;
 }
@@ -122,8 +140,71 @@ void RdmaClient::SetSize(uint64_t size){
 	m_size = size;
 }
 
+void RdmaClient::Sent(){
+   std::cout<<"sim sent \n";
+   int sender_node = src;
+   int receiver_node = dest;
+   if(sentHash.find(make_pair(tag,make_pair(sender_node, receiver_node)))!=sentHash.end()){
+     std::cout<<"in senthash "<<src<<" "<<dest<<" "<<tag<<"\n";
+     task1 t2 = sentHash[make_pair(tag,make_pair(sender_node, receiver_node))];
+     sentHash.erase(make_pair(tag,make_pair(sender_node, receiver_node)));
+     t2.msg_handler(t2.fun_arg);
+   }
+   else{
+     std::cout<<"not in senthash "<<src<<" "<<dest<<" "<<tag<<"\n";
+   }
+}
+
 void RdmaClient::Finish(){
+  //for send msg_handler
+  std::cout<<"in finish rdmaclient\n";
+  //:wqmsg_handler(fun_arg);
+  //for recv msg handler
+  int count = m_size;
+  int sender_node = src;
+  int receiver_node = dest;
+  std::cout<<"count src dest "<<count<<" "<<src<<" "<<dest<<"\n";
+  if(expeRecvHash.find(make_pair(tag,make_pair(sender_node, receiver_node)))!=expeRecvHash.end()){
+        task1 t2 = expeRecvHash[make_pair(tag,make_pair(sender_node, receiver_node))];
+	std::cout<<"count and t2.count is"<<count<<" "<<t2.count<<"\n";
+        if(count == t2.count)
+        {
+          expeRecvHash.erase(make_pair(tag,make_pair(sender_node, receiver_node)));
+	  std::cout<<"already in expected recv hash\n";
+          t2.msg_handler(t2.fun_arg);
+        }
+        else if (count > t2.count){
+            recvHash[make_pair(tag,make_pair(sender_node, receiver_node))] = count - t2.count;
+            expeRecvHash.erase(make_pair(tag,make_pair(sender_node, receiver_node)));
+	    std::cout<<"already in recv hash with more data\n";
+	    t2.msg_handler(t2.fun_arg);
+        }
+        else{
+            t2.count -=count;
+            expeRecvHash[make_pair(tag,make_pair(sender_node, receiver_node))] = t2;
+	    std::cout<<"t2.count is"<<t2.count<<"\n";
+	    std::cout<<"partially in recv hash \n";
+        }
+	// t2.msg_handler(t2.fun_arg);
+      }
+      else{
+        if(recvHash.find(make_pair(tag,make_pair(sender_node, receiver_node)))==recvHash.end()){
+          recvHash[make_pair(tag,make_pair(sender_node, receiver_node))]=count;
+	  std::cout<<"not in expected recv hash\n";
+        }
+        else{
+          //TODO: is this really required?
+          recvHash[make_pair(tag,make_pair(sender_node, receiver_node))]+=count;
+	  std::cout<<"in recv hash already maybe from previous flows\n";
+        }
+      }
 	m_node->DeleteApplication(this);
+}
+
+void RdmaClient::SetFn(void (*msg_handler)(void* fun_arg), void* fun_arg){
+  msg_handler = msg_handler;
+  fun_arg = fun_arg;
+  std::cout<<"fun set msg handler\n";
 }
 
 void RdmaClient::DoDispose (void)
@@ -138,7 +219,8 @@ void RdmaClient::StartApplication (void)
   // get RDMA driver and add up queue pair
   Ptr<Node> node = GetNode();
   Ptr<RdmaDriver> rdma = node->GetObject<RdmaDriver>();
-  rdma->AddQueuePair(m_size, m_pg, m_sip, m_dip, m_sport, m_dport, m_win, m_baseRtt, MakeCallback(&RdmaClient::Finish, this));
+  cout<<"size in rdmaclient is "<<m_size<<"\n";
+  rdma->AddQueuePair(m_size, m_pg, m_sip, m_dip, m_sport, m_dport, m_win, m_baseRtt, MakeCallback(&RdmaClient::Finish, this), MakeCallback(&RdmaClient::Sent, this));
 }
 
 void RdmaClient::StopApplication ()
