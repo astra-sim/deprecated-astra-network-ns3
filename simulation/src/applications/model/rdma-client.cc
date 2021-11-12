@@ -40,6 +40,7 @@
 map<pair<int,pair<int,int> >,int > recvHash;
 map<pair<int,pair<int,int> >, struct task1> expeRecvHash;
 map<pair<int,pair<int,int> >, struct task1> sentHash;
+map<pair<int,int>,int> nodeHash;
 namespace ns3 {
 
 NS_LOG_COMPONENT_DEFINE ("RdmaClient");
@@ -153,6 +154,12 @@ void RdmaClient::Sent(){
    else{
      std::cout<<"not in senthash "<<src<<" "<<dest<<" "<<tag<<"\n";
    }
+   if(nodeHash.find(make_pair(sender_node, 0))==nodeHash.end()){
+     nodeHash[make_pair(sender_node, 0)] = m_size;
+   }
+   else{
+     nodeHash[make_pair(sender_node, 0)] += m_size;
+   }
 }
 
 void RdmaClient::Finish(){
@@ -198,6 +205,12 @@ void RdmaClient::Finish(){
 	  std::cout<<"in recv hash already maybe from previous flows\n";
         }
       }
+  if(nodeHash.find(make_pair(receiver_node, 1))==nodeHash.end()){
+     nodeHash[make_pair(receiver_node, 1)] = m_size;
+   }
+   else{
+     nodeHash[make_pair(receiver_node, 1)] += m_size;
+   }
 	m_node->DeleteApplication(this);
 }
 

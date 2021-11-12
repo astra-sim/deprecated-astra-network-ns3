@@ -62,6 +62,15 @@ class ASTRASimNetwork:public AstraSim::AstraNetworkAPI{
         int sim_finish(){
             cout<<"sim finish\n";
             // Simulator::Destroy ();
+            for(auto it = nodeHash.begin();it!=nodeHash.end();it++){
+                pair<int,int> p = it->first;
+                if(p.second==0){
+                    cout<<"ALL DATA SENT FROM NODE "<<p.first<<" IS "<<it->second<<"\n";
+                }
+                else{
+                    cout<<"ALL DATA RECEIVED BY NODE "<<p.first<<" IS "<<it->second<<"\n";
+                }
+            }
             return 0;
         }
         double sim_time_resolution(){
