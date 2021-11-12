@@ -65,10 +65,10 @@ class ASTRASimNetwork:public AstraSim::AstraNetworkAPI{
             for(auto it = nodeHash.begin();it!=nodeHash.end();it++){
                 pair<int,int> p = it->first;
                 if(p.second==0){
-                    cout<<"ALL DATA SENT FROM NODE "<<p.first<<" IS "<<it->second<<"\n";
+                    cout<<"All data sent from node "<<p.first<<" is "<<it->second<<"\n";
                 }
                 else{
-                    cout<<"ALL DATA RECEIVED BY NODE "<<p.first<<" IS "<<it->second<<"\n";
+                    cout<<"All data received by node "<<p.first<<" is "<<it->second<<"\n";
                 }
             }
             return 0;

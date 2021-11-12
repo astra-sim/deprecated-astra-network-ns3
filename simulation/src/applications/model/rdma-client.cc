@@ -149,16 +149,16 @@ void RdmaClient::Sent(){
      std::cout<<"in senthash "<<src<<" "<<dest<<" "<<tag<<"\n";
      task1 t2 = sentHash[make_pair(tag,make_pair(sender_node, receiver_node))];
      sentHash.erase(make_pair(tag,make_pair(sender_node, receiver_node)));
-     t2.msg_handler(t2.fun_arg);
+      if(nodeHash.find(make_pair(sender_node, 0))==nodeHash.end()){
+        nodeHash[make_pair(sender_node, 0)] = m_size;
+      }
+      else{
+        nodeHash[make_pair(sender_node, 0)] += m_size;
+      }
+      t2.msg_handler(t2.fun_arg);
    }
    else{
      std::cout<<"not in senthash "<<src<<" "<<dest<<" "<<tag<<"\n";
-   }
-   if(nodeHash.find(make_pair(sender_node, 0))==nodeHash.end()){
-     nodeHash[make_pair(sender_node, 0)] = m_size;
-   }
-   else{
-     nodeHash[make_pair(sender_node, 0)] += m_size;
    }
 }
 
