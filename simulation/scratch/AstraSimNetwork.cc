@@ -32,7 +32,7 @@ using namespace ns3;
 //   double time_val;
 // };
 // extern int global_variable;
-const int num_gpus = 4;
+const int num_gpus = 64;
 queue<struct task1> workerQueue;
 // map<pair<int,int>, struct task1> expeRecvHash;
 struct sim_event {
@@ -123,7 +123,8 @@ class ASTRASimNetwork:public AstraSim::AstraNetworkAPI{
                 // workerQueue.push(t); 
                 // udp[t.src]->SendPacket(t.dest, t.fun_arg, t.msg_handler, t.count, tag);
 		//cout<<"COUNT and PACKET is "<<count<<" "<<maxPacketCount<<"\n";
-                sentHash[make_pair(tag,make_pair(t.src,t.dest))] = t;
+                cout<<"COUNT IN SEND IS "<<count<<"\n";
+		sentHash[make_pair(tag,make_pair(t.src,t.dest))] = t;
                 SendFlow(rank, dst , count, msg_handler, fun_arg,tag);
 	        cout<<"event at sender pushed "<<t.src<<" "<<" "<<t.dest<<" "<<tag<<"\n";
                 return 0;
@@ -181,6 +182,7 @@ class ASTRASimNetwork:public AstraSim::AstraNetworkAPI{
                     }
                     //expeRecvHash[make_pair(tag,make_pair(t.src,t.dest))] = t;
                 }
+		cout<<"COUNT IN RECV IS "<<count<<"\n";
                 cout<<"event at receiver pushed\n";
                 return 0;
             }
@@ -320,7 +322,7 @@ int main (int argc, char *argv[]){
         	queues_per_dim, // queues per corresponding dimension
         	"../astra-sim/inputs/system/sample_a2a_sys.txt", // system configuration
         	"../astra-sim/inputs/workload/microAllReduce.txt", // workload configuration
-        	1, // communication scale
+        	1024, // communication scale
         	1, // computation scale
         	1, // injection scale
         	1,
@@ -342,7 +344,7 @@ int main (int argc, char *argv[]){
 	systems[i]->workload->fire();	
     }
     Simulator::Run ();
-    Simulator::Stop (Seconds (1000));
+    Simulator::Stop (Seconds (100000000000000));
     Simulator::Destroy();
     return 0;
 }

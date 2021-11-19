@@ -786,7 +786,7 @@ int main1(int argc, char *argv[])
 		std::string data_rate, link_delay;
 		double error_rate;
 		topof >> src >> dst >> data_rate >> link_delay >> error_rate;
-		data_rate = "200Gbps";
+		//data_rate = "200Gbps";
 		Ptr<Node> snode = n.Get(src), dnode = n.Get(dst);
 
 		qbb.SetDeviceAttribute("DataRate", StringValue(data_rate));
