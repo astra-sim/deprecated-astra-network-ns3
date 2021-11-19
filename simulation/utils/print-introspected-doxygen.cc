@@ -132,7 +132,7 @@ public:
    */
   void Gather (TypeId tid);
   /**
-   * Print output in "a -> b" form on std::cout
+   * Print output in "a -> b" form on //std:://cout
    */
   void Print (void) const;
 
@@ -204,7 +204,7 @@ StaticInformation::Print (void) const
   for (std::vector<std::pair<TypeId,std::string> >::const_iterator i = m_output.begin (); i != m_output.end (); ++i)
     {
       std::pair<TypeId,std::string> item = *i;
-      std::cout << item.first.GetName () << " -> " << item.second << std::endl;
+      //std:://cout << item.first.GetName () << " -> " << item.second << std::endl;
     }
 }
 
@@ -381,7 +381,7 @@ StaticInformation::find_and_replace( std::string &source, const std::string find
 void
 PrintHelp (const char *program_name)
 {
-  std::cout << "Usage: " << program_name << " [options]" << std::endl
+  //std:://cout << "Usage: " << program_name << " [options]" << std::endl
             << std::endl
             << "Options:" << std::endl
             << "  --help        : print these options" << std::endl
@@ -549,64 +549,64 @@ int main (int argc, char *argv[])
       // Get the class's index out of the map;
       uint32_t i = nameMapIterator->second;
 
-      std::cout << commentStart << std::endl;
+      //std:://cout << commentStart << std::endl;
       TypeId tid = TypeId::GetRegistered (i);
       if (tid.MustHideFromDocumentation ())
 	{
 	  continue;
 	}
-      std::cout << functionStart << tid.GetName () << std::endl;
-      std::cout << std::endl;
+      //std:://cout << functionStart << tid.GetName () << std::endl;
+      //std:://cout << std::endl;
       std::vector<std::string> paths = info.Get (tid);
 
       // Config --------------
       if (paths.empty ())
 	{
-	  std::cout << "Doxygen introspection did not find any typical Config paths."
+	  //std:://cout << "Doxygen introspection did not find any typical Config paths."
 		    << breakBoth << std::endl;
 	}
       else
 	{
-	  std::cout << headingStart
+	  //std:://cout << headingStart
 		    << "Config Paths"
 		    << headingStop << std::endl;
-	  std::cout << std::endl;
-	  std::cout << tid.GetName ()
+	  //std:://cout << std::endl;
+	  //std:://cout << tid.GetName ()
 		    << " is accessible through the following paths"
 		    << " with Config::Set and Config::Connect:"
 		    << std::endl;
-	  std::cout << listStart << std::endl;
+	  //std:://cout << listStart << std::endl;
 	  for (uint32_t k = 0; k < paths.size (); ++k)
 	    {
 	      std::string path = paths[k];
-	      std::cout << listLineStart << path
+	      //std:://cout << listLineStart << path
 			<< listLineStop  << breakTextOnly << std::endl;
 	    }
-	  std::cout << listStop << std::endl;
+	  //std:://cout << listStop << std::endl;
 	}  // Config
 
       // Attributes ----------
       if (tid.GetAttributeN () == 0)
 	{
-	  std::cout << "No Attributes are defined for this type."
+	  //std:://cout << "No Attributes are defined for this type."
 		    << breakBoth << std::endl;
 	}
       else
 	{
-	  std::cout << headingStart << "Attributes"
+	  //std:://cout << headingStart << "Attributes"
 		    << headingStop  << std::endl;
-	  PrintAttributes (tid, std::cout);
+	  PrintAttributes (tid, //std:://cout);
 
 	  TypeId tmp = tid.GetParent ();
 	  while (tmp.GetParent () != tmp)
 	    {
 	      if (tmp.GetAttributeN () != 0)
 		{
-		  std::cout << headingStart
+		  //std:://cout << headingStart
 			    << "Attributes defined in parent class "
 			    << tmp.GetName ()
 			    << headingStop << std::endl;
-		  PrintAttributes (tmp, std::cout);
+		  PrintAttributes (tmp, //std:://cout);
 		}
 	      tmp = tmp.GetParent ();
 	    }
@@ -615,14 +615,14 @@ int main (int argc, char *argv[])
       // Tracing -------------
       if (tid.GetTraceSourceN () == 0)
 	{
-	  std::cout << "No TraceSources are defined for this type."
+	  //std:://cout << "No TraceSources are defined for this type."
 		    << breakBoth << std::endl;
 	}
       else
 	{
-	  std::cout << headingStart << "TraceSources"
+	  //std:://cout << headingStart << "TraceSources"
 		    << headingStop  << std::endl;
-	  PrintTraceSources (tid, std::cout);
+	  PrintTraceSources (tid, //std:://cout);
 	}
       {
 	TypeId tmp = tid.GetParent ();
@@ -630,20 +630,20 @@ int main (int argc, char *argv[])
 	  {
 	    if (tmp.GetTraceSourceN () != 0)
 	      {
-		std::cout << headingStart
+		//std:://cout << headingStart
 			  << "TraceSources defined in parent class "
 			  << tmp.GetName ()
 			  << headingStop << std::endl;
-		PrintTraceSources (tmp, std::cout);
+		PrintTraceSources (tmp, //std:://cout);
 	      }
 	    tmp = tmp.GetParent ();
 	  }
       }
-      std::cout << commentStop << std::endl;
+      //std:://cout << commentStop << std::endl;
     }  // class documentation
 
 
-  std::cout << commentStart << std::endl
+  //std:://cout << commentStart << std::endl
             << ingroupConstructs
             << defgroupTraceSourceListStart << "The list of all trace sources."
 	    << defgroupTraceSourceListStop << std::endl;
@@ -655,20 +655,20 @@ int main (int argc, char *argv[])
 	{
 	  continue;
 	}
-      std::cout << boldStart << tid.GetName ()
+      //std:://cout << boldStart << tid.GetName ()
 		<< boldStop  << breakHtmlOnly << std::endl
 		<< listStart << std::endl;
       for (uint32_t j = 0; j < tid.GetTraceSourceN (); ++j)
 	{
 	  struct TypeId::TraceSourceInformation info = tid.GetTraceSource(j);
-	  std::cout << listLineStart << info.name << ": " << info.help
+	  //std:://cout << listLineStart << info.name << ": " << info.help
 		    << listLineStop  << std::endl;
 	}
-      std::cout << listStop << std::endl;
+      //std:://cout << listStop << std::endl;
     }
-  std::cout << commentStop << std::endl;
+  //std:://cout << commentStop << std::endl;
 
-  std::cout << commentStart << std::endl
+  //std:://cout << commentStart << std::endl
             << ingroupConstructs
             << defgroupAttributeListStart << "The list of all attributes."
 	    << defgroupAttributeListStop  << std::endl;
@@ -680,22 +680,22 @@ int main (int argc, char *argv[])
 	{
 	  continue;
 	}
-      std::cout << boldStart << tid.GetName ()
+      //std:://cout << boldStart << tid.GetName ()
 		<< boldStop  << breakHtmlOnly << std::endl
 		<< listStart << std::endl;
       for (uint32_t j = 0; j < tid.GetAttributeN (); ++j)
 	{
 	  struct TypeId::AttributeInformation info = tid.GetAttribute(j);
-	  std::cout << listLineStart << info.name << ": " << info.help
+	  //std:://cout << listLineStart << info.name << ": " << info.help
 		    << listLineStop  << std::endl;
 	}
-      std::cout << listStop << std::endl;
+      //std:://cout << listStop << std::endl;
     }
-  std::cout << commentStop << std::endl;
+  //std:://cout << commentStop << std::endl;
 
 
 
-  std::cout << commentStart << std::endl
+  //std:://cout << commentStart << std::endl
             << ingroupConstructs
             << defgroupGlobalValueListStart << "The list of all global values."
 	    << defgroupGlobalValueListStop  << std::endl
@@ -706,7 +706,7 @@ int main (int argc, char *argv[])
     {
       StringValue val;
       (*i)->GetValue (val);
-      std::cout << indentHtmlOnly
+      //std:://cout << indentHtmlOnly
 		<<   listLineStart
 		<<     boldStart
 		<<       anchor
@@ -715,7 +715,7 @@ int main (int argc, char *argv[])
 		<< ": " << (*i)->GetHelp () << ".  Default value: " << val.Get () << "."
 		<<   listLineStop << std::endl;
     }
-  std::cout << listStop    << std::endl
+  //std:://cout << listStop    << std::endl
 	    << commentStop << std::endl;
 
 

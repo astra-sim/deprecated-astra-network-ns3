@@ -72,7 +72,7 @@ main (int argc, char *argv[])
 
   TIMER_TYPE t0, t1, t2;
   TIMER_NOW (t0);
-  cout << " ==== DARPA NMS CAMPUS NETWORK SIMULATION ====" << endl;
+  //cout << " ==== DARPA NMS CAMPUS NETWORK SIMULATION ====" << endl;
 
   GlobalValue::Bind ("SimulatorImplementationType",
                      StringValue ("ns3::DistributedSimulatorImpl"));
@@ -95,18 +95,18 @@ main (int argc, char *argv[])
 
   if (nCN < 2)
     {
-      cout << "Number of total CNs (" << nCN << ") lower than minimum of 2"
+      //cout << "Number of total CNs (" << nCN << ") lower than minimum of 2"
            << endl;
       return 1;
     }
   if (systemCount > nCN)
     {
-      cout << "Number of total CNs (" << nCN << ") should be >= systemCount ("
+      //cout << "Number of total CNs (" << nCN << ") should be >= systemCount ("
            << systemCount << ")." << endl;
       return 1;
     }
 
-  cout << "Number of CNs: " << nCN << ", LAN nodes: " << nLANClients << endl;
+  //cout << "Number of CNs: " << nCN << ", LAN nodes: " << nLANClients << endl;
 
   NodeContainer nodes_net0[nCN][3], nodes_net1[nCN][6], nodes_netLR[nCN],
                 nodes_net2[nCN][14], nodes_net2LAN[nCN][7][nLANClients],
@@ -140,9 +140,9 @@ main (int argc, char *argv[])
   // Create Campus Networks
   for (uint32_t z = 0; z < nCN; ++z)
     {
-      cout << "Creating Campus Network " << z << ":" << endl;
+      //cout << "Creating Campus Network " << z << ":" << endl;
       // Create Net0
-      cout << "  SubNet [ 0";
+      //cout << "  SubNet [ 0";
       for (int i = 0; i < 3; ++i)
         {
           Ptr<Node> node = CreateObject<Node> (z % systemCount);
@@ -158,7 +158,7 @@ main (int argc, char *argv[])
           ndc0[i] = p2p_1gb5ms.Install (nodes_net0[z][i]);
         }
       // Create Net1
-      cout << " 1";
+      //cout << " 1";
       for (int i = 0; i < 6; ++i)
         {
           Ptr<Node> node = CreateObject<Node> (z % systemCount);
@@ -190,7 +190,7 @@ main (int argc, char *argv[])
       address.SetBase (oss.str ().c_str (), "255.255.255.0");
       ifs = address.Assign (ndc0_1);
       // Create Net2
-      cout << " 2";
+      //cout << " 2";
       for (int i = 0; i < 14; ++i)
         {
           Ptr<Node> node = CreateObject<Node> (z % systemCount);
@@ -233,7 +233,7 @@ main (int argc, char *argv[])
             }
         }
       // Create Net3
-      cout << " 3 ]" << endl;
+      //cout << " 3 ]" << endl;
       for (int i = 0; i < 9; ++i)
         {
           Ptr<Node> node = CreateObject<Node> (z % systemCount);
@@ -270,7 +270,7 @@ main (int argc, char *argv[])
               ifs3LAN[z][i][j] = address.Assign (ndc3LAN[i][j]);
             }
         }
-      cout << "  Connecting Subnets..." << endl;
+      //cout << "  Connecting Subnets..." << endl;
       // Create Lone Routers (Node 4 & 5)
       Ptr<Node> node1 = CreateObject<Node> (z % systemCount);
       Ptr<Node> node2 = CreateObject<Node> (z % systemCount);
@@ -325,7 +325,7 @@ main (int argc, char *argv[])
       address.SetBase (oss.str ().c_str (), "255.255.255.0");
       ifs = address.Assign (ndc3_5b);
       // Assign IP addresses
-      cout << "  Assigning IP addresses..." << endl;
+      //cout << "  Assigning IP addresses..." << endl;
       for (int i = 0; i < 3; ++i)
         {
           oss.str ("");
@@ -366,7 +366,7 @@ main (int argc, char *argv[])
   // Create Ring Links
   if (nCN > 1)
     {
-      cout << "Forming Ring Topology..." << endl;
+      //cout << "Forming Ring Topology..." << endl;
       NodeContainer nodes_ring[nCN];
       for (uint32_t z = 0; z < nCN - 1; ++z)
         {
@@ -387,7 +387,7 @@ main (int argc, char *argv[])
     }
 
   // Create Traffic Flows
-  cout << "Creating UDP Traffic Flows:" << endl;
+  //cout << "Creating UDP Traffic Flows:" << endl;
   Config::SetDefault ("ns3::OnOffApplication::MaxBytes",
                       UintegerValue (nBytes));
   Config::SetDefault ("ns3::OnOffApplication::OnTime",
@@ -408,7 +408,7 @@ main (int argc, char *argv[])
 
           OnOffHelper client ("ns3::UdpSocketFactory", Address ());
           AddressValue remoteAddress (InetSocketAddress (ifs1[0][2].GetAddress (0), 9999));
-          cout << "Remote Address is " << ifs1[0][2].GetAddress (0) << endl;
+          //cout << "Remote Address is " << ifs1[0][2].GetAddress (0) << endl;
           client.SetAttribute ("Remote", remoteAddress);
 
           ApplicationContainer clientApp;
@@ -431,7 +431,7 @@ main (int argc, char *argv[])
           AddressValue remoteAddress
             (InetSocketAddress (ifs1[1][0].GetAddress (0), 9999));
 
-          cout << "Remote Address is " << ifs1[1][0].GetAddress (0) << endl;
+          //cout << "Remote Address is " << ifs1[1][0].GetAddress (0) << endl;
           client.SetAttribute ("Remote", remoteAddress);
 
           ApplicationContainer clientApp;
@@ -452,7 +452,7 @@ main (int argc, char *argv[])
               x = 0;
             }
           // Subnet 2 LANs
-          cout << "  Campus Network " << z << " Flows [ Net2 ";
+          //cout << "  Campus Network " << z << " Flows [ Net2 ";
           for (int i = 0; i < 7; ++i)
             {
               for (uint32_t j = 0; j < nLANClients; ++j)
@@ -512,7 +512,7 @@ main (int argc, char *argv[])
                 }
             }
           // Subnet 3 LANs
-          cout << "Net3 ]" << endl;
+          //cout << "Net3 ]" << endl;
           for (int i = 0; i < 5; ++i)
             {
               for (uint32_t j = 0; j < nLANClients; ++j)
@@ -574,40 +574,40 @@ main (int argc, char *argv[])
         }
     }
 
-  cout << "Created " << NodeList::GetNNodes () << " nodes." << endl;
+  //cout << "Created " << NodeList::GetNNodes () << " nodes." << endl;
   TIMER_TYPE routingStart;
   TIMER_NOW (routingStart);
 
   if (nix)
     {
-      cout << "Using Nix-vectors..." << endl;
+      //cout << "Using Nix-vectors..." << endl;
     }
   else
     {
       // Calculate routing tables
-      cout << "Populating Routing tables..." << endl;
+      //cout << "Populating Routing tables..." << endl;
       Ipv4GlobalRoutingHelper::PopulateRoutingTables ();
     }
 
   TIMER_TYPE routingEnd;
   TIMER_NOW (routingEnd);
-  cout << "Routing tables population took "
+  //cout << "Routing tables population took "
        << TIMER_DIFF (routingEnd, routingStart) << endl;
 
-  cout << "Running simulator..." << endl;
+  //cout << "Running simulator..." << endl;
   TIMER_NOW (t1);
   Simulator::Stop (Seconds (100.0));
   Simulator::Run ();
   TIMER_NOW (t2);
-  cout << "Simulator finished." << endl;
+  //cout << "Simulator finished." << endl;
   Simulator::Destroy ();
   // Exit the MPI execution environment
   MpiInterface::Disable ();
   double d1 = TIMER_DIFF (t1, t0), d2 = TIMER_DIFF (t2, t1);
-  cout << "-----" << endl << "Runtime Stats:" << endl;
-  cout << "Simulator init time: " << d1 << endl;
-  cout << "Simulator run time: " << d2 << endl;
-  cout << "Total elapsed time: " << d1 + d2 << endl;
+  //cout << "-----" << endl << "Runtime Stats:" << endl;
+  //cout << "Simulator init time: " << d1 << endl;
+  //cout << "Simulator run time: " << d2 << endl;
+  //cout << "Total elapsed time: " << d1 + d2 << endl;
   return 0;
 #else
   NS_FATAL_ERROR ("Can't use distributed simulator without MPI compiled in");

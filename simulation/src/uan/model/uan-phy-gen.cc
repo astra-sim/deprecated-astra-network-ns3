@@ -320,7 +320,7 @@ UanPhyPerUmodem::CalcPer (Ptr<Packet> pkt, double sinr, UanTxMode mode)
       Pb = Pb + Bd[r] * P[r];
     }
 
-  // cout << "Pb = " << Pb << endl;
+  // //cout << "Pb = " << Pb << endl;
   uint32_t bits = pkt->GetSize () * 8;
 
   double Ppacket = 1;

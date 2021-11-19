@@ -237,14 +237,14 @@ OlsrTcTestCase::DoRun (void)
 
   olsr::MessageHeader msgOut;
   packet.RemoveHeader (msgOut);
-  olsr::MessageHeader::Tc &tcOut = msgOut.GetTc ();
+  olsr::MessageHeader::Tc &t//cout = msgOut.GetTc ();
 
-  NS_TEST_ASSERT_MSG_EQ (tcOut.ansn, 0x1234, "XXX");
-  NS_TEST_ASSERT_MSG_EQ (tcOut.neighborAddresses.size (), 2, "XXX");
+  NS_TEST_ASSERT_MSG_EQ (t//cout.ansn, 0x1234, "XXX");
+  NS_TEST_ASSERT_MSG_EQ (t//cout.neighborAddresses.size (), 2, "XXX");
 
-  NS_TEST_ASSERT_MSG_EQ (tcOut.neighborAddresses[0],
+  NS_TEST_ASSERT_MSG_EQ (t//cout.neighborAddresses[0],
                          Ipv4Address ("1.2.3.4"), "XXX");
-  NS_TEST_ASSERT_MSG_EQ (tcOut.neighborAddresses[1],
+  NS_TEST_ASSERT_MSG_EQ (t//cout.neighborAddresses[1],
                          Ipv4Address ("1.2.3.5"), "XXX");
 
   NS_TEST_ASSERT_MSG_EQ (packet.GetSize (), 0, "XXX");

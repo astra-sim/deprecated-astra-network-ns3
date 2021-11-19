@@ -82,7 +82,7 @@ GlobalPathlossDatabase::Print ()
            imsiIt != cellIdIt->second.end ();
            ++imsiIt)
         {
-          std::cout << "CellId: " << cellIdIt->first << " IMSI: " << imsiIt->first << " pathloss: " << imsiIt->second << " dB" << std::endl;
+          //std:://cout << "CellId: " << cellIdIt->first << " IMSI: " << imsiIt->first << " pathloss: " << imsiIt->second << " dB" << std::endl;
         }
     }
 }
@@ -256,9 +256,9 @@ int main (int argc, char *argv[])
 
 
   // print the pathloss values at the end of the simulation
-  std::cout << std::endl << "Downlink pathloss:" << std::endl;
+  //std:://cout << std::endl << "Downlink pathloss:" << std::endl;
   dlPathlossDb.Print ();
-  std::cout << std::endl << "Uplink pathloss:" << std::endl;
+  //std:://cout << std::endl << "Uplink pathloss:" << std::endl;
   ulPathlossDb.Print ();
 
 

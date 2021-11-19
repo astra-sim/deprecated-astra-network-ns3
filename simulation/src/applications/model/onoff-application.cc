@@ -299,7 +299,7 @@ void OnOffApplication::ConnectionSucceeded (Ptr<Socket>)
 void OnOffApplication::ConnectionFailed (Ptr<Socket>)
 {
   NS_LOG_FUNCTION_NOARGS ();
-  cout << "OnOffApplication, Connection Failed" << endl;
+  //cout << "OnOffApplication, Connection Failed" << endl;
 }
 
 } // Namespace ns3

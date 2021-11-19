@@ -45,7 +45,7 @@ static void SinkRx (Ptr<const Packet> p, const Address &ad)
 {
   // Enable the below line to see the packet contents printed out at the
   // receive sink
-  //std::cout << Simulator::Now().GetSeconds () << " " << *p << std::endl;
+  ////std:://cout << Simulator::Now().GetSeconds () << " " << *p << std::endl;
 }
 
 int

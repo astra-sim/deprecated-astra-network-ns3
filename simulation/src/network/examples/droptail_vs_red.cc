@@ -141,7 +141,7 @@ int main (int argc, char *argv[])
 
   Ipv4GlobalRoutingHelper::PopulateRoutingTables ();
 
-  std::cout << "Running the simulation" << std::endl;
+  //std:://cout << "Running the simulation" << std::endl;
   Simulator::Run ();
 
   uint32_t totalRxBytesCounter = 0;
@@ -158,7 +158,7 @@ int main (int argc, char *argv[])
   NS_LOG_UNCOND ("----------------------------");
 
 
-  std::cout << "Destroying the simulation" << std::endl;
+  //std:://cout << "Destroying the simulation" << std::endl;
   Simulator::Destroy ();
   return 0;
 }

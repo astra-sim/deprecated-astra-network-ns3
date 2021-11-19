@@ -100,7 +100,7 @@ int
 TcpNewReno::Listen (void)
 {
 
-	//std::cout << "NewReno!\n";
+	////std:://cout << "NewReno!\n";
   NS_LOG_FUNCTION (this);
   InitializeCwnd ();
   return TcpSocketBase::Listen ();
@@ -120,7 +120,7 @@ uint32_t
 TcpNewReno::Window (void)
 {
   NS_LOG_FUNCTION (this);
-  //std::cout << m_rWnd.Get() << " " << m_cWnd.Get() << "\n";
+  ////std:://cout << m_rWnd.Get() << " " << m_cWnd.Get() << "\n";
   return m_cWnd.Get();
   //return std::min (m_rWnd.Get (), m_cWnd.Get ());
 }
@@ -142,7 +142,7 @@ TcpNewReno::NewAck (const SequenceNumber32& seq)
 
   if (m_received >= m_lastwin)
   {
-	  //std::cout << m_lastwin << "\t" << m_alpha << "\t" << m_received << "\t" <<  m_marked <<"\n";
+	  ////std:://cout << m_lastwin << "\t" << m_alpha << "\t" << m_received << "\t" <<  m_marked <<"\n";
 	  m_alpha = (1 - m_g)*m_alpha + m_g*m_marked / m_received;
 	  m_received = 0;
 	  m_marked = 0;
@@ -185,7 +185,7 @@ TcpNewReno::NewAck (const SequenceNumber32& seq)
       double adder = static_cast<double> (m_segmentSize * m_segmentSize) / m_cWnd.Get ();
 	  //double adder = static_cast<double> ((seq - m_txBuffer.HeadSequence()) * m_segmentSize) / m_cWnd.Get();
 	  adder = std::max (1.0, adder);
-	  //std::cout << m_cWnd << "\t" << m_ssThresh << "\t"<<adder<<"\n";
+	  ////std:://cout << m_cWnd << "\t" << m_ssThresh << "\t"<<adder<<"\n";
       m_cWnd += static_cast<uint32_t> (adder);
       NS_LOG_INFO ("In CongAvoid, updated to cwnd " << m_cWnd << " ssthresh " << m_ssThresh);
 	  //m_alpha = m_alpha - m_last_update_alpha * m_g * m_segmentSize / m_cWnd.Get();

@@ -252,7 +252,7 @@ runBench (void (*bench) (uint32_t), uint32_t n, char const *name)
   double ps = n;
   ps *= 1000;
   ps /= deltaMs;
-  std::cout << ps << " packets/s"
+  //std:://cout << ps << " packets/s"
             << " (" << deltaMs << " ms elapsed)\t"
             << name
             << std::endl;
@@ -282,8 +282,8 @@ int main (int argc, char *argv[])
         "by command-line argument --n=(number of packets)" << std::endl;
       exit (1);
     }
-  std::cout << "Running bench-packets with n=" << n << std::endl;
-  std::cout << "All tests begin by adding UDP and IPv4 headers." << std::endl;
+  //std:://cout << "Running bench-packets with n=" << n << std::endl;
+  //std:://cout << "All tests begin by adding UDP and IPv4 headers." << std::endl;
 
   runBench (&benchA, n, "Copy packet, remove headers");
   runBench (&benchB, n, "Just add headers");

@@ -321,37 +321,37 @@ CommandLine::HandleArgument (const std::string &name, const std::string &value) 
   if (name == "PrintHelp" || name == "help")
     {
       // method below never returns.
-      PrintHelp (std::cout);
+      PrintHelp (//std:://cout);
       std::exit (0);
     } 
   else if (name == "PrintGroups")
     {
       // method below never returns.
-      PrintGroups (std::cout);
+      PrintGroups (//std:://cout);
       std::exit (0);
     }
   else if (name == "PrintTypeIds")
     {
       // method below never returns.
-      PrintTypeIds (std::cout);
+      PrintTypeIds (//std:://cout);
       std::exit (0);
     }
   else if (name == "PrintGlobals")
     {
       // method below never returns.
-      PrintGlobals (std::cout);
+      PrintGlobals (//std:://cout);
       std::exit (0);
     }
   else if (name == "PrintGroup")
     {
       // method below never returns.
-      PrintGroup (std::cout, value);
+      PrintGroup (//std:://cout, value);
       std::exit (0);
     }
   else if (name == "PrintAttributes")
     {
       // method below never returns.
-      PrintAttributes (std::cout, value);
+      PrintAttributes (//std:://cout, value);
       std::exit (0);
     }
   else

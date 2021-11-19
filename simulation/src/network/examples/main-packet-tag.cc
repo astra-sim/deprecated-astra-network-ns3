@@ -113,8 +113,8 @@ int main (int argc, char *argv[])
   // the copy and the original are the same !
   NS_ASSERT (tagCopy.GetSimpleValue () == tag.GetSimpleValue ());
 
-  aCopy->PrintPacketTags (std::cout);
-  std::cout << std::endl;
+  aCopy->PrintPacketTags (//std:://cout);
+  //std:://cout << std::endl;
 
   return 0;
 }

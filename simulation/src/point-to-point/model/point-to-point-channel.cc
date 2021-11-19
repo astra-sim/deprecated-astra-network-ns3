@@ -108,8 +108,8 @@ PointToPointChannel::GetNDevices (void) const
 {
   NS_LOG_FUNCTION_NOARGS ();
 
-  //std::cout<<m_nDevices<<"\n";
-  //std::cout.flush();
+  ////std:://cout<<m_nDevices<<"\n";
+  ////std:://cout.flush();
 
   return m_nDevices;
 }

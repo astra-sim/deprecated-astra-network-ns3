@@ -45,7 +45,7 @@ MyModel::Start (void)
 void
 MyModel::HandleEvent (double value)
 {
-  std::cout << "Member method received event at "
+  //std:://cout << "Member method received event at "
             << Simulator::Now ().GetSeconds ()
             << "s started at " << value << "s" << std::endl;
 }
@@ -53,7 +53,7 @@ MyModel::HandleEvent (double value)
 static void
 ExampleFunction (MyModel *model)
 {
-  std::cout << "ExampleFunction received event at "
+  //std:://cout << "ExampleFunction received event at "
             << Simulator::Now ().GetSeconds () << "s" << std::endl;
   model->Start ();
 }
@@ -61,14 +61,14 @@ ExampleFunction (MyModel *model)
 static void
 RandomFunction (void)
 {
-  std::cout << "RandomFunction received event at "
+  //std:://cout << "RandomFunction received event at "
             << Simulator::Now ().GetSeconds () << "s" << std::endl;
 }
 
 static void
 CancelledEvent (void)
 {
-  std::cout << "I should never be called... " << std::endl;
+  //std:://cout << "I should never be called... " << std::endl;
 }
 
 int main (int argc, char *argv[])

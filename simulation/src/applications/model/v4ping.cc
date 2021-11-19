@@ -147,7 +147,7 @@ V4Ping::Receive (Ptr<Socket> socket)
 
                       if (m_verbose)
                         {
-                          std::cout << recvSize << " bytes from " << realFrom.GetIpv4 () << ":"
+                          //std:://cout << recvSize << " bytes from " << realFrom.GetIpv4 () << ":"
                                     << " icmp_seq=" << echo.GetSequenceNumber ()
                                     << " ttl=" << (unsigned)ipv4.GetTtl ()
                                     << " time=" << delta.GetMilliSeconds () << " ms\n";
@@ -229,7 +229,7 @@ V4Ping::StartApplication (void)
   m_started = Simulator::Now ();
   if (m_verbose)
     {
-      std::cout << "PING  " << m_remote << " 56(84) bytes of data.\n";
+      //std:://cout << "PING  " << m_remote << " 56(84) bytes of data.\n";
     }
 
   m_socket = Socket::CreateSocket (GetNode (), TypeId::LookupByName ("ns3::Ipv4RawSocketFactory"));
@@ -266,7 +266,7 @@ V4Ping::StopApplication (void)
         os << "rtt min/avg/max/mdev = " << m_avgRtt.Min () << "/" << m_avgRtt.Avg () << "/"
            << m_avgRtt.Max () << "/" << m_avgRtt.Stddev ()
            << " ms\n";
-      std::cout << os.str ();
+      //std:://cout << os.str ();
     }
 }
 

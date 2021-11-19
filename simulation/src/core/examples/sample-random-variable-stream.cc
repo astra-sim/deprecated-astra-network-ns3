@@ -60,6 +60,6 @@ int main (int argc, char *argv[])
 
   Ptr<UniformRandomVariable> uv = CreateObject<UniformRandomVariable> ();
 
-  cout << uv->GetValue () << endl;
+  //cout << uv->GetValue () << endl;
 
 }

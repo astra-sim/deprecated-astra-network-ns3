@@ -289,7 +289,7 @@ static void PrintPsr (int argc, char *argv[])
   double psr = output.received;
   psr /= input.nPackets;
 
-  std::cout << psr << std::endl;
+  //std:://cout << psr << std::endl;
 }
 
 double CalcPsr (struct PsrExperiment::Output output, struct PsrExperiment::Input input)
@@ -310,43 +310,43 @@ static void PrintPsrVsDistance (int argc, char *argv[])
   cmd.Parse (argc, argv);
   for (input.distance = 1.0; input.distance < 165; input.distance += 2.0)
     {
-      std::cout << input.distance;
+      //std:://cout << input.distance;
       PsrExperiment experiment;
       struct PsrExperiment::Output output;
 
       input.txMode = "OfdmRate6Mbps";
       output = experiment.Run (input);
-      std::cout << " " << CalcPsr (output, input);
+      //std:://cout << " " << CalcPsr (output, input);
 
       input.txMode = "OfdmRate9Mbps";
       output = experiment.Run (input);
-      std::cout << " " << CalcPsr (output, input);
+      //std:://cout << " " << CalcPsr (output, input);
 
       input.txMode = "OfdmRate12Mbps";
       output = experiment.Run (input);
-      std::cout << " " << CalcPsr (output, input);
+      //std:://cout << " " << CalcPsr (output, input);
 
       input.txMode = "OfdmRate18Mbps";
       output = experiment.Run (input);
-      std::cout << " " << CalcPsr (output, input);
+      //std:://cout << " " << CalcPsr (output, input);
 
       input.txMode = "OfdmRate24Mbps";
       output = experiment.Run (input);
-      std::cout << " " << CalcPsr (output, input);
+      //std:://cout << " " << CalcPsr (output, input);
 
       input.txMode = "OfdmRate36Mbps";
       output = experiment.Run (input);
-      std::cout << " " << CalcPsr (output, input);
+      //std:://cout << " " << CalcPsr (output, input);
 
       input.txMode = "OfdmRate48Mbps";
       output = experiment.Run (input);
-      std::cout << " " << CalcPsr (output, input);
+      //std:://cout << " " << CalcPsr (output, input);
 
       input.txMode = "OfdmRate54Mbps";
       output = experiment.Run (input);
-      std::cout << " " << CalcPsr (output, input);
+      //std:://cout << " " << CalcPsr (output, input);
 
-      std::cout << std::endl;
+      //std:://cout << std::endl;
     }
 }
 
@@ -382,7 +382,7 @@ static void PrintSizeVsRange (int argc, char *argv[])
               high = middle;
             }
         }
-      std::cout << input.packetSize << " " << input.distance << std::endl;
+      //std:://cout << input.packetSize << " " << input.distance << std::endl;
     }
 }
 
@@ -402,7 +402,7 @@ static void PrintPsrVsCollisionInterval (int argc, char *argv[])
       output = experiment.Run (input);
       double perA = (output.receivedA + 0.0) / (input.nPackets + 0.0);
       double perB = (output.receivedB + 0.0) / (input.nPackets + 0.0);
-      std::cout << i << " " << perA << " " << perB << std::endl;
+      //std:://cout << i << " " << perA << " " << perB << std::endl;
     }
   for (uint32_t i = 100; i < 4000; i += 50)
     {
@@ -412,7 +412,7 @@ static void PrintPsrVsCollisionInterval (int argc, char *argv[])
       output = experiment.Run (input);
       double perA = (output.receivedA + 0.0) / (input.nPackets + 0.0);
       double perB = (output.receivedB + 0.0) / (input.nPackets + 0.0);
-      std::cout << i << " " << perA << " " << perB << std::endl;
+      //std:://cout << i << " " << perA << " " << perB << std::endl;
     }
 }
 
@@ -422,7 +422,7 @@ int main (int argc, char *argv[])
 {
   if (argc <= 1)
     {
-      std::cout << "Available experiments: "
+      //std:://cout << "Available experiments: "
                 << "Psr "
                 << "SizeVsRange "
                 << "PsrVsDistance "

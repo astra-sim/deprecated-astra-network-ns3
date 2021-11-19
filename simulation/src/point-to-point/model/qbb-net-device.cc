@@ -104,14 +104,14 @@ namespace ns3 {
 			uint32_t idx = (qIndex + m_rrlast) % fcount;
 			Ptr<RdmaQueuePair> qp = m_qpGrp->Get(idx);
 			if (!paused[qp->m_pg] && qp->GetBytesLeft() > 0 && !qp->IsWinBound()){
-				std::cout<<"there is byte left \n";
+				//std:://cout<<"there is byte left \n";
 				if (m_qpGrp->Get(idx)->m_nextAvail.GetTimeStep() > Simulator::Now().GetTimeStep()) //not available now
 					continue;
 				res = idx;
 				break;
 			}else if (qp->IsFinished()){
 				min_finish_id = idx < min_finish_id ? idx : min_finish_id;
-				std::cout<<"finished id  is "<<min_finish_id<<"\n";
+				//std:://cout<<"finished id  is "<<min_finish_id<<"\n";
 			}
 		}
 
@@ -127,7 +127,7 @@ namespace ns3 {
 			}
 			qps.resize(nxt);
 		}
-		std::cout<<"clear the finished qp \n";
+		//std:://cout<<"clear the finished qp \n";
 		return res;
 	}
 
@@ -137,23 +137,23 @@ namespace ns3 {
 
 	uint32_t RdmaEgressQueue::GetNBytes(uint32_t qIndex){
 		NS_ASSERT_MSG(qIndex < m_qpGrp->GetN(), "RdmaEgressQueue::GetNBytes: qIndex >= m_qpGrp->GetN()");
-		std::cout<<"bytes left in RdmaEgressQueue::GetNBytes "<<m_qpGrp->Get(qIndex)->GetBytesLeft()<<"\n";
+		//std:://cout<<"bytes left in RdmaEgressQueue::GetNBytes "<<m_qpGrp->Get(qIndex)->GetBytesLeft()<<"\n";
 		return m_qpGrp->Get(qIndex)->GetBytesLeft();
 	}
 
 	uint32_t RdmaEgressQueue::GetFlowCount(void){
-		std::cout<<"Get flow count "<<m_qpGrp->GetN()<<"\n";
+		//std:://cout<<"Get flow count "<<m_qpGrp->GetN()<<"\n";
 		return m_qpGrp->GetN();
 	}
 
 	Ptr<RdmaQueuePair> RdmaEgressQueue::GetQp(uint32_t i){
-		std::cout<<"Get ith queue pair egress "<<i<<"\n";
+		//std:://cout<<"Get ith queue pair egress "<<i<<"\n";
 		return m_qpGrp->Get(i);
 	}
  
 	void RdmaEgressQueue::RecoverQueue(uint32_t i){
 		NS_ASSERT_MSG(i < m_qpGrp->GetN(), "RdmaEgressQueue::RecoverQueue: qIndex >= m_qpGrp->GetN()");
-		std::cout<<"Get recover queue pair egress id "<<i<<"\n";
+		//std:://cout<<"Get recover queue pair egress id "<<i<<"\n";
 		m_qpGrp->Get(i)->snd_nxt = m_qpGrp->Get(i)->snd_una;
 	}
 
@@ -259,7 +259,7 @@ namespace ns3 {
 		m_phyTxEndTrace(m_currentPkt);
 		m_currentPkt = 0;
 		DequeueAndTransmit();
-		std::cout<<"transmit complete qbbnetdevice \n";
+		//std:://cout<<"transmit complete qbbnetdevice \n";
 	}
 
 	void
@@ -271,11 +271,11 @@ namespace ns3 {
 		Ptr<Packet> p;
 		if (m_node->GetNodeType() == 0){
 			int qIndex = m_rdmaEQ->GetNextQindex(m_paused);
-			std::cout<<"qIndex is "<<qIndex<<"\n";
+			//std:://cout<<"qIndex is "<<qIndex<<"\n";
 			if (qIndex != -1024){
-				std::cout<<"there are packet to send\n";
+				//std:://cout<<"there are packet to send\n";
 				if (qIndex == -1){ // high prio
-					std::cout<<"there are packet to send in high priority\n";
+					//std:://cout<<"there are packet to send in high priority\n";
 					p = m_rdmaEQ->DequeueQindex(qIndex);
 					m_traceDequeue(p, 0);
 					TransmitStart(p);
@@ -284,33 +284,33 @@ namespace ns3 {
 				// a qp dequeue a packet
 				Ptr<RdmaQueuePair> lastQp = m_rdmaEQ->GetQp(qIndex);
 				p = m_rdmaEQ->DequeueQindex(qIndex);
-				//std::cout<<"packet size is "<<p.GetSize()<<"\n";
+				////std:://cout<<"packet size is "<<p.GetSize()<<"\n";
 				// transmit
 				m_traceQpDequeue(p, lastQp);
-				std::cout<<"transmit started \n";
+				//std:://cout<<"transmit started \n";
 				TransmitStart(p);
 
 				// update for the next avail time
-				std::cout<<"next pkt update\n";
+				//std:://cout<<"next pkt update\n";
 				m_rdmaPktSent(lastQp, p, m_tInterframeGap);
 			}else { // no packet to send
-				std::cout<<"there are no packet to send\n";
-				std::cout<<"PAUSE prohibits send at node " << m_node->GetId()<<"\n";
+				//std:://cout<<"there are no packet to send\n";
+				//std:://cout<<"PAUSE prohibits send at node " << m_node->GetId()<<"\n";
 				NS_LOG_INFO("PAUSE prohibits send at node " << m_node->GetId());
 				Time t = Simulator::GetMaximumSimulationTime();
-				std::cout<<"maximum simulation time is "<<t<<"\n";
+				//std:://cout<<"maximum simulation time is "<<t<<"\n";
 				for (uint32_t i = 0; i < m_rdmaEQ->GetFlowCount(); i++){
 					Ptr<RdmaQueuePair> qp = m_rdmaEQ->GetQp(i);
 					if (qp->GetBytesLeft() == 0){
-						std::cout<<"get byte left in dequeue transmit\n";
+						//std:://cout<<"get byte left in dequeue transmit\n";
 						qp->m_notifyAppSent();
 						continue;
 					}
 					t = Min(qp->m_nextAvail, t);
 				}
 				if (m_nextSend.IsExpired() && t < Simulator::GetMaximumSimulationTime() && t > Simulator::Now()){
-					std::cout<<"send next packet in else \n";
-					//std::cout<<"bytes left to transmit "<<qp->GetBytesLeft()<<"\n";
+					//std:://cout<<"send next packet in else \n";
+					////std:://cout<<"bytes left to transmit "<<qp->GetBytesLeft()<<"\n";
 					m_nextSend = Simulator::Schedule(t - Simulator::Now(), &QbbNetDevice::DequeueAndTransmit, this);
 				}
 			}
@@ -344,7 +344,7 @@ namespace ns3 {
 					for (uint32_t i = 0; i < m_rdmaEQ->GetFlowCount(); i++){
 						Ptr<RdmaQueuePair> qp = m_rdmaEQ->GetQp(i);
 						if (qp->GetBytesLeft() == 0){
-							std::cout<<"get byte left in dequeue transmit in switch\n";
+							//std:://cout<<"get byte left in dequeue transmit in switch\n";
 							qp->m_notifyAppSent();
 							continue;
 						}	
@@ -374,7 +374,7 @@ namespace ns3 {
 		QbbNetDevice::Receive(Ptr<Packet> packet)
 	{
 		NS_LOG_FUNCTION(this << packet);
-		std::cout<<"receive packet \n";
+		//std:://cout<<"receive packet \n";
 		if (!m_linkUp){
 			m_traceDrop(packet, 0);
 			return;
@@ -395,7 +395,7 @@ namespace ns3 {
 		ch.getInt = 1; // parse INT header
 		packet->PeekHeader(ch);
 		if (ch.l3Prot == 0xFE){ // PFC
-			std::cout<<"receive pfc packet \n";
+			//std:://cout<<"receive pfc packet \n";
 			if (!m_qbbEnabled) return;
 			unsigned qIndex = ch.pfc.qIndex;
 			if (ch.pfc.time > 0){
@@ -406,13 +406,13 @@ namespace ns3 {
 				Resume(qIndex);
 			}
 		}else { // non-PFC packets (data, ACK, NACK, CNP...)
-			std::cout<<"receive normal packet \n";
+			//std:://cout<<"receive normal packet \n";
 			if (m_node->GetNodeType() > 0){ // switch
 				packet->AddPacketTag(FlowIdTag(m_ifIndex));
 				m_node->SwitchReceiveFromDevice(this, packet, ch);
 			}else { // NIC
 				// send to RdmaHw
-				std::cout<<"receive normal packet at normal node rdma hw \n";
+				//std:://cout<<"receive normal packet at normal node rdma hw \n";
 				int ret = m_rdmaReceiveCb(packet, ch);
 				// TODO we may based on the ret do something
 			}
@@ -474,22 +474,22 @@ namespace ns3 {
 		//
 		NS_ASSERT_MSG(m_txMachineState == READY, "Must be READY to transmit");
 		if(m_txMachineState == READY){
-			std::cout<<"must be ready to transmit\n";
+			//std:://cout<<"must be ready to transmit\n";
 		}
 		m_txMachineState = BUSY;
 		m_currentPkt = p;
 		m_phyTxBeginTrace(m_currentPkt);
 		Time txTime = Seconds(m_bps.CalculateTxTime(p->GetSize()));
-		std::cout<<"txtime for packet in sec is "<<txTime.GetSeconds()<<"\n";
+		//std:://cout<<"txtime for packet in sec is "<<txTime.GetSeconds()<<"\n";
 		Time txCompleteTime = txTime + m_tInterframeGap;
-		std::cout<<"txCompleteTime for packet in sec is "<<txCompleteTime.GetSeconds()<<"\n";
+		//std:://cout<<"txCompleteTime for packet in sec is "<<txCompleteTime.GetSeconds()<<"\n";
 		NS_LOG_LOGIC("Schedule TransmitCompleteEvent in " << txCompleteTime.GetSeconds() << "sec");
 		Simulator::Schedule(txCompleteTime, &QbbNetDevice::TransmitComplete, this);
 
 		bool result = m_channel->TransmitStart(p, this, txTime);
 		if (result == false)
 		{
-			std::cout<<"result is false\n";
+			//std:://cout<<"result is false\n";
 			m_phyTxDropTrace(p);
 		}
 		return result;

@@ -27,7 +27,9 @@ void RdmaDriver::Init(void){
 		// share the queue pair group with NIC
 		if (ipv4->GetNetDevice(i)->IsQbb()){
 			DynamicCast<QbbNetDevice>(ipv4->GetNetDevice(i))->m_rdmaEQ->m_qpGrp = m_rdma->m_nic[i];
+			//std:://cout<<"qbb net device is "<<m_rdma->m_nic[i]<<"\n";
 		}
+		//std:://cout<<"net device "<<i<<"\n"
 	}
 	#endif
 	for (uint32_t i = 0; i < m_node->GetNDevices(); i++){
@@ -36,6 +38,7 @@ void RdmaDriver::Init(void){
 			dev = DynamicCast<QbbNetDevice>(m_node->GetDevice(i));
 		m_rdma->m_nic.push_back(RdmaInterfaceMgr(dev));
 		m_rdma->m_nic.back().qpGrp = CreateObject<RdmaQueuePairGroup>();
+		//std:://cout<<"rdma driver nic size is "<<m_rdma->m_nic.size()<<"\n";
 	}
 	#if 0
 	for (uint32_t i = 0; i < ipv4->GetNInterfaces (); i++){
@@ -44,6 +47,7 @@ void RdmaDriver::Init(void){
 			// add a new RdmaInterfaceMgr for this device
 			m_rdma->m_nic.push_back(RdmaInterfaceMgr(dev));
 			m_rdma->m_nic.back().qpGrp = CreateObject<RdmaQueuePairGroup>();
+			//std:://cout<<"rdma driver nic interface is "<<m_rdma->m_nic.size()<<"\n";
 		}
 	}
 	#endif

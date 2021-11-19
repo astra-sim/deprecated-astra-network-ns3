@@ -52,7 +52,7 @@ class ASTRASimNetwork:public AstraSim::AstraNetworkAPI{
     public:
         queue<sim_event> sim_event_queue;
         ASTRASimNetwork(int rank):AstraNetworkAPI(rank){
-            cout<<"hello constructor\n";
+            //cout<<"hello constructor\n";
             // workerQueue.push("avg");
         }
         ~ASTRASimNetwork(){}
@@ -60,7 +60,7 @@ class ASTRASimNetwork:public AstraSim::AstraNetworkAPI{
             return 0;
         }
         int sim_finish(){
-            cout<<"sim finish\n";
+            //cout<<"sim finish\n";
             // Simulator::Destroy ();
             for(auto it = nodeHash.begin();it!=nodeHash.end();it++){
                 pair<int,int> p = it->first;
@@ -97,7 +97,7 @@ class ASTRASimNetwork:public AstraSim::AstraNetworkAPI{
                 t.schTime = delta.time_val;
                 // workerQueue.push(t);
                 Simulator::Schedule (NanoSeconds (t.schTime), t.msg_handler, t.fun_arg);
-                cout<<"sim schedule is called "<<endl;
+                //cout<<"sim schedule is called "<<endl;
                 return;
             }
         virtual int sim_send(
@@ -122,11 +122,11 @@ class ASTRASimNetwork:public AstraSim::AstraNetworkAPI{
                 t.msg_handler = msg_handler;
                 // workerQueue.push(t); 
                 // udp[t.src]->SendPacket(t.dest, t.fun_arg, t.msg_handler, t.count, tag);
-		//cout<<"COUNT and PACKET is "<<count<<" "<<maxPacketCount<<"\n";
-                cout<<"COUNT IN SEND IS "<<count<<"\n";
+		////cout<<"COUNT and PACKET is "<<count<<" "<<maxPacketCount<<"\n";
+                //cout<<"COUNT IN SEND IS "<<count<<"\n";
 		sentHash[make_pair(tag,make_pair(t.src,t.dest))] = t;
                 SendFlow(rank, dst , count, msg_handler, fun_arg,tag);
-	        cout<<"event at sender pushed "<<t.src<<" "<<" "<<t.dest<<" "<<tag<<"\n";
+	        //cout<<"event at sender pushed "<<t.src<<" "<<" "<<t.dest<<" "<<tag<<"\n";
                 return 0;
             }
         virtual int sim_recv(
@@ -154,55 +154,55 @@ class ASTRASimNetwork:public AstraSim::AstraNetworkAPI{
                     if(count == t.count)
                     {
                         recvHash.erase(make_pair(tag,make_pair(t.src,t.dest)));
-                        cout<<"already in recv hash "<<t.src<<" "<<t.dest<<" "<<tag<<"\n";
+                        //cout<<"already in recv hash "<<t.src<<" "<<t.dest<<" "<<tag<<"\n";
                         t.msg_handler(t.fun_arg);
                     }
                     else if (count > t.count){
                         recvHash[make_pair(tag,make_pair(t.src,t.dest))] = count - t.count;
-                        cout<<"already in recv hash with more data "<<t.src<<" "<<t.dest<<" "<<tag<<"\n";
+                        //cout<<"already in recv hash with more data "<<t.src<<" "<<t.dest<<" "<<tag<<"\n";
                         t.msg_handler(t.fun_arg);
                     }
                     else{
                         recvHash.erase(make_pair(tag,make_pair(t.src,t.dest)));
                         t.count -= count;
                         expeRecvHash[make_pair(tag,make_pair(t.src,t.dest))] = t;
-                        cout<<"partially in recv hash "<<t.src<<" "<<t.dest<<" "<<tag<<"\n";
+                        //cout<<"partially in recv hash "<<t.src<<" "<<t.dest<<" "<<tag<<"\n";
                     }
                 }
                 else{
 		    if(expeRecvHash.find(make_pair(tag,make_pair(t.src,t.dest)))==expeRecvHash.end()){
                         expeRecvHash[make_pair(tag,make_pair(t.src,t.dest))] = t;
-                        cout<<"not in recv hash "<<t.src<<" "<<t.dest<<"  "<<tag<<"\n";
+                        //cout<<"not in recv hash "<<t.src<<" "<<t.dest<<"  "<<tag<<"\n";
                     }
                     else{
                         int expecount = expeRecvHash[make_pair(tag,make_pair(t.src,t.dest))].count;
                         t.count += expecount;
                         expeRecvHash[make_pair(tag,make_pair(t.src,t.dest))] = t;
-                        cout<<"not in recv hash but in expected recv hash "<<t.src<<" "<<t.dest<<" "<<tag<<"\n";
+                        //cout<<"not in recv hash but in expected recv hash "<<t.src<<" "<<t.dest<<" "<<tag<<"\n";
                     }
                     //expeRecvHash[make_pair(tag,make_pair(t.src,t.dest))] = t;
                 }
-		cout<<"COUNT IN RECV IS "<<count<<"\n";
-                cout<<"event at receiver pushed\n";
+		//cout<<"COUNT IN RECV IS "<<count<<"\n";
+                //cout<<"event at receiver pushed\n";
                 return 0;
             }
         void  handleEvent(int dst,int cnt) {
-            cout<<"test\n";
-            cout<<"event pushed\n";
+            //cout<<"test\n";
+            //cout<<"event pushed\n";
         }
 };
 
 void fun_send(void* a) {
-    cout<<*(int *)a<<"Having fun in send!"<<"\n";
+    //cout<<*(int *)a<<"Having fun in send!"<<"\n";
 }
 void fun_recv(void* a) {
-    cout<<*(int *)a<<"Having fun in recv!"<<"\n";
+    //cout<<*(int *)a<<"Having fun in recv!"<<"\n";
 }
 void fun_sch(void* a) {
-    cout<<*(int *)a<<"Having fun in schedule!"<<"\n";
+    //cout<<*(int *)a<<"Having fun in schedule!"<<"\n";
 }
 Ptr<SimpleUdpApplication>* sim_init(int n){
-    cout<<"sim init is called"<<endl;
+    //cout<<"sim init is called"<<endl;
     NodeContainer nodes;
     nodes.Create (n);
     CsmaHelper csma;  
@@ -245,13 +245,13 @@ Ptr<SimpleUdpApplication>* sim_init(int n){
     }
     return udp;
     // Ipv4Address dest_ip = ifaces.GetAddress(1);
-    // cout<<"dest ip is "<<dest_ip<<"\n";
+    // //cout<<"dest ip is "<<dest_ip<<"\n";
     // while(!workerQueue.empty()){
     //     task1 t1 = workerQueue.front();
-    //     cout<<"woker queue with task id: "<<t1.type<<" is scheduled"<<endl;
+    //     //cout<<"woker queue with task id: "<<t1.type<<" is scheduled"<<endl;
     //     if(t1.type==0){
     //         Ipv4Address dest_ip1 = ifaces.GetAddress(t1.dest);
-    //         cout<<"dest ip is "<<dest_ip1<<"\n";
+    //         //cout<<"dest ip is "<<dest_ip1<<"\n";
     //         udp[t1.src]->SendPacket(t1.dest, t1.fun_arg, t1.msg_handler, t1.count);
     //         // Simulator::Schedule (Seconds (0), &SimpleUdpApplication::SendPacket, udp[t1.src], t1.dest, t1.fun_arg, t1.msg_handler, t1.count);
     //     }
@@ -263,23 +263,23 @@ Ptr<SimpleUdpApplication>* sim_init(int n){
     //             {
     //                 recvHash.erase(make_pair(t1.src,t1.dest));
     //                 t1.msg_handler(t1.fun_arg);
-    //                 cout<<"already in recv hash\n";
+    //                 //cout<<"already in recv hash\n";
     //             }
     //             else if (count > t1.count){
     //                 recvHash[make_pair(t1.src,t1.dest)] = count - t1.count;
     //                 t1.msg_handler(t1.fun_arg);
-    //                 cout<<"already in recv hash with more data\n";
+    //                 //cout<<"already in recv hash with more data\n";
     //             }
     //             else{
     //                 recvHash.erase(make_pair(t1.src,t1.dest));
     //                 t1.count -= count;
     //                 expeRecvHash[make_pair(t1.src,t1.dest)] = t1;
-    //                 cout<<"partially in recv hash\n";
+    //                 //cout<<"partially in recv hash\n";
     //             }
     //         }
     //         else{
     //             expeRecvHash[make_pair(t1.src,t1.dest)] = t1;
-    //             cout<<"not in recv hash\n";
+    //             //cout<<"not in recv hash\n";
     //         }
     //     }
     //     else{
@@ -301,7 +301,7 @@ Ptr<SimpleUdpApplication>* sim_init(int n){
 
 int main (int argc, char *argv[]){
     LogComponentEnable ("SimpleUdpApplication", LOG_LEVEL_INFO);
-    cout << "Hello world!\n";
+    //cout << "Hello world!\n";
     // LogComponentEnable("myTCPMultiple",LOG_LEVEL_INFO);
     LogComponentEnable("OnOffApplication", LOG_LEVEL_INFO);
     LogComponentEnable("PacketSink", LOG_LEVEL_INFO);

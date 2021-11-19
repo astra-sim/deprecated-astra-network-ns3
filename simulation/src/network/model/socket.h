@@ -424,7 +424,7 @@ public:
   //yibo: to get local port
   virtual uint32_t GetLocalPort()
   {
-	  std::cout<<"WARNING: shouldn't reach here -- socket.h\n";
+	  //std:://cout<<"WARNING: shouldn't reach here -- socket.h\n";
 	  return 0;
   }
                                 

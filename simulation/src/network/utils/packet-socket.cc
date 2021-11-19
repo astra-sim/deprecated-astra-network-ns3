@@ -255,7 +255,7 @@ PacketSocket::Send (Ptr<Packet> p, uint32_t flags)
 {
 	//SeqTsHeader sth;
 	//p->PeekHeader(sth);
-	//std::cout << "in packet socket send " << sth.GetSeq() << "\n";
+	////std:://cout << "in packet socket send " << sth.GetSeq() << "\n";
 
   NS_LOG_FUNCTION (this << p << flags);
   if (m_state == STATE_OPEN ||
@@ -304,7 +304,7 @@ PacketSocket::SendTo (Ptr<Packet> p, uint32_t flags, const Address &address)
 {
 	//SeqTsHeader sth;
 	//p->PeekHeader(sth);
-	//std::cout << "in packet socket sendto " << sth.GetSeq() << "\n";
+	////std:://cout << "in packet socket sendto " << sth.GetSeq() << "\n";
 
   NS_LOG_FUNCTION (this << p << flags << address);
   PacketSocketAddress ad;

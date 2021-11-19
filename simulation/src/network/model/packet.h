@@ -217,7 +217,7 @@ public:
 		m_count--;
 		if (m_count == 0)
 		{
-			//std::cout<<"TEST\n";
+			////std:://cout<<"TEST\n";
 			//DELETER::Delete (static_cast<T*> (const_cast<SimpleRefCount *> (this)));
 		}
 	}

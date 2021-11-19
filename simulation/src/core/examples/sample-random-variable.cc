@@ -58,6 +58,6 @@ int main (int argc, char *argv[])
 
   UniformVariable uv;
 
-  cout << uv.GetValue () << endl;
+  //cout << uv.GetValue () << endl;
 
 }

@@ -122,19 +122,19 @@ void
 MyApp::SendPacket (void)
 {
     Ptr<Packet> packet = Create<Packet> (m_packetSize);
-    std::cout<<Simulator::Now ().GetSeconds ()<<"send single packet starts"<<"\n";
+    //std:://cout<<Simulator::Now ().GetSeconds ()<<"send single packet starts"<<"\n";
     m_socket->Send (packet);
-    std::cout<<Simulator::Now ().GetSeconds ()<<"send single packet ends"<<"\n";
+    //std:://cout<<Simulator::Now ().GetSeconds ()<<"send single packet ends"<<"\n";
     if (++m_packetsSent < m_nPackets)
     {
       ScheduleTx ();
-      std::cout<<Simulator::Now ().GetSeconds ()<<"scheduled of packet done"<<"\n";
+      //std:://cout<<Simulator::Now ().GetSeconds ()<<"scheduled of packet done"<<"\n";
       //Is this the right place to call schedule sim
       ScheduleSIM ();
-      std::cout<<Simulator::Now ().GetSeconds ()<<"scheduled of astrasim fn done done"<<"\n";
+      //std:://cout<<Simulator::Now ().GetSeconds ()<<"scheduled of astrasim fn done done"<<"\n";
       //call sim_send here if want to inform after sending single packet
       Sim_send();
-      std::cout<<Simulator::Now ().GetSeconds ()<<"sim send called"<<"\n";
+      //std:://cout<<Simulator::Now ().GetSeconds ()<<"sim send called"<<"\n";
     }
 }
 
@@ -160,20 +160,20 @@ void
 MyApp::Sim_send(void)
 {
     //call sim send fn
-    std::cout<<"hello word, Sim_send is called\n";
+    //std:://cout<<"hello word, Sim_send is called\n";
 }
 
 void
 MyApp::Sim_receive(void)
 {
     //call sim receive fn once receive of packet is done
-    std::cout<<"hello word, Sim_receive is called\n";
+    //std:://cout<<"hello word, Sim_receive is called\n";
 }
 
 void
 MyApp::ASTRASimfn(void)
 {
-    std::cout<<"hello word, astra sim fn is called\n";
+    //std:://cout<<"hello word, astra sim fn is called\n";
 }
 
 static void

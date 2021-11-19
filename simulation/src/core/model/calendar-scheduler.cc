@@ -72,13 +72,13 @@ CalendarScheduler::PrintInfo (void)
 {
   NS_LOG_FUNCTION (this);
 
-  std::cout << "nBuckets=" << m_nBuckets << ", width=" << m_width << std::endl;
-  std::cout << "Bucket Distribution ";
+  //std:://cout << "nBuckets=" << m_nBuckets << ", width=" << m_width << std::endl;
+  //std:://cout << "Bucket Distribution ";
   for (uint32_t i = 0; i < m_nBuckets; i++)
     {
-      std::cout << m_buckets[i].size () << " ";
+      //std:://cout << m_buckets[i].size () << " ";
     }
-  std::cout << std::endl;
+  //std:://cout << std::endl;
 }
 uint32_t
 CalendarScheduler::Hash (uint64_t ts) const

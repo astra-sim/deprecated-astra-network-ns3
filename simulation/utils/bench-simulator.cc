@@ -32,7 +32,7 @@ using namespace ns3;
 bool g_debug = false;
 
 std::string g_me;
-#define LOG(x)   std::cout << x << std::endl
+#define LOG(x)   //std:://cout << x << std::endl
 #define LOGME(x) LOG (g_me << x)
 #define DEB(x) if (g_debug) { LOGME (x) ; }
 
@@ -257,14 +257,14 @@ int main (int argc, char *argv[])
        
   // prime
   DEB ("priming");
-  std::cout << std::left << std::setw (g_fwidth) << "(prime)";
+  //std:://cout << std::left << std::setw (g_fwidth) << "(prime)";
   bench->RunBench ();
 
   bench->SetPopulation (pop);
   bench->SetTotal (total);
   for (uint32_t i = 0; i < runs; i++)
     {
-      std::cout << std::setw (g_fwidth) << i;
+      //std:://cout << std::setw (g_fwidth) << i;
       
       bench->RunBench ();
     }

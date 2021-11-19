@@ -63,7 +63,7 @@ void
 QbbChannel::Attach (Ptr<QbbNetDevice> device)
 {
   
-  //std::cout << m_nDevices << " " << N_DEVICES << "\n";
+  ////std:://cout << m_nDevices << " " << N_DEVICES << "\n";
   //fflush(stdout);
   NS_LOG_FUNCTION (this << device);
   NS_ASSERT_MSG (m_nDevices < N_DEVICES, "Only two devices permitted");
@@ -113,8 +113,8 @@ QbbChannel::GetNDevices (void) const
 {
   NS_LOG_FUNCTION_NOARGS ();
 
-  //std::cout<<m_nDevices<<"\n";
-  //std::cout.flush();
+  ////std:://cout<<m_nDevices<<"\n";
+  ////std:://cout.flush();
 
 
   return m_nDevices;

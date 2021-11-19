@@ -150,7 +150,7 @@ FlushStreams (void)
   std::fflush (0);
 
   /* Flush stdandard streams - shouldn't be required (except for clog) */
-  std::cout.flush ();
+  //std:://cout.flush ();
   std::cerr.flush ();
   std::clog.flush ();
 
@@ -192,7 +192,7 @@ FlushStreams (void)
   std::fflush (0);
 
   /* Flush stdandard streams - shouldn't be required (except for clog) */
-  std::cout.flush ();
+  //std:://cout.flush ();
   std::cerr.flush ();
   std::clog.flush ();
 

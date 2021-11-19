@@ -26,7 +26,7 @@
 using namespace ns3;
 /**
  * \ingroup propagation
- * \brief Constructs a JakesPropagationlossModel and print the loss value as a function of time into std::cout.
+ * \brief Constructs a JakesPropagationlossModel and print the loss value as a function of time into //std:://cout.
  * Distribution and correlation statistics is compared woth a theoretical ones using R package (http://www.r-project.org/).
  * Scripts are presented within comments.
  */
@@ -63,7 +63,7 @@ JakesPropagationExample::~JakesPropagationExample ()
 void JakesPropagationExample::Next ()
 {
   m_nextEvent = Simulator::Schedule (m_step, &JakesPropagationExample::Next, this);
-  std::cout << Simulator::Now ().GetMilliSeconds () << " " << m_loss->CalcRxPower (0, m_firstMobility, m_secondMobility) << std::endl;
+  //std:://cout << Simulator::Now ().GetMilliSeconds () << " " << m_loss->CalcRxPower (0, m_firstMobility, m_secondMobility) << std::endl;
 }
 
 int main (int argc, char *argv[])

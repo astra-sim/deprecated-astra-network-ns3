@@ -160,7 +160,7 @@ int main (int argc, char *argv[])
   Ipv4GlobalRoutingHelper::PopulateRoutingTables ();
 
   Simulator::Run ();
-  std::cout << "Animation Trace file created:" << animFile.c_str ()<< std::endl;
+  //std:://cout << "Animation Trace file created:" << animFile.c_str ()<< std::endl;
   Simulator::Destroy ();
   delete pAnim;
   return 0;

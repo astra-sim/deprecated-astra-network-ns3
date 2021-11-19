@@ -110,9 +110,9 @@ main (int argc, char *argv[])
           uint64_t et = GetRealtimeInNs () - start;
           result = min (result, et);
           stream.close ();
-          cout << "."; std::cout.flush ();
+          //cout << "."; //std:://cout.flush ();
         }
-      cout << std::endl;
+      //cout << std::endl;
     }
   else
     {
@@ -131,9 +131,9 @@ main (int argc, char *argv[])
           result = std::min (result, et);
           fclose (file);
           file = 0;
-          std::cout << "."; std::cout.flush ();
+          //std:://cout << "."; //std:://cout.flush ();
         }
-      std::cout << std::endl;
+      //std:://cout << std::endl;
     }
-  std::cout << argv[0] << ": " << result << "ns" << std::endl;
+  //std:://cout << argv[0] << ": " << result << "ns" << std::endl;
 }

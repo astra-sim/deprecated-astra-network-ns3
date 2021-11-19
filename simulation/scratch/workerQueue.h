@@ -32,15 +32,15 @@ extern map<pair<int,int>,int> nodeHash;//mapping of <node,type> to data sent/rec
 //         ~workerQueue(){}
 //         void pushItem(string str){
 //             q.push(str);
-//             cout<<"que\n";
+//             //cout<<"que\n";
 //         }
 // };
 // int main (int argc, char *argv[]){
-//     cout<<"hello\n";
+//     //cout<<"hello\n";
 //     workerQueue que;
 //     que.pushItem("etest");
 //     while(!que.q.empty()){
-//         cout<<que.q.front()<<"\n";
+//         //cout<<que.q.front()<<"\n";
 //         que.q.pop();
 //     }
 // }

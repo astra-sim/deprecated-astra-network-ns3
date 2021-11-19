@@ -8,14 +8,14 @@ using namespace ns3;
 static double 
 CbOne (double a, double b)
 {
-  std::cout << "invoke cbOne a=" << a << ", b=" << b << std::endl;
+  //std:://cout << "invoke cbOne a=" << a << ", b=" << b << std::endl;
   return a;
 }
 
 class MyCb {
 public:
   int CbTwo (double a) {
-    std::cout << "invoke cbTwo a=" << a << std::endl;
+    //std:://cout << "invoke cbTwo a=" << a << std::endl;
     return -5;
   }
 };

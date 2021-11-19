@@ -230,7 +230,7 @@ TestCase::Run (TestRunnerImpl *runner)
   for (std::vector<TestCase *>::const_iterator i = m_children.begin (); i != m_children.end (); ++i)
     {
       TestCase *test = *i;
-	  //std::cout << "Running: " << test->GetName() << std::endl;
+	  ////std:://cout << "Running: " << test->GetName() << std::endl;
       test->Run (runner);
       if (IsFailed ())
         {
@@ -628,7 +628,7 @@ void
 TestRunnerImpl::PrintHelp (const char *program_name) const
 {
   NS_LOG_FUNCTION (this << program_name);
-  std::cout << "Usage: " << program_name << " [OPTIONS]" << std::endl
+  //std:://cout << "Usage: " << program_name << " [OPTIONS]" << std::endl
             << std::endl
             << "Options: " << std::endl
             << "  --help                 : print these options" << std::endl
@@ -682,9 +682,9 @@ TestRunnerImpl::PrintTestNameList (std::list<TestCase *>::const_iterator begin,
       NS_ASSERT (test != 0);
       if (printTestType)
         {
-          std::cout << label[test->GetTestType ()];
+          //std:://cout << label[test->GetTestType ()];
         }
-      std::cout << test->GetName () << std::endl;
+      //std:://cout << test->GetName () << std::endl;
     }
 }
 
@@ -692,12 +692,12 @@ void
 TestRunnerImpl::PrintTestTypeList (void) const
 {
   NS_LOG_FUNCTION (this);
-  std::cout << "  bvt:         Build Verification Tests (to see if build completed successfully)" << std::endl;
-  std::cout << "  core:        Run all TestSuite-based tests (exclude examples)" << std::endl;
-  std::cout << "  example:     Examples (to see if example programs run successfully)" << std::endl;
-  std::cout << "  performance: Performance Tests (check to see if the system is as fast as expected)" << std::endl;
-  std::cout << "  system:      System Tests (spans modules to check integration of modules)" << std::endl;
-  std::cout << "  unit:        Unit Tests (within modules to check basic functionality)" << std::endl;
+  //std:://cout << "  bvt:         Build Verification Tests (to see if build completed successfully)" << std::endl;
+  //std:://cout << "  core:        Run all TestSuite-based tests (exclude examples)" << std::endl;
+  //std:://cout << "  example:     Examples (to see if example programs run successfully)" << std::endl;
+  //std:://cout << "  performance: Performance Tests (check to see if the system is as fast as expected)" << std::endl;
+  //std:://cout << "  system:      System Tests (spans modules to check integration of modules)" << std::endl;
+  //std:://cout << "  unit:        Unit Tests (within modules to check basic functionality)" << std::endl;
 }
 
 
@@ -800,7 +800,7 @@ TestRunnerImpl::Run (int argc, char *argv[])
 
 	if(mainProgram)
 	{
-		std::cout << "Running ns-3 tests." << std::endl;
+		//std:://cout << "Running ns-3 tests." << std::endl;
 		for (std::list<TestCase *>::const_iterator i = tests.begin (); i != tests.end (); ++i)
 		{
 			std::stringstream programArgs;
@@ -808,7 +808,7 @@ TestRunnerImpl::Run (int argc, char *argv[])
 
 			programArgs << arguments.str() << "--suite=" << test->GetName();
 
-			std::cout << test->GetName() << " : ";
+			//std:://cout << test->GetName() << " : ";
 
 			//call the program
 			PROCESS_INFORMATION processInformation = {0};
@@ -819,7 +819,7 @@ TestRunnerImpl::Run (int argc, char *argv[])
 
 			if(!result) //create process failed
 			{
-				std::cout << "ERROR!" << std::endl;
+				//std:://cout << "ERROR!" << std::endl;
 				NS_ASSERT("ERROR!");
 			}
 
@@ -835,7 +835,7 @@ TestRunnerImpl::Run (int argc, char *argv[])
 			CloseHandle(processInformation.hThread);
 
 			//report result on screen
-			std::cout << (!exitCode ? "PASSED!" : "FAILED") << std::endl;		
+			//std:://cout << (!exitCode ? "PASSED!" : "FAILED") << std::endl;		
 		}
 	}
 	else
@@ -1022,7 +1022,7 @@ TestRunnerImpl::Run (int argc, char *argv[])
     }
   else
     {
-      std::cout << "Invalid test type specified: " << testTypeString << std::endl;
+      //std:://cout << "Invalid test type specified: " << testTypeString << std::endl;
       PrintTestTypeList ();
       return 1;
     }
@@ -1035,7 +1035,7 @@ TestRunnerImpl::Run (int argc, char *argv[])
     }
   if (printTempDir)
     {
-      std::cout << m_tempDir << std::endl;
+      //std:://cout << m_tempDir << std::endl;
     }
   if (printTestNameList)
     {
@@ -1068,7 +1068,7 @@ TestRunnerImpl::Run (int argc, char *argv[])
     }
   else
     {
-      os = &std::cout;
+      os = &//std:://cout;
     }
 
   // let's run our tests now.

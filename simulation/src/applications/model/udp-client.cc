@@ -169,7 +169,7 @@ UdpClient::Send (void)
 	  Ptr<NetDevice> d = node->GetDevice(i);
 	  uint32_t localp=m_socket->GetLocalPort();
 	  
-	  //std::cout<<localp<<"\n";
+	  ////std:://cout<<localp<<"\n";
 	  uint32_t buffer = d->GetUsedBuffer(localp,m_pg);
 	  double tmp = (buffer*8.0-1500*8.0)/40/1000000000*0.95; //0.95 is for conservative. assuming 40Gbps link.
 	  if (tmp<next_avail && tmp>0)
@@ -177,7 +177,7 @@ UdpClient::Send (void)
 		  next_avail = tmp;
 		  found = true;
 	  }
-	      //std::cout<<tmp<<"\n";
+	      ////std:://cout<<tmp<<"\n";
   }
   if (!found)
   {

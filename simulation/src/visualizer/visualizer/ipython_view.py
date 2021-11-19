@@ -40,13 +40,13 @@ ansi_colors =  {'0;30': 'Black',
 
 class IterableIPShell:
   def __init__(self,argv=None,user_ns=None,user_global_ns=None,
-               cin=None, cout=None,cerr=None, input_func=None):
+               cin=None, //cout=None,cerr=None, input_func=None):
     if input_func:
       IPython.iplib.raw_input_original = input_func
     if cin:
       IPython.Shell.Term.cin = cin
-    if cout:
-      IPython.Shell.Term.cout = cout
+    if //cout:
+      IPython.Shell.Term.//cout = //cout
     if cerr:
       IPython.Shell.Term.cerr = cerr
 
@@ -57,7 +57,7 @@ class IterableIPShell:
     # IPython.Shell.InteractiveShell.user_setup()
     IPython.iplib.raw_input = lambda x: None
 
-    self.term = IPython.genutils.IOTerm(cin=cin, cout=cout, cerr=cerr)
+    self.term = IPython.genutils.IOTerm(cin=cin, //cout=//cout, cerr=cerr)
     os.environ['TERM'] = 'dumb'
     excepthook = sys.excepthook
     self.IP = IPython.Shell.make_IPython(argv,user_ns=user_ns,
@@ -75,7 +75,7 @@ class IterableIPShell:
   def execute(self):
     self.history_level = 0
     orig_stdout = sys.stdout
-    sys.stdout = IPython.Shell.Term.cout
+    sys.stdout = IPython.Shell.Term.//cout
     try:
       line = self.IP.raw_input(None, self.iter_more)
       if self.IP.autoindent:
@@ -245,12 +245,12 @@ class ConsoleView(gtk.TextView):
 class IPythonView(ConsoleView, IterableIPShell):
   def __init__(self):
     ConsoleView.__init__(self)
-    self.cout = StringIO()
-    IterableIPShell.__init__(self, cout=self.cout,cerr=self.cout,
+    self.//cout = StringIO()
+    IterableIPShell.__init__(self, //cout=self.//cout,cerr=self.//cout,
                              input_func=self.raw_input)
     self.connect('key_press_event', self.keyPress)
     self.execute()
-    self.cout.truncate(0)
+    self.//cout.truncate(0)
     self.showPrompt(self.prompt)
     self.interrupt = False
 
@@ -290,7 +290,7 @@ class IPythonView(ConsoleView, IterableIPShell):
   def _processLine(self):
     self.history_pos = 0
     self.execute()
-    rv = self.cout.getvalue()
+    rv = self.//cout.getvalue()
     if rv: rv = rv.strip('\n')
     self.showReturned(rv)
-    self.cout.truncate(0)
+    self.//cout.truncate(0)

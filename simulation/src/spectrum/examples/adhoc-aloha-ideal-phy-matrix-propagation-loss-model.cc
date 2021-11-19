@@ -56,7 +56,7 @@ PhyRxEndOkTrace (std::string context, Ptr<const Packet> p)
 {
   if (g_verbose)
     {
-      std::cout << context << " PHY RX END OK p:" << p << std::endl;
+      //std:://cout << context << " PHY RX END OK p:" << p << std::endl;
     }
   g_rxBytes += p->GetSize ();
 }
@@ -115,7 +115,7 @@ GlobalPathlossDatabase::Print ()
            rxit != txit->second.end ();
            ++rxit)
         {
-          std::cout << txit->first << " --> " << rxit->first << " : " << rxit->second << " dB" << std::endl;
+          //std:://cout << txit->first << " --> " << rxit->first << " : " << rxit->second << " dB" << std::endl;
         }
     }
 }
@@ -213,12 +213,12 @@ int main (int argc, char** argv)
       globalPathlossDatabase.Print ();
 
       double throughputBps = (g_rxBytes * 8.0) / simDuration;
-      std::cout << "throughput:       " << throughputBps << std::endl;
-      std::cout << "throughput:       " << std::setw (20) << std::fixed << throughputBps << " bps" << std::endl;
-      std::cout << "phy rate  :       "   << std::setw (20) << std::fixed << phyRate*1.0 << " bps" << std::endl; 
+      //std:://cout << "throughput:       " << throughputBps << std::endl;
+      //std:://cout << "throughput:       " << std::setw (20) << std::fixed << throughputBps << " bps" << std::endl;
+      //std:://cout << "phy rate  :       "   << std::setw (20) << std::fixed << phyRate*1.0 << " bps" << std::endl; 
       double rxPowerW = txPowerW / (pow (10.0, lossDb/10.0));
       double capacity = 20e6*log2 (1.0 + (rxPowerW/20.0e6)/noisePsdValue);
-      std::cout << "shannon capacity: "   << std::setw (20) << std::fixed << capacity <<  " bps" << std::endl; 
+      //std:://cout << "shannon capacity: "   << std::setw (20) << std::fixed << capacity <<  " bps" << std::endl; 
 
     }
 

@@ -89,7 +89,7 @@ int main (int argc, char **argv)
     NS_FATAL_ERROR ("Configuration failed. Aborted.");
 
   test.Run ();
-  test.Report (std::cout);
+  test.Report (//std:://cout);
   return 0;
 }
 
@@ -131,7 +131,7 @@ AodvExample::Run ()
   InstallInternetStack ();
   InstallApplications ();
 
-  std::cout << "Starting simulation for " << totalTime << " s ...\n";
+  //std:://cout << "Starting simulation for " << totalTime << " s ...\n";
 
   Simulator::Stop (Seconds (totalTime));
   Simulator::Run ();
@@ -146,7 +146,7 @@ AodvExample::Report (std::ostream &)
 void
 AodvExample::CreateNodes ()
 {
-  std::cout << "Creating " << (unsigned)size << " nodes " << step << " m apart.\n";
+  //std:://cout << "Creating " << (unsigned)size << " nodes " << step << " m apart.\n";
   nodes.Create (size);
   // Name nodes
   for (uint32_t i = 0; i < size; ++i)

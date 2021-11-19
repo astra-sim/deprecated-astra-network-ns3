@@ -175,7 +175,7 @@ QbbHelper::EnableAsciiInternal (
       // transmit queue.
       //
 	  
-	  //std::cout<<"Hook Callback\n";
+	  ////std:://cout<<"Hook Callback\n";
 
       Ptr<BEgressQueue> queue = device->GetQueue ();
       asciiTraceHelper.HookDefaultEnqueueSinkWithoutContext<BEgressQueue> (queue, "Enqueue", theStream);

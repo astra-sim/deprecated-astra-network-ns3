@@ -237,7 +237,7 @@ void RdmaHw::AddQueuePair(uint64_t size, uint16_t pg, Ipv4Address sip, Ipv4Addre
 
 	// set init variables
 	DataRate m_bps = m_nic[nic_idx].dev->GetDataRate();
-	std::cout<<"data rate in addqueuepair is "<<m_bps<<"\n";
+	//std:://cout<<"data rate in addqueuepair is "<<m_bps<<"\n";
 	qp->m_rate = m_bps;
 	qp->m_max_rate = m_bps;
 	if (m_cc_mode == 1){
@@ -301,7 +301,7 @@ int RdmaHw::ReceiveUdp(Ptr<Packet> p, CustomHeader &ch){
 	uint8_t ecnbits = ch.GetIpv4EcnBits();
 
 	uint32_t payload_size = p->GetSize() - ch.GetSerializedSize();
-	std::cout<<"payload size  in receive udp in rdma-hw is "<<payload_size<<"\n";
+	//std:://cout<<"payload size  in receive udp in rdma-hw is "<<payload_size<<"\n";
 	// TODO find corresponding rx queue pair
 	Ptr<RdmaRxQueuePair> rxQp = GetRxQp(ch.dip, ch.sip, ch.udp.dport, ch.udp.sport, ch.udp.pg, true);
 	if (ecnbits != 0){
@@ -313,7 +313,7 @@ int RdmaHw::ReceiveUdp(Ptr<Packet> p, CustomHeader &ch){
 
 	int x = ReceiverCheckSeq(ch.udp.seq, rxQp, payload_size);
 	if (x == 1 || x == 2){ //generate ACK or NACK
-		std::cout<<"generate ack or nack "<<x<<"\n";
+		//std:://cout<<"generate ack or nack "<<x<<"\n";
 		qbbHeader seqh;
 		seqh.SetSeq(rxQp->ReceiverNextExpectedSeq);
 		seqh.SetPG(ch.udp.pg);
@@ -340,7 +340,7 @@ int RdmaHw::ReceiveUdp(Ptr<Packet> p, CustomHeader &ch){
 		uint32_t nic_idx = GetNicIdxOfRxQp(rxQp);
 		m_nic[nic_idx].dev->RdmaEnqueueHighPrioQ(newp);
 		m_nic[nic_idx].dev->TriggerTransmit();
-		std::cout<<"transmit triggered\n";
+		//std:://cout<<"transmit triggered\n";
 	}
 	return 0;
 }
@@ -352,7 +352,7 @@ int RdmaHw::ReceiveCnp(Ptr<Packet> p, CustomHeader &ch){
 	// We assume, without verify, the packet is destinated to me
 	uint32_t qIndex = ch.cnp.qIndex;
 	if (qIndex == 1){		//DCTCP
-		std::cout << "TCP--ignore\n";
+		//std:://cout << "TCP--ignore\n";
 		return 0;
 	}
 	uint16_t udpport = ch.cnp.fid; // corresponds to the sport
@@ -364,7 +364,7 @@ int RdmaHw::ReceiveCnp(Ptr<Packet> p, CustomHeader &ch){
 	// get qp
 	Ptr<RdmaQueuePair> qp = GetQp(ch.sip, udpport, qIndex);
 	if (qp == NULL)
-		std::cout << "ERROR: QCN NIC cannot find the flow\n";
+		//std:://cout << "ERROR: QCN NIC cannot find the flow\n";
 	// get nic
 	uint32_t nic_idx = GetNicIdxOfQp(qp);
 	Ptr<QbbNetDevice> dev = m_nic[nic_idx].dev;
@@ -395,17 +395,17 @@ int RdmaHw::ReceiveAck(Ptr<Packet> p, CustomHeader &ch){
 	uint32_t seq = ch.ack.seq;
 	uint8_t cnp = (ch.ack.flags >> qbbHeader::FLAG_CNP) & 1;
 	int i;
-	std::cout<<"receive ack \n";
+	//std:://cout<<"receive ack \n";
 	Ptr<RdmaQueuePair> qp = GetQp(ch.sip, port, qIndex);
 	if (qp == NULL){
-		std::cout << "ERROR: " << "node:" << m_node->GetId() << ' ' << (ch.l3Prot == 0xFC ? "ACK" : "NACK") << " NIC cannot find the flow\n";
+		//std:://cout << "ERROR: " << "node:" << m_node->GetId() << ' ' << (ch.l3Prot == 0xFC ? "ACK" : "NACK") << " NIC cannot find the flow\n";
 		return 0;
 	}
 
 	uint32_t nic_idx = GetNicIdxOfQp(qp);
 	Ptr<QbbNetDevice> dev = m_nic[nic_idx].dev;
 	if (m_ack_interval == 0)
-		std::cout << "ERROR: shouldn't receive ack\n";
+		//std:://cout << "ERROR: shouldn't receive ack\n";
 	else {
 		if (!m_backto0){
 			qp->Acknowledge(seq);
@@ -438,7 +438,7 @@ int RdmaHw::ReceiveAck(Ptr<Packet> p, CustomHeader &ch){
 	}
 	// ACK may advance the on-the-fly window, allowing more packets to send
 	dev->TriggerTransmit();
-	std::cout << "ack triggere transmitted\n";
+	//std:://cout << "ack triggere transmitted\n";
 	return 0;
 }
 
@@ -448,10 +448,10 @@ int RdmaHw::Receive(Ptr<Packet> p, CustomHeader &ch){
 	}else if (ch.l3Prot == 0xFF){ // CNP
 		ReceiveCnp(p, ch);
 	}else if (ch.l3Prot == 0xFD){ // NACK
-		std::cout<<"Received nack \n";
+		//std:://cout<<"Received nack \n";
 		ReceiveAck(p, ch);
 	}else if (ch.l3Prot == 0xFC){ // ACK
-		std::cout<<"Received ack \n";
+		//std:://cout<<"Received ack \n";
 		ReceiveAck(p, ch);
 	}
 	return 0;
@@ -592,7 +592,7 @@ Ptr<Packet> RdmaHw::GetNxtPacket(Ptr<RdmaQueuePair> qp){
 
 void RdmaHw::PktSent(Ptr<RdmaQueuePair> qp, Ptr<Packet> pkt, Time interframeGap){
 	qp->lastPktSize = pkt->GetSize();
-	std::cout<<"last packet size is "<<pkt->GetSize()<<"\n";
+	//std:://cout<<"last packet size is "<<pkt->GetSize()<<"\n";
 	UpdateNextAvail(qp, interframeGap, pkt->GetSize());
 }
 
@@ -602,8 +602,8 @@ void RdmaHw::UpdateNextAvail(Ptr<RdmaQueuePair> qp, Time interframeGap, uint32_t
 		sendingTime = interframeGap + Seconds(qp->m_rate.CalculateTxTime(pkt_size));
 	else
 		sendingTime = interframeGap + Seconds(qp->m_max_rate.CalculateTxTime(pkt_size));
-	std::cout<<"interframeGap is  "<<sendingTime.GetSeconds()<<" transmit time is "<<Seconds(qp->m_rate.CalculateTxTime(pkt_size))<<"\n";
-	std::cout<<"sending time is  "<<sendingTime.GetSeconds()<<"\n";
+	//std:://cout<<"interframeGap is  "<<sendingTime.GetSeconds()<<" transmit time is "<<Seconds(qp->m_rate.CalculateTxTime(pkt_size))<<"\n";
+	//std:://cout<<"sending time is  "<<sendingTime.GetSeconds()<<"\n";
 	qp->m_nextAvail = Simulator::Now() + sendingTime;
 }
 
@@ -627,7 +627,7 @@ void RdmaHw::ChangeRate(Ptr<RdmaQueuePair> qp, DataRate new_rate){
  *****************************/
 void RdmaHw::UpdateAlphaMlx(Ptr<RdmaQueuePair> q){
 	#if PRINT_LOG
-	//std::cout << Simulator::Now() << " alpha update:" << m_node->GetId() << ' ' << q->mlx.m_alpha << ' ' << (int)q->mlx.m_alpha_cnp_arrived << '\n';
+	////std:://cout << Simulator::Now() << " alpha update:" << m_node->GetId() << ' ' << q->mlx.m_alpha << ' ' << (int)q->mlx.m_alpha_cnp_arrived << '\n';
 	//printf("%lu alpha update: %08x %08x %u %u %.6lf->", Simulator::Now().GetTimeStep(), q->sip.Get(), q->dip.Get(), q->sport, q->dport, q->mlx.m_alpha);
 	#endif
 	if (q->mlx.m_alpha_cnp_arrived){

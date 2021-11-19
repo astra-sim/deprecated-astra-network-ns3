@@ -1059,8 +1059,8 @@ GlobalRouter::ProcessPointToPointLink (Ptr<NetDevice> ndLocal, GlobalRoutingLSA 
   //
   //ndLocal->GetIfIndex();
 
-  //std::cout<<addrLocal<<"\n";
-  //std::cout<<"!!!\n";
+  ////std:://cout<<addrLocal<<"\n";
+  ////std:://cout<<"!!!\n";
   //fflush(stdout);
 
   Ptr<NetDevice> ndRemote = GetAdjacent (ndLocal, ch);
@@ -1598,7 +1598,7 @@ GlobalRouter::GetAdjacent (Ptr<NetDevice> nd, Ptr<Channel> ch) const
 {
   NS_LOG_FUNCTION_NOARGS ();
 
-  //std::cout<<"Device num:"<<ch->GetNDevices ()<<"\n";
+  ////std:://cout<<"Device num:"<<ch->GetNDevices ()<<"\n";
   //fflush(stdout);
 
   NS_ASSERT_MSG (ch->GetNDevices () == 2, "GlobalRouter::GetAdjacent (): Channel with other than two devices");

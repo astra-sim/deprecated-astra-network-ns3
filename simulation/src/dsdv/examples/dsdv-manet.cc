@@ -216,7 +216,7 @@ DsdvManetExample::CaseRun (uint32_t nWifis, uint32_t nSinks, double totalTime, s
   std::string sTotalTime = ss3.str ();
 
   std::string tr_name = "Dsdv_Manet_" + t_nodes + "Nodes_" + sTotalTime + "SimTime";
-  std::cout << "Trace file generated is " << tr_name << ".tr\n";
+  //std:://cout << "Trace file generated is " << tr_name << ".tr\n";
 
   CreateNodes ();
   CreateDevices (tr_name);
@@ -224,7 +224,7 @@ DsdvManetExample::CaseRun (uint32_t nWifis, uint32_t nSinks, double totalTime, s
   InstallInternetStack (tr_name);
   InstallApplications ();
 
-  std::cout << "\nStarting simulation for " << m_totalTime << " s ...\n";
+  //std:://cout << "\nStarting simulation for " << m_totalTime << " s ...\n";
 
   CheckThroughput ();
 
@@ -236,7 +236,7 @@ DsdvManetExample::CaseRun (uint32_t nWifis, uint32_t nSinks, double totalTime, s
 void
 DsdvManetExample::CreateNodes ()
 {
-  std::cout << "Creating " << (unsigned) m_nWifis << " nodes.\n";
+  //std:://cout << "Creating " << (unsigned) m_nWifis << " nodes.\n";
   nodes.Create (m_nWifis);
   NS_ASSERT_MSG (m_nWifis > m_nSinks, "Sinks must be less or equal to the number of nodes in network");
 }

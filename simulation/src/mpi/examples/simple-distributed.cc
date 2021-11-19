@@ -80,7 +80,7 @@ main (int argc, char *argv[])
   // Must have 2 and only 2 Logical Processors (LPs)
   if (systemCount != 2)
     {
-      std::cout << "This simulation requires 2 and only 2 logical processors." << std::endl;
+      //std:://cout << "This simulation requires 2 and only 2 logical processors." << std::endl;
       return 1;
     }
 

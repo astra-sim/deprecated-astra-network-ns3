@@ -42,14 +42,14 @@ static int gVerbose = 0;
 #define LOG(msg) \
   if (gVerbose) \
     { \
-      std::cout << __FUNCTION__ << "(): " << msg << std::endl;   \
+      //std:://cout << __FUNCTION__ << "(): " << msg << std::endl;   \
     }
 
 #define ABORT(msg, printErrno) \
-  std::cout << __FILE__ << ": fatal error at line " << __LINE__ << ": " << __FUNCTION__ << "(): " << msg << std::endl; \
+  //std:://cout << __FILE__ << ": fatal error at line " << __LINE__ << ": " << __FUNCTION__ << "(): " << msg << std::endl; \
   if (printErrno) \
     { \
-      std::cout << "    errno = " << errno << " (" << strerror (errno) << ")" << std::endl; \
+      //std:://cout << "    errno = " << errno << " (" << strerror (errno) << ")" << std::endl; \
     } \
   exit (-1); 
 

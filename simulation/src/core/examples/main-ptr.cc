@@ -14,16 +14,16 @@ public:
 };
 A::A ()
 {
-  std::cout << "A constructor" << std::endl;
+  //std:://cout << "A constructor" << std::endl;
 }
 A::~A()
 {
-  std::cout << "A destructor" << std::endl;
+  //std:://cout << "A destructor" << std::endl;
 }
 void
 A::Method (void)
 {
-  std::cout << "A method" << std::endl;
+  //std:://cout << "A method" << std::endl;
 }
 
 static Ptr<A> g_a = 0;

@@ -1187,7 +1187,7 @@ TcpSocketBase::ReceivedAck (Ptr<Packet> packet, const TcpHeader& tcpHeader)
           NS_LOG_INFO ("Received ECN Echo. Checking if it's valid one.");
           //if (m_EcnEchoSeq < tcpHeader.GetAckNumber ())
           //  {
-			  //std::cout << "@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@\n";
+			  ////std:://cout << "@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@\n";
               NS_LOG_INFO ("Received ECN Echo was valid.");
               m_EcnEchoSeq = tcpHeader.GetAckNumber ();
               m_EcnState |= ECN_RX_ECHO;
@@ -1795,7 +1795,7 @@ TcpSocketBase::SendEmptyPacket (uint16_t flags)
         }
       else*/ if (m_EcnState & ECN_TX_ECHO)
         {
-		  //std::cout << "!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!\n";
+		  ////std:://cout << "!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!\n";
           NS_LOG_INFO ("Sending ECN Echo.");
           flags |= TcpHeader::ECE;
         }
@@ -2171,7 +2171,7 @@ TcpSocketBase::SendPendingData (bool withAck)
         {
           NS_LOG_INFO ("Halving CWND because we've received ECN Echo.");
           m_EcnState |= ECN_SEND_CWR;
-		  //std::cout << AvailableWindow() << "\n";
+		  ////std:://cout << AvailableWindow() << "\n";
           //HalveCwnd();
         }
 

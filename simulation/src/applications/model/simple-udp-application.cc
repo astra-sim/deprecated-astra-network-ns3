@@ -105,9 +105,9 @@ namespace ns3
     Address from;
     Address localAddress;
     int receiver_node = GetNode()->GetId();
-    std::cout<<"receiver node "<<receiver_node<<"\n";
+    //std:://cout<<"receiver node "<<receiver_node<<"\n";
     int sender_node;
-    // std::cout<<socket->GetBoundNetDevice()->GetAddress()<<"\n";
+    // //std:://cout<<socket->GetBoundNetDevice()->GetAddress()<<"\n";
     // int count=0; //data in bytes
     map<int,int> tagMap; //data in bytes corresponding to the tag for the same src and dst. 
     while ((packet = socket->RecvFrom(from)))
@@ -116,10 +116,10 @@ namespace ns3
       packet->RemoveHeader (destinationHeader);
       sender_node = destinationHeader.GetData ();
       int tag = destinationHeader.GetTag();
-      cout<<"sender node and tag is" << sender_node<<" "<<tag<<"\n";
+      //cout<<"sender node and tag is" << sender_node<<" "<<tag<<"\n";
       NS_LOG_INFO(PURPLE_CODE << "HandleRead : Received a Packet of size: " << packet->GetSize() << " at time " << Now().GetSeconds() << END_CODE);
       //NS_LOG_INFO("Content: " << packet->ToString());
-      // std::cout<<"handleread "<<packet->GetSize() << " at time " << Now().GetSeconds()<<"\n";
+      // //std:://cout<<"handleread "<<packet->GetSize() << " at time " << Now().GetSeconds()<<"\n";
       // count+= packet->GetSize();
       if(tagMap.find(tag)==tagMap.end()){
         tagMap[tag] = packet->GetSize();
@@ -127,44 +127,44 @@ namespace ns3
       else{
         tagMap[tag] = tagMap[tag] + packet->GetSize();
       }
-      std::cout<<"for tag, packet size is "<<tag<<" "<<tagMap[tag]<<"\n";
+      //std:://cout<<"for tag, packet size is "<<tag<<" "<<tagMap[tag]<<"\n";
     }
     // for(std::map<std::pair<int, int>, struct task1>::iterator it = expeRecvHash.begin();it!=expeRecvHash.end();it++){
-    //     std::cout<<it->first.first<<" "<<it->first.second<<"\n";
+    //     //std:://cout<<it->first.first<<" "<<it->first.second<<"\n";
     // }
     for(auto it = tagMap.begin();it!=tagMap.end();it++){
       int tag = it->first;int count = it->second;
       if(expeRecvHash.find(make_pair(tag,make_pair(sender_node, receiver_node)))!=expeRecvHash.end()){
         task1 t2 = expeRecvHash[make_pair(tag,make_pair(sender_node, receiver_node))];
-        cout<<"count and t2.count is"<<count<<" "<<t2.count<<"\n";
+        //cout<<"count and t2.count is"<<count<<" "<<t2.count<<"\n";
         if(count == t2.count)
         {
           expeRecvHash.erase(make_pair(tag,make_pair(sender_node, receiver_node)));
-          cout<<"already in expected recv hash\n";
+          //cout<<"already in expected recv hash\n";
           t2.msg_handler(t2.fun_arg);
         }
         else if (count > t2.count){
             recvHash[make_pair(tag,make_pair(sender_node, receiver_node))] = count - t2.count;
             expeRecvHash.erase(make_pair(tag,make_pair(sender_node, receiver_node)));
-            cout<<"already in recv hash with more data\n";
+            //cout<<"already in recv hash with more data\n";
             t2.msg_handler(t2.fun_arg);
         }
         else{
             t2.count -=count;
             expeRecvHash[make_pair(tag,make_pair(sender_node, receiver_node))] = t2;
-            cout<<"t2.count is"<<t2.count<<"\n";
-            cout<<"partially in recv hash \n";
+            //cout<<"t2.count is"<<t2.count<<"\n";
+            //cout<<"partially in recv hash \n";
         }
       }
       else{
         if(recvHash.find(make_pair(tag,make_pair(sender_node, receiver_node)))==recvHash.end()){
           recvHash[make_pair(tag,make_pair(sender_node, receiver_node))]=count;
-          cout<<"not in expected recv hash\n";
+          //cout<<"not in expected recv hash\n";
         }
         else{
           //TODO: is this really required?
           recvHash[make_pair(tag,make_pair(sender_node, receiver_node))]+=count;
-          cout<<"in recv hash already maybe from previous flows\n";
+          //cout<<"in recv hash already maybe from previous flows\n";
         }
       }
     // recvHash.insert();
@@ -189,13 +189,13 @@ namespace ns3
       Ptr<Packet> packet1 = Create <Packet> (pktSize);
       MyHeader sourceHeader;
       sourceHeader.SetData (GetNode()->GetId());
-      //cout<<"tag is "<<tag<<"\n";
+      ////cout<<"tag is "<<tag<<"\n";
       sourceHeader.SetTag(tag);
       packet1->AddHeader (sourceHeader);
-      packet1->Print (std::cout);
-      std::cout << std::endl;
+      packet1->Print (//std:://cout);
+      //std:://cout << std::endl;
       m_send_socket[dest]->Send(packet1);
-      std::cout<<"packet send to port of sender "<<m_port_send+dest<<" and recevied to node"<<m_port_recv+GetNode()->GetId()<<"\n";
+      //std:://cout<<"packet send to port of sender "<<m_port_send+dest<<" and recevied to node"<<m_port_recv+GetNode()->GetId()<<"\n";
       // Simulator::Schedule (Seconds (1),&SimpleUdpApplication::SendPacketInternal, this, dest, );
       count-=mtu;
       if(count>0)
@@ -226,7 +226,7 @@ namespace ns3
         task t1 = dataQueue.front();
         int nodeId = t1.dest;
         m_send_socket[nodeId]->Send(packet1);
-        std::cout<<"inside the queue\n";
+        //std:://cout<<"inside the queue\n";
         // t1.msg_handler(t1.fun_arg);
       }
     }
@@ -235,10 +235,10 @@ namespace ns3
   void SimpleUdpApplication::FinishTask(){
     finishFlag = 1;
     if(dataQueue.empty()){
-      std::cout<<"dataQueue emptied by processQueue\n";
+      //std:://cout<<"dataQueue emptied by processQueue\n";
     }
     else{
-      std::cout<<"dataQueue not emptied by processQueue\n";
+      //std:://cout<<"dataQueue not emptied by processQueue\n";
     }
   }
 

@@ -91,7 +91,7 @@ RttEstimator::GetCurrentEstimate (void) const
 double
 RttEstimator::GetAlpha (void) const
 {
-	std::cout << "Error: deprecated GetAlpha function!\n";
+	//std:://cout << "Error: deprecated GetAlpha function!\n";
 	exit(1);
   return m_alpha;
 }

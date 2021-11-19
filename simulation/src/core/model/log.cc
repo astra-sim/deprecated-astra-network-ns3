@@ -379,67 +379,67 @@ LogComponentPrintList (void)
        i != components->end ();
        i++)
     {
-      std::cout << i->first << "=";
+      //std:://cout << i->first << "=";
       if (i->second->IsNoneEnabled ())
         {
-          std::cout << "0" << std::endl;
+          //std:://cout << "0" << std::endl;
           continue;
         }
       if (i->second->IsEnabled (LOG_LEVEL_ALL))
         {
-          std::cout << "all";
+          //std:://cout << "all";
         }
       else
         {
           if (i->second->IsEnabled (LOG_ERROR))
             {
-              std::cout << "error";
+              //std:://cout << "error";
             }
           if (i->second->IsEnabled (LOG_WARN))
             {
-              std::cout << "|warn";
+              //std:://cout << "|warn";
             }
           if (i->second->IsEnabled (LOG_DEBUG))
             {
-              std::cout << "|debug";
+              //std:://cout << "|debug";
             }
           if (i->second->IsEnabled (LOG_INFO))
             {
-              std::cout << "|info";
+              //std:://cout << "|info";
             }
           if (i->second->IsEnabled (LOG_FUNCTION))
             {
-              std::cout << "|function";
+              //std:://cout << "|function";
             }
           if (i->second->IsEnabled (LOG_LOGIC))
             {
-              std::cout << "|logic";
+              //std:://cout << "|logic";
             }
         }
       if (i->second->IsEnabled (LOG_PREFIX_ALL))
         {
-          std::cout << "|prefix_all";
+          //std:://cout << "|prefix_all";
         }
       else
         {
           if (i->second->IsEnabled (LOG_PREFIX_FUNC))
             {
-              std::cout << "|func";
+              //std:://cout << "|func";
             }
           if (i->second->IsEnabled (LOG_PREFIX_TIME))
             {
-              std::cout << "|time";
+              //std:://cout << "|time";
             }
           if (i->second->IsEnabled (LOG_PREFIX_NODE))
             {
-              std::cout << "|node";
+              //std:://cout << "|node";
             }
           if (i->second->IsEnabled (LOG_PREFIX_LEVEL))
             {
-              std::cout << "|level";
+              //std:://cout << "|level";
             }
         }
-      std::cout << std::endl;
+      //std:://cout << std::endl;
     }
 }
 

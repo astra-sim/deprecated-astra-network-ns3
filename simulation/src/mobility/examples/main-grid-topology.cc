@@ -47,7 +47,7 @@ int main (int argc, char *argv[])
       Ptr<MobilityModel> position = object->GetObject<MobilityModel> ();
       NS_ASSERT (position != 0);
       Vector pos = position->GetPosition ();
-      std::cout << "x=" << pos.x << ", y=" << pos.y << ", z=" << pos.z << std::endl;
+      //std:://cout << "x=" << pos.x << ", y=" << pos.y << ", z=" << pos.z << std::endl;
     }
 
   Simulator::Destroy ();

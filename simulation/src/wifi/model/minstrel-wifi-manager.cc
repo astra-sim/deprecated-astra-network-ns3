@@ -779,9 +779,9 @@ MinstrelWifiManager::PrintSampleTable (MinstrelWifiRemoteStation *station)
     {
       for (uint32_t j = 0; j < m_sampleCol; j++)
         {
-          std::cout << m_sampleTable[i][j] << "\t";
+          //std:://cout << m_sampleTable[i][j] << "\t";
         }
-      std::cout << std::endl;
+      //std:://cout << std::endl;
     }
 }
 
@@ -792,7 +792,7 @@ MinstrelWifiManager::PrintTable (MinstrelWifiRemoteStation *station)
 
   for (uint32_t i = 0; i < m_nsupported; i++)
     {
-      std::cout << "index(" << i << ") = " << m_minstrelTable[i].perfectTxTime << "\n";
+      //std:://cout << "index(" << i << ") = " << m_minstrelTable[i].perfectTxTime << "\n";
     }
 }
 

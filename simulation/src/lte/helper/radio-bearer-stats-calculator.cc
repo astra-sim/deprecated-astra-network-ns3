@@ -61,12 +61,12 @@ RadioBearerStatsCalculator::GetTypeId (void)
     .SetParent<LteStatsCalculator> ().AddConstructor<RadioBearerStatsCalculator> ()
     .AddAttribute ("StartTime", "Start time of the on going epoch.", TimeValue (Seconds (0.)),MakeTimeAccessor (&RadioBearerStatsCalculator::m_startTime), MakeTimeChecker ())
     .AddAttribute ("EpochDuration", "Epoch duration.", TimeValue (Seconds (0.25)), MakeTimeAccessor (&RadioBearerStatsCalculator::m_epochDuration), MakeTimeChecker ())
-    .AddAttribute ("DlRlcOutputFilename",
+    .AddAttribute ("DlRl//coutputFilename",
                    "Name of the file where the downlink results will be saved.",
                    StringValue ("DlRlcStats.txt"),
                    MakeStringAccessor (&LteStatsCalculator::SetDlOutputFilename),
                    MakeStringChecker ())
-    .AddAttribute ("UlRlcOutputFilename",
+    .AddAttribute ("UlRl//coutputFilename",
                    "Name of the file where the uplink results will be saved.",
                    StringValue ("UlRlcStats.txt"),
                    MakeStringAccessor (&LteStatsCalculator::SetUlOutputFilename),

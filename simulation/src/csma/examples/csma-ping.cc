@@ -40,12 +40,12 @@ NS_LOG_COMPONENT_DEFINE ("CsmaPingExample");
 
 static void SinkRx (Ptr<const Packet> p, const Address &ad)
 {
-  //std::cout << *p << std::endl;
+  ////std:://cout << *p << std::endl;
 }
 
 static void PingRtt (std::string context, Time rtt)
 {
-  //std::cout << context << " " << rtt << std::endl;
+  ////std:://cout << context << " " << rtt << std::endl;
 }
 
 int

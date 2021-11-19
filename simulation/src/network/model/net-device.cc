@@ -45,7 +45,7 @@ NetDevice::~NetDevice ()
 
 uint32_t NetDevice::GetUsedBuffer(uint32_t port, uint32_t qIndex)
 {
-	//std::cout<<"WARNING: shouldn't reach here --- net-device.cc\n";
+	////std:://cout<<"WARNING: shouldn't reach here --- net-device.cc\n";
 	return 0;
 }
 

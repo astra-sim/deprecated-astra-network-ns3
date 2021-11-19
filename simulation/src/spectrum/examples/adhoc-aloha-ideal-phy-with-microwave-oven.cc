@@ -55,7 +55,7 @@ PhyTxStartTrace (std::string context, Ptr<const Packet> p)
 {
   if (g_verbose)
     {
-      std::cout << context << " PHY TX START p: " << p << std::endl;
+      //std:://cout << context << " PHY TX START p: " << p << std::endl;
     }
 }
 
@@ -65,7 +65,7 @@ PhyTxEndTrace (std::string context, Ptr<const Packet> p)
 {
   if (g_verbose)
     {
-      std::cout << context << " PHY TX END p: " << p << std::endl;
+      //std:://cout << context << " PHY TX END p: " << p << std::endl;
     }
 }
 
@@ -74,7 +74,7 @@ PhyRxStartTrace (std::string context, Ptr<const Packet> p)
 {
   if (g_verbose)
     {
-      std::cout << context << " PHY RX START p:" << p << std::endl;
+      //std:://cout << context << " PHY RX START p:" << p << std::endl;
     }
 }
 
@@ -83,7 +83,7 @@ PhyRxEndOkTrace (std::string context, Ptr<const Packet> p)
 {
   if (g_verbose)
     {
-      std::cout << context << " PHY RX END OK p:" << p << std::endl;
+      //std:://cout << context << " PHY RX END OK p:" << p << std::endl;
     }
 }
 
@@ -92,7 +92,7 @@ PhyRxEndErrorTrace (std::string context, Ptr<const Packet> p)
 {
   if (g_verbose)
     {
-      std::cout << context << " PHY RX END ERROR p:" << p << std::endl;
+      //std:://cout << context << " PHY RX END ERROR p:" << p << std::endl;
     }
 }
 
@@ -108,7 +108,7 @@ ReceivePacket (Ptr<Socket> socket)
     }
   if (g_verbose)
     {
-      std::cout << "SOCKET received " << bytes << " bytes" << std::endl;
+      //std:://cout << "SOCKET received " << bytes << " bytes" << std::endl;
     }
 }
 

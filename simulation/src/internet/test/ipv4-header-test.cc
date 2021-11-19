@@ -195,7 +195,7 @@ Ipv4HeaderTest::DoRun (void)
   // ------ Now the tests ------------
 
   // Dscp Tests
-  std::cout << "Dscp Test\n";
+  //std:://cout << "Dscp Test\n";
 
   std::vector <Ipv4Header::DscpType> vDscpTypes;
   vDscpTypes.push_back (Ipv4Header::DscpDefault);
@@ -225,14 +225,14 @@ Ipv4HeaderTest::DoRun (void)
       SendData_IpHdr_Dscp (txSocket, "10.0.0.1", vDscpTypes [i], Ipv4Header::ECT1);
       NS_TEST_EXPECT_MSG_EQ (m_receivedPacket->GetSize (), 143, "recv(hdrincl): 10.0.0.1");
       NS_TEST_EXPECT_MSG_EQ (m_receivedHeader.GetDscp (), vDscpTypes [i], "recv(hdrincl): 10.0.0.1");
-      m_receivedHeader.Print (std::cout);
-      std::cout << std::endl;
+      m_receivedHeader.Print (//std:://cout);
+      //std:://cout << std::endl;
       m_receivedPacket->RemoveAllByteTags ();
       m_receivedPacket = 0;
     }
  
   // Ecn tests
-  std::cout << "Ecn Test\n";
+  //std:://cout << "Ecn Test\n";
   std::vector <Ipv4Header::EcnType> vEcnTypes;
   vEcnTypes.push_back (Ipv4Header::NotECT);
   vEcnTypes.push_back (Ipv4Header::ECT1);
@@ -244,8 +244,8 @@ Ipv4HeaderTest::DoRun (void)
       SendData_IpHdr_Dscp (txSocket, "10.0.0.1", Ipv4Header::DscpDefault, vEcnTypes [i]);
       NS_TEST_EXPECT_MSG_EQ (m_receivedPacket->GetSize (), 143, "recv(hdrincl): 10.0.0.1");
       NS_TEST_EXPECT_MSG_EQ (m_receivedHeader.GetEcn (), vEcnTypes [i], "recv(hdrincl): 10.0.0.1");
-      m_receivedHeader.Print (std::cout);
-      std::cout << std::endl;
+      m_receivedHeader.Print (//std:://cout);
+      //std:://cout << std::endl;
       m_receivedPacket->RemoveAllByteTags ();
       m_receivedPacket = 0;
     }

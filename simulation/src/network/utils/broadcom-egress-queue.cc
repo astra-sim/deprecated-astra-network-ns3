@@ -182,7 +182,7 @@ namespace ns3 {
 	bool
 		BEgressQueue::DoEnqueue(Ptr<Packet> p)	//for compatiability
 	{
-		std::cout << "Warning: Call Broadcom queues without priority\n";
+		//std:://cout << "Warning: Call Broadcom queues without priority\n";
 		uint32_t qIndex = 0;
 		NS_LOG_FUNCTION(this << p);
 		if (m_bytesInQueueTotal + p->GetSize() < m_maxBytes)
@@ -211,7 +211,7 @@ namespace ns3 {
 	Ptr<const Packet>
 		BEgressQueue::DoPeek(void) const	//DoPeek doesn't work for multiple queues!!
 	{
-		std::cout << "Warning: Call Broadcom queues without priority\n";
+		//std:://cout << "Warning: Call Broadcom queues without priority\n";
 		NS_LOG_FUNCTION(this);
 		if (m_bytesInQueueTotal == 0)
 		{

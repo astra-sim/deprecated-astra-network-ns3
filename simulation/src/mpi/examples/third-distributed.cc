@@ -67,7 +67,7 @@ main (int argc, char *argv[])
   // Must have 2 and only 2 Logical Processors (LPs)
   if (systemCount != 2)
     {
-      std::cout << "This simulation requires 2 and only 2 logical processors." << std::endl;
+      //std:://cout << "This simulation requires 2 and only 2 logical processors." << std::endl;
       return 1;
     }
 
@@ -88,7 +88,7 @@ main (int argc, char *argv[])
   // soon become an issue
   if (nWifi > 250 || nCsma > 250)
     {
-      std::cout << "Too many wifi or csma nodes, max 200 each." << std::endl;
+      //std:://cout << "Too many wifi or csma nodes, max 200 each." << std::endl;
       return 1;
     }
 

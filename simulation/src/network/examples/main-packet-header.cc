@@ -114,8 +114,8 @@ int main (int argc, char *argv[])
   p->AddHeader (sourceHeader);
 
   // print the content of my packet on the standard output.
-  p->Print (std::cout);
-  std::cout << std::endl;
+  p->Print (//std:://cout);
+  //std:://cout << std::endl;
 
   // you can now remove the header from the packet:
   MyHeader destinationHeader;

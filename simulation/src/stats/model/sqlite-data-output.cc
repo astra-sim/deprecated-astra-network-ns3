@@ -71,21 +71,21 @@ SqliteDataOutput::Exec (std::string exe) {
       NS_LOG_ERROR ("sqlite3 error: \"" << errMsg << "\"");
       /*
       } else {
-        // std::cout << "nrows " << nrows << " ncols " << ncols << std::endl;
+        // //std:://cout << "nrows " << nrows << " ncols " << ncols << std::endl;
 
         if (nrows > 0) {
           for (int i = 0; i < ncols; i++) {
-            std::cout << "  " << result[i];
+            //std:://cout << "  " << result[i];
           }
-          std::cout << std::endl;
+          //std:://cout << std::endl;
 
           for (int r = 1; r <= nrows; r++) {
             for (int c = 0; c < ncols; c++) {
-              std::cout << "  " << result[(r*ncols)+c];
+              //std:://cout << "  " << result[(r*ncols)+c];
             }
-            std::cout << std::endl;
+            //std:://cout << std::endl;
           }
-          std::cout << std::endl;
+          //std:://cout << std::endl;
         }
       */
     }
