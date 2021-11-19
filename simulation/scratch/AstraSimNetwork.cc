@@ -322,7 +322,7 @@ int main (int argc, char *argv[]){
         	queues_per_dim, // queues per corresponding dimension
         	"../astra-sim/inputs/system/sample_a2a_sys.txt", // system configuration
         	"../astra-sim/inputs/workload/microAllReduce.txt", // workload configuration
-        	1024, // communication scale
+        	128, // communication scale
         	1, // computation scale
         	1, // injection scale
         	1,
@@ -344,7 +344,7 @@ int main (int argc, char *argv[]){
 	systems[i]->workload->fire();	
     }
     Simulator::Run ();
-    Simulator::Stop (Seconds (100000000000000));
+    Simulator::Stop (Seconds (2000000000));
     Simulator::Destroy();
     return 0;
 }

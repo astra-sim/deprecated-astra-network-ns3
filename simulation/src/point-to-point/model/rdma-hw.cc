@@ -364,7 +364,7 @@ int RdmaHw::ReceiveCnp(Ptr<Packet> p, CustomHeader &ch){
 	// get qp
 	Ptr<RdmaQueuePair> qp = GetQp(ch.sip, udpport, qIndex);
 	if (qp == NULL)
-		//std:://cout << "ERROR: QCN NIC cannot find the flow\n";
+		std::cout << "ERROR: QCN NIC cannot find the flow\n";
 	// get nic
 	uint32_t nic_idx = GetNicIdxOfQp(qp);
 	Ptr<QbbNetDevice> dev = m_nic[nic_idx].dev;
@@ -405,7 +405,7 @@ int RdmaHw::ReceiveAck(Ptr<Packet> p, CustomHeader &ch){
 	uint32_t nic_idx = GetNicIdxOfQp(qp);
 	Ptr<QbbNetDevice> dev = m_nic[nic_idx].dev;
 	if (m_ack_interval == 0)
-		//std:://cout << "ERROR: shouldn't receive ack\n";
+		std::cout << "ERROR: shouldn't receive ack\n";
 	else {
 		if (!m_backto0){
 			qp->Acknowledge(seq);

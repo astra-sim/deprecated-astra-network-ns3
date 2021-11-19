@@ -192,7 +192,7 @@ namespace ns3
       ////cout<<"tag is "<<tag<<"\n";
       sourceHeader.SetTag(tag);
       packet1->AddHeader (sourceHeader);
-      packet1->Print (//std:://cout);
+      packet1->Print (std::cout);
       //std:://cout << std::endl;
       m_send_socket[dest]->Send(packet1);
       //std:://cout<<"packet send to port of sender "<<m_port_send+dest<<" and recevied to node"<<m_port_recv+GetNode()->GetId()<<"\n";

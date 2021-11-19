@@ -391,9 +391,9 @@ int main1(int argc, char *argv[])
 				uint32_t v;
 				conf >> v;
 				enable_qcn = v;
-				if (enable_qcn)
+				//if (enable_qcn)
 					//std:://cout << "ENABLE_QCN\t\t\t" << "Yes" << "\n";
-				else
+				//else
 					//std:://cout << "ENABLE_QCN\t\t\t" << "No" << "\n";
 			}
 			else if (key.compare("USE_DYNAMIC_PFC_THRESHOLD") == 0)
@@ -401,9 +401,9 @@ int main1(int argc, char *argv[])
 				uint32_t v;
 				conf >> v;
 				use_dynamic_pfc_threshold = v;
-				if (use_dynamic_pfc_threshold)
+				//if (use_dynamic_pfc_threshold)
 					//std:://cout << "USE_DYNAMIC_PFC_THRESHOLD\t" << "Yes" << "\n";
-				else
+				//else
 					//std:://cout << "USE_DYNAMIC_PFC_THRESHOLD\t" << "No" << "\n";
 			}
 			else if (key.compare("CLAMP_TARGET_RATE") == 0)
@@ -411,9 +411,9 @@ int main1(int argc, char *argv[])
 				uint32_t v;
 				conf >> v;
 				clamp_target_rate = v;
-				if (clamp_target_rate)
+				//if (clamp_target_rate)
 					//std:://cout << "CLAMP_TARGET_RATE\t\t" << "Yes" << "\n";
-				else
+				//else
 					//std:://cout << "CLAMP_TARGET_RATE\t\t" << "No" << "\n";
 			}
 			else if (key.compare("PAUSE_TIME") == 0)
@@ -463,9 +463,9 @@ int main1(int argc, char *argv[])
 				uint32_t v;
 				conf >> v;
 				l2_back_to_zero = v;
-				if (l2_back_to_zero)
+				//if (l2_back_to_zero)
 					//std:://cout << "L2_BACK_TO_ZERO\t\t\t" << "Yes" << "\n";
-				else
+				//else
 					//std:://cout << "L2_BACK_TO_ZERO\t\t\t" << "No" << "\n";
 			}
 			else if (key.compare("TOPOLOGY_FILE") == 0)

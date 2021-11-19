@@ -628,7 +628,7 @@ void
 TestRunnerImpl::PrintHelp (const char *program_name) const
 {
   NS_LOG_FUNCTION (this << program_name);
-  //std:://cout << "Usage: " << program_name << " [OPTIONS]" << std::endl
+  std::cout << "Usage: " << program_name << " [OPTIONS]" << std::endl
             << std::endl
             << "Options: " << std::endl
             << "  --help                 : print these options" << std::endl
@@ -1068,7 +1068,7 @@ TestRunnerImpl::Run (int argc, char *argv[])
     }
   else
     {
-      os = &//std:://cout;
+      os = &std::cout;
     }
 
   // let's run our tests now.

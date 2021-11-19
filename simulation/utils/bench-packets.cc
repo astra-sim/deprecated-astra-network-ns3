@@ -253,9 +253,9 @@ runBench (void (*bench) (uint32_t), uint32_t n, char const *name)
   ps *= 1000;
   ps /= deltaMs;
   //std:://cout << ps << " packets/s"
-            << " (" << deltaMs << " ms elapsed)\t"
-            << name
-            << std::endl;
+            //<< " (" << deltaMs << " ms elapsed)\t"
+            //<< name
+            //<< std::endl;
 }
 
 int main (int argc, char *argv[])

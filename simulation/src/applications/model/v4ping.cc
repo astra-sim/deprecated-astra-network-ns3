@@ -148,9 +148,9 @@ V4Ping::Receive (Ptr<Socket> socket)
                       if (m_verbose)
                         {
                           //std:://cout << recvSize << " bytes from " << realFrom.GetIpv4 () << ":"
-                                    << " icmp_seq=" << echo.GetSequenceNumber ()
-                                    << " ttl=" << (unsigned)ipv4.GetTtl ()
-                                    << " time=" << delta.GetMilliSeconds () << " ms\n";
+                                   // << " icmp_seq=" << echo.GetSequenceNumber ()
+                                   // << " ttl=" << (unsigned)ipv4.GetTtl ()
+                                   // << " time=" << delta.GetMilliSeconds () << " ms\n";
                         }
                     }
                 }
