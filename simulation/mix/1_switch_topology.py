@@ -1,6 +1,6 @@
-nodes = 65
+nodes = 513
 switch_nodes = 1
-links = 64
+links = 512
 latency = "0.0005ms"
 bandwidth = "200Gbps"
 error_rate = "0"
