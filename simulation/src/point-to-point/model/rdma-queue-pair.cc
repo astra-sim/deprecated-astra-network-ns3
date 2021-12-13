@@ -26,6 +26,7 @@ RdmaQueuePair::RdmaQueuePair(uint16_t pg, Ipv4Address _sip, Ipv4Address _dip, ui
 	dip = _dip;
 	sport = _sport;
 	dport = _dport;
+	//std::cout<<"sip dip sport dport is "<<sip<<" "<<dip<<" "<<sport<<" "<<dport<<"\n";
 	m_size = 0;
 	snd_nxt = snd_una = 0;
 	m_pg = pg;

@@ -32,13 +32,14 @@ void RdmaDriver::Init(void){
 		//std:://cout<<"net device "<<i<<"\n"
 	}
 	#endif
+	//std::cout<<"get n devices is "<<m_node->GetNDevices()<<"\n";
 	for (uint32_t i = 0; i < m_node->GetNDevices(); i++){
 		Ptr<QbbNetDevice> dev = NULL;
 		if (m_node->GetDevice(i)->IsQbb())
 			dev = DynamicCast<QbbNetDevice>(m_node->GetDevice(i));
 		m_rdma->m_nic.push_back(RdmaInterfaceMgr(dev));
 		m_rdma->m_nic.back().qpGrp = CreateObject<RdmaQueuePairGroup>();
-		//std:://cout<<"rdma driver nic size is "<<m_rdma->m_nic.size()<<"\n";
+		//std::cout<<"rdma driver nic size is "<<m_rdma->m_nic.size()<<"\n";
 	}
 	#if 0
 	for (uint32_t i = 0; i < ipv4->GetNInterfaces (); i++){
