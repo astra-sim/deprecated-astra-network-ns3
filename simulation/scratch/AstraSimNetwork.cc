@@ -34,6 +34,8 @@ using namespace ns3;
 // extern int global_variable;
 const int num_gpus = 64;
 queue<struct task1> workerQueue;
+unsigned long long tempcnt = 999;
+unsigned long long  cnt = 0;
 // map<pair<int,int>, struct task1> expeRecvHash;
 struct sim_event {
     void* buffer;
@@ -123,7 +125,7 @@ class ASTRASimNetwork:public AstraSim::AstraNetworkAPI{
                 // workerQueue.push(t); 
                 // udp[t.src]->SendPacket(t.dest, t.fun_arg, t.msg_handler, t.count, tag);
 		//cout<<"COUNT and PACKET is "<<count<<" "<<maxPacketCount<<"\n";
-                cout<<"src dst cOUNT IN SEND IS "<<rank<<" "<<dst<<" "<<count<<"\n";
+                //cout<<"src dst cOUNT IN SEND IS "<<rank<<" "<<dst<<" "<<count<<"\n";
 		sentHash[make_pair(tag,make_pair(t.src,t.dest))] = t;
                 SendFlow(rank, dst , count, msg_handler, fun_arg,tag);
 	        //cout<<"event at sender pushed "<<t.src<<" "<<" "<<t.dest<<" "<<tag<<"\n";
@@ -196,7 +198,32 @@ void fun_send(void* a) {
     //cout<<*(int *)a<<"Having fun in send!"<<"\n";
 }
 void fun_recv(void* a) {
-    //cout<<*(int *)a<<"Having fun in recv!"<<"\n";
+	//unsigned long long cnt = 0;
+	tempcnt++;cnt++;
+	if(tempcnt==1000){
+		tempcnt = 1;
+		auto now = chrono::system_clock::now();
+auto now_c = std::chrono::system_clock::to_time_t(now);
+std::cout << cnt <<"at time "<<std::ctime(&now_c)<<"\n";//std::put_time(std::localtime(&now_c), "%c") << '\n';
+		//cout<<"send times is "<<cnt<<"\n";
+	}
+	int fun_arg=1;
+    ASTRASimNetwork network0 = ASTRASimNetwork(0);
+    ASTRASimNetwork network1 = ASTRASimNetwork(1);
+    task1 t;
+    t.src = 0;
+    t.dest = 1;
+    t.count = 3000;
+    t.type = 1;
+    t.fun_arg = &fun_arg;
+    t.msg_handler= &fun_recv;
+    int tag = 100;
+    expeRecvHash[make_pair(tag,make_pair(t.src,t.dest))] = t;
+    t.src = 1; t.dest = 0;
+    expeRecvHash[make_pair(tag,make_pair(t.src,t.dest))] = t;
+    network0.sim_send(nullptr,3000,-1,1,100,nullptr,&fun_send,&fun_arg);
+    network1.sim_send(nullptr,3000,-1,0,100,nullptr,&fun_send,&fun_arg);
+	//cout<<*(int *)a<<"Having fun in recv!"<<"\n";
 }
 void fun_sch(void* a) {
     //cout<<*(int *)a<<"Having fun in schedule!"<<"\n";
@@ -340,11 +367,13 @@ int main (int argc, char *argv[]){
     //network.sim_schedule(AstraSim::timespec_t(),&fun_sch,&fun_arg);
     //pass number of nodes
     // Ptr<SimpleUdpApplication> *udp = sim_init(num_gpus);
-    for(int i=0;i<num_gpus;i++){
-	systems[i]->workload->fire();	
-    }
+    fun_recv(&fun_arg);
+    //for(int i=0;i<num_gpus;i++){
+//	systems[i]->workload->fire();	
+  //  }
     Simulator::Run ();
-    Simulator::Stop (Seconds (1000000000));
+    //Simulator::Stop(TimeStep (0x7fffffffffffffffLL)); 
+    Simulator::Stop(Seconds (2000000000));
     Simulator::Destroy();
     return 0;
 }

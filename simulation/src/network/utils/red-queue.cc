@@ -142,6 +142,11 @@ TypeId RedQueue::GetTypeId (void)
                    TimeValue (MilliSeconds (20)),
                    MakeTimeAccessor (&RedQueue::m_linkDelay),
                    MakeTimeChecker ())
+    .AddAttribute ("MaxBytes",
+                   "The maximum number of bytes accepted by this DropTailQueue.",
+                   UintegerValue (30000 * 65535),
+                   MakeUintegerAccessor (&RedQueue::m_maxBytes),
+                   MakeUintegerChecker<uint32_t> ())
   ;
 
   return tid;

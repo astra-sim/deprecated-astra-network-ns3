@@ -205,10 +205,10 @@ void RdmaHw::Setup(QpCompleteCallback cb){
 uint32_t RdmaHw::GetNicIdxOfQp(Ptr<RdmaQueuePair> qp){
 	auto &v = m_rtTable[qp->dip.Get()];
 	if (v.size() > 0){
-		std::cout<<"nic id is "<<v[qp->GetHash()%v.size()]<<"\n";
+		//std::cout<<"nic id is "<<v[qp->GetHash()%v.size()]<<"\n";
 		return v[qp->GetHash() % v.size()];
 	}else{
-		std::cout<<"no nic is alive, no ECMP ports to that dest ip\n";
+		//std::cout<<"no nic is alive, no ECMP ports to that dest ip\n";
 		NS_ASSERT_MSG(false, "We assume at least one NIC is alive");
 	}
 }
@@ -225,7 +225,7 @@ Ptr<RdmaQueuePair> RdmaHw::GetQp(uint32_t dip, uint16_t sport, uint16_t pg){
 void RdmaHw::AddQueuePair(uint64_t size, uint16_t pg, Ipv4Address sip, Ipv4Address dip, uint16_t sport, uint16_t dport, uint32_t win, uint64_t baseRtt, Callback<void> notifyAppFinish, Callback<void> notifyAppSent){
 	// create qp
 	Ptr<RdmaQueuePair> qp = CreateObject<RdmaQueuePair>(pg, sip, dip, sport, dport);
-	std::cout<<"size and qp is "<<size<<" "<<qp<<"\n";
+	//std::cout<<"size and qp is "<<size<<" "<<qp<<"\n";
 	qp->SetSize(size);
 	qp->SetWin(win);
 	qp->SetBaseRtt(baseRtt);

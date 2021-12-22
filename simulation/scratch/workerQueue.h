@@ -16,6 +16,8 @@ struct task1{
     void (*msg_handler)(void* fun_arg);
     double schTime; //in sec
 };
+extern unsigned long long cnt;
+extern unsigned long long tempcnt;
 extern queue<struct task1> workerQueue;
 extern map<pair<int,pair<int,int> >, struct task1> expeRecvHash;
 extern map<pair<int,pair<int,int> >,int > recvHash;

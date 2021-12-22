@@ -85,7 +85,7 @@ int SwitchNode::GetOutDev(Ptr<const Packet> p, CustomHeader &ch){
 		buf.u32[2] = ch.ack.sport | ((uint32_t)ch.ack.dport << 16);
 
 	uint32_t idx = EcmpHash(buf.u8, 12, m_ecmpSeed) % nexthops.size();
-	std::cout<<"idx and nextHop is "<<idx<<" "<<nexthops[idx]<<"\n";
+	//std::cout<<"idx and nextHop is "<<idx<<" "<<nexthops[idx]<<"\n";
 	return nexthops[idx];
 }
 
@@ -134,7 +134,7 @@ void SwitchNode::SendToDev(Ptr<Packet>p, CustomHeader &ch){
 		m_devices[idx]->SwitchSend(qIndex, p, ch);
 	}else
 	{
-		std::cout<<"IDX IS NEGATIVE, PACKET DROP\n";
+		//std::cout<<"IDX IS NEGATIVE, PACKET DROP\n";
 		return; // Drop
 	}
 }

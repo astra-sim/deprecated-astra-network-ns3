@@ -101,41 +101,41 @@ namespace ns3 {
 		// no pkt in highest priority queue, do rr for each qp
 		int res = -1024;
 		uint32_t fcount = m_qpGrp->GetN();
-		std::cout<<"fcount and m_rrlast is "<<fcount<<" "<<m_rrlast<<"\n";
+		//std::cout<<"fcount and m_rrlast is "<<fcount<<" "<<m_rrlast<<"\n";
 		uint32_t min_finish_id = 0xffffffff;
 		for (qIndex = 1; qIndex <= fcount; qIndex++){
 			uint32_t idx = (qIndex + m_rrlast) % fcount;
-			std::cout<<"idx is "<<idx<<"\n";
+			//std::cout<<"idx is "<<idx<<"\n";
 			Ptr<RdmaQueuePair> qp = m_qpGrp->Get(idx);
-			std::cout<<"paused qp->m_pg , qp getbyteleft, qp iswinbound is "<<paused[qp->m_pg]<<" "<<qp->GetBytesLeft()<<" "<<qp->IsWinBound()<<"\n";
+			//std::cout<<"paused qp->m_pg , qp getbyteleft, qp iswinbound is "<<paused[qp->m_pg]<<" "<<qp->GetBytesLeft()<<" "<<qp->IsWinBound()<<"\n";
 			if (!paused[qp->m_pg] && qp->GetBytesLeft() > 0 && !qp->IsWinBound()){
-				std::cout<<"there is byte left \n";
+				//std::cout<<"there is byte left \n";
 				if (m_qpGrp->Get(idx)->m_nextAvail.GetTimeStep() > Simulator::Now().GetTimeStep()) //not available now
 					continue;
 				res = idx;
 				break;
 			}else if (qp->IsFinished()){
 				min_finish_id = idx < min_finish_id ? idx : min_finish_id;
-				std::cout<<"finished id  is "<<min_finish_id<<"\n";
+			//	std::cout<<"finished id  is "<<min_finish_id<<"\n";
 			}
 		}
 
 		// clear the finished qp
 		if (min_finish_id < 0xffffffff){
 			int nxt = min_finish_id;
-			std::cout<<"min finish id clear queue is "<<nxt<<"\n";
+			//std::cout<<"min finish id clear queue is "<<nxt<<"\n";
 			auto &qps = m_qpGrp->m_qps;
 			for (int i = min_finish_id + 1; i < fcount; i++) if (!qps[i]->IsFinished()){
-				std::cout<<"i is "<<i<<"\n";
+				//std::cout<<"i is "<<i<<"\n";
 				if (i == res) // update res to the idx after removing finished qp
 					res = nxt;
-				std::cout<<"res is "<<res<<"\n";
-				std::cout<<"qps i is "<<qps[i]<<"\n";
+				//std::cout<<"res is "<<res<<"\n";
+				//std::cout<<"qps i is "<<qps[i]<<"\n";
 				qps[nxt] = qps[i];
 				nxt++;
 			}
 			qps.resize(nxt);
-			std::cout<<"qps size is"<<qps.size()<<"\n";
+			//std::cout<<"qps size is"<<qps.size()<<"\n";
 		}
 		//std:://cout<<"clear the finished qp \n";
 		return res;
@@ -281,11 +281,11 @@ namespace ns3 {
 		Ptr<Packet> p;
 		if (m_node->GetNodeType() == 0){
 			int qIndex = m_rdmaEQ->GetNextQindex(m_paused);
-			std::cout<<"qIndex is "<<qIndex<<"\n";
+			//std::cout<<"qIndex is "<<qIndex<<"\n";
 			if (qIndex != -1024){
-				std::cout<<"there are packet to send\n";
+			//	std::cout<<"there are packet to send\n";
 				if (qIndex == -1){ // high prio
-					std::cout<<"there are packet to send in high priority\n";
+			//		std::cout<<"there are packet to send in high priority\n";
 					p = m_rdmaEQ->DequeueQindex(qIndex);
 					m_traceDequeue(p, 0);
 					TransmitStart(p);
@@ -297,7 +297,7 @@ namespace ns3 {
 				//std::cout<<"packet size is "<<p.GetSize()<<"\n";
 				// transmit
 				m_traceQpDequeue(p, lastQp);
-				std::cout<<"transmit started \n";
+			//	std::cout<<"transmit started \n";
 				TransmitStart(p);
 
 				// update for the next avail time
@@ -305,21 +305,21 @@ namespace ns3 {
 				m_rdmaPktSent(lastQp, p, m_tInterframeGap);
 			}else { // no packet to send
 				//std::cout<<"there are no packet to send\n";
-				std::cout<<"PAUSE prohibits send at node " << m_node->GetId()<<"\n";
+				//std::cout<<"PAUSE prohibits send at node " << m_node->GetId()<<"\n";
 				NS_LOG_INFO("PAUSE prohibits send at node " << m_node->GetId());
 				Time t = Simulator::GetMaximumSimulationTime();
-				std::cout<<"maximum simulation time is "<<t<<"\n";
+			//	std::cout<<"maximum simulation time is "<<t<<"\n";
 				for (uint32_t i = 0; i < m_rdmaEQ->GetFlowCount(); i++){
 					Ptr<RdmaQueuePair> qp = m_rdmaEQ->GetQp(i);
 					if (qp->GetBytesLeft() == 0){
-						std::cout<<"get byte left in dequeue transmit\n";
+						//std::cout<<"get byte left in dequeue transmit\n";
 						qp->m_notifyAppSent();
 						continue;
 					}
 					t = Min(qp->m_nextAvail, t);
 				}
 				if (m_nextSend.IsExpired() && t < Simulator::GetMaximumSimulationTime() && t > Simulator::Now()){
-					std::cout<<"send next packet in else \n";
+					//std::cout<<"send next packet in else \n";
 					//std:://cout<<"bytes left to transmit "<<qp->GetBytesLeft()<<"\n";
 					m_nextSend = Simulator::Schedule(t - Simulator::Now(), &QbbNetDevice::DequeueAndTransmit, this);
 				}
@@ -338,11 +338,11 @@ namespace ns3 {
 				FlowIdTag t;
 				uint32_t qIndex = m_queue->GetLastQueue();
 				if (qIndex == 0){//this is a pause or cnp, send it immediately!
-					std::cout<<"pause or cnp in switch, send immediately\n";
+					//std::cout<<"pause or cnp in switch, send immediately\n";
 					m_node->SwitchNotifyDequeue(m_ifIndex, qIndex, p);
 					p->RemovePacketTag(t);
 				}else{
-					std::cout<<"send packet normal from SWITCH\n";
+					//std::cout<<"send packet normal from SWITCH\n";
 					m_node->SwitchNotifyDequeue(m_ifIndex, qIndex, p);
 					p->RemovePacketTag(t);
 				}
@@ -350,21 +350,21 @@ namespace ns3 {
 				TransmitStart(p);
 				return;
 			}else{ //No queue can deliver any packet
-				std::cout<<"pause prohibits send at node in switch "<<m_node->GetId()<<"\n";
+				//std::cout<<"pause prohibits send at node in switch "<<m_node->GetId()<<"\n";
 				NS_LOG_INFO("PAUSE prohibits send at node " << m_node->GetId());
 				if (m_node->GetNodeType() == 0 && m_qcnEnabled){ //nothing to send, possibly due to qcn flow control, if so reschedule sending
 					Time t = Simulator::GetMaximumSimulationTime();
 					for (uint32_t i = 0; i < m_rdmaEQ->GetFlowCount(); i++){
 						Ptr<RdmaQueuePair> qp = m_rdmaEQ->GetQp(i);
 						if (qp->GetBytesLeft() == 0){
-							std::cout<<"get byte left in dequeue transmit in switch\n";
+							//std::cout<<"get byte left in dequeue transmit in switch\n";
 							qp->m_notifyAppSent();
 							continue;
 						}	
 						t = Min(qp->m_nextAvail, t);
 					}
 					if (m_nextSend.IsExpired() && t < Simulator::GetMaximumSimulationTime() && t > Simulator::Now()){
-						std::cout<<"in m_nextSend \n";
+						//std::cout<<"in m_nextSend \n";
 						m_nextSend = Simulator::Schedule(t - Simulator::Now(), &QbbNetDevice::DequeueAndTransmit, this);
 					}
 				}
