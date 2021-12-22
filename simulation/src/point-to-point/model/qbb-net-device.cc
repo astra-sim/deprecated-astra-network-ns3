@@ -30,6 +30,7 @@
 #include "ns3/object-vector.h"
 #include "ns3/pause-header.h"
 #include "ns3/drop-tail-queue.h"
+#include "ns3/red-queue.h"
 #include "ns3/assert.h"
 #include "ns3/ipv4.h"
 #include "ns3/ipv4-header.h"
@@ -71,6 +72,7 @@ namespace ns3 {
 		m_rrlast = 0;
 		m_qlast = 0;
 		m_ackQ = CreateObject<DropTailQueue>();
+		//m_ackQ = CreateObject<RedQueue>();
 		m_ackQ->SetAttribute("MaxBytes", UintegerValue(0xffffffff)); // queue limit is on a higher level, not here
 	}
 

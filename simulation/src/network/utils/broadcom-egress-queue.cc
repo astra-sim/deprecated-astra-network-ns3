@@ -23,6 +23,7 @@
 #include "ns3/double.h"
 #include "ns3/simulator.h"
 #include "drop-tail-queue.h"
+#include "red-queue.h"
 #include "broadcom-egress-queue.h"
 
 NS_LOG_COMPONENT_DEFINE("BEgressQueue");
@@ -59,6 +60,7 @@ namespace ns3 {
 		for (uint32_t i = 0; i < fCnt; i++)
 		{
 			m_bytesInQueue[i] = 0;
+			//m_queues.push_back(CreateObject<RedQueue>());
 			m_queues.push_back(CreateObject<DropTailQueue>());
 		}
 	}
