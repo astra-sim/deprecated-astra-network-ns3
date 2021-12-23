@@ -32,7 +32,7 @@ using namespace ns3;
 //   double time_val;
 // };
 // extern int global_variable;
-const int num_gpus = 64;
+const int num_gpus = 256;
 queue<struct task1> workerQueue;
 unsigned long long tempcnt = 999;
 unsigned long long  cnt = 0;
@@ -111,6 +111,9 @@ class ASTRASimNetwork:public AstraSim::AstraNetworkAPI{
             AstraSim::sim_request* request,//not yet used 
             void (*msg_handler)(void* fun_arg),
             void* fun_arg){
+		if(rank==0 && dst == 1 && cnt == 0){
+		cout<<"lets go \n";
+		}
                 // int src = 0;
                 //populate task1 with the required arguments
                 task1 t;
@@ -349,7 +352,7 @@ int main (int argc, char *argv[]){
         	queues_per_dim, // queues per corresponding dimension
         	"../astra-sim/inputs/system/sample_a2a_sys.txt", // system configuration
         	"../astra-sim/inputs/workload/microAllToAll.txt", //DLRM_HybridParallel.txt, // Resnet50_DataParallel.txt, // workload configuration
-        	1000, // communication scale
+        	1024, // communication scale
         	1, // computation scale
         	1, // injection scale
         	1,
@@ -367,10 +370,10 @@ int main (int argc, char *argv[]){
     //network.sim_schedule(AstraSim::timespec_t(),&fun_sch,&fun_arg);
     //pass number of nodes
     // Ptr<SimpleUdpApplication> *udp = sim_init(num_gpus);
-    fun_recv(&fun_arg);
-    //for(int i=0;i<num_gpus;i++){
-//	systems[i]->workload->fire();	
-  //  }
+    //fun_recv(&fun_arg);
+    for(int i=0;i<num_gpus;i++){
+	systems[i]->workload->fire();	
+    }
     Simulator::Run ();
     //Simulator::Stop(TimeStep (0x7fffffffffffffffLL)); 
     Simulator::Stop(Seconds (2000000000));
