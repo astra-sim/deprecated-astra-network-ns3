@@ -32,7 +32,7 @@ using namespace ns3;
 //   double time_val;
 // };
 // extern int global_variable;
-const int num_gpus = 256;
+std::vector<int> physical_dims{ 4 };
 queue<struct task1> workerQueue;
 unsigned long long tempcnt = 999;
 unsigned long long  cnt = 0;
@@ -128,7 +128,7 @@ class ASTRASimNetwork:public AstraSim::AstraNetworkAPI{
                 // workerQueue.push(t); 
                 // udp[t.src]->SendPacket(t.dest, t.fun_arg, t.msg_handler, t.count, tag);
 		//cout<<"COUNT and PACKET is "<<count<<" "<<maxPacketCount<<"\n";
-                //cout<<"src dst cOUNT IN SEND IS "<<rank<<" "<<dst<<" "<<count<<"\n";
+                cout<<"src dst cOUNT IN SEND IS "<<rank<<" "<<dst<<" "<<count<<"\n";
 		sentHash[make_pair(tag,make_pair(t.src,t.dest))] = t;
                 SendFlow(rank, dst , count, msg_handler, fun_arg,tag);
 	        //cout<<"event at sender pushed "<<t.src<<" "<<" "<<t.dest<<" "<<tag<<"\n";
@@ -330,6 +330,20 @@ Ptr<SimpleUdpApplication>* sim_init(int n){
 
 
 int main (int argc, char *argv[]){
+    int num_gpus=1;
+    for(auto &a:physical_dims){
+        num_gpus*=a;
+    }
+    std::string system_input;
+    if(physical_dims.size()==1){
+        system_input="sample_1D_switch_sys.txt";
+    }
+    else if(physical_dims.size()==2){
+        system_input="sample_2D_switch_sys.txt";
+    }
+    else if(physical_dims.size()==3){
+        system_input="sample_3D_switch_sys.txt";
+    }
     LogComponentEnable ("SimpleUdpApplication", LOG_LEVEL_INFO);
     //cout << "Hello world!\n";
     // LogComponentEnable("myTCPMultiple",LOG_LEVEL_INFO);
@@ -339,8 +353,8 @@ int main (int argc, char *argv[]){
     //ASTRASimNetwork network1 = ASTRASimNetwork(254);
     std::vector<ASTRASimNetwork*> networks(num_gpus,nullptr);
     std::vector<AstraSim::Sys*> systems(num_gpus,nullptr);
-    std::vector<int> physical_dims(1,num_gpus);
-    std::vector<int> queues_per_dim(1,1);
+    //std::vector<int> physical_dims(1,num_gpus);
+    std::vector<int> queues_per_dim(physical_dims.size(),1);
     for(int i=0;i<num_gpus;i++){
 	networks[i]=new ASTRASimNetwork(i);	
 	systems[i] = new AstraSim::Sys(
@@ -350,9 +364,9 @@ int main (int argc, char *argv[]){
         	1, // num_passes
         	physical_dims, // dimensions
         	queues_per_dim, // queues per corresponding dimension
-        	"../astra-sim/inputs/system/sample_a2a_sys.txt", // system configuration
-        	"../astra-sim/inputs/workload/microAllToAll.txt", //DLRM_HybridParallel.txt, // Resnet50_DataParallel.txt, // workload configuration
-        	1024, // communication scale
+        	"../astra-sim/inputs/system/"+system_input, // system configuration
+        	"../astra-sim/inputs/workload/microAllReduce.txt", //DLRM_HybridParallel.txt, // Resnet50_DataParallel.txt, // workload configuration
+        	1, // communication scale
         	1, // computation scale
         	1, // injection scale
         	1,
@@ -363,7 +377,7 @@ int main (int argc, char *argv[]){
         	false  // randezvous protocol
     	);	    
     }	
-    int fun_arg=1;
+    //int fun_arg=1;
     main1(argc, argv);
     //network0.sim_send(nullptr,3000,-1,1,100,nullptr,&fun_send,&fun_arg);
     //network1.sim_send(nullptr,3000,-1,1,100,nullptr,&fun_recv,&fun_arg);
