@@ -177,14 +177,14 @@ void RdmaClient::Finish(){
         if(count == t2.count)
         {
           expeRecvHash.erase(make_pair(tag,make_pair(sender_node, receiver_node)));
-	  std::cout<<"already in expected recv hash src dest count "<<src<<" "<<dest<<" "<<count<<"\n";
+	 // std::cout<<"already in expected recv hash src dest count "<<src<<" "<<dest<<" "<<count<<"\n";
           t2.msg_handler(t2.fun_arg);
         }
         else if (count > t2.count){
             recvHash[make_pair(tag,make_pair(sender_node, receiver_node))] = count - t2.count;
             expeRecvHash.erase(make_pair(tag,make_pair(sender_node, receiver_node)));
 	    //std::cout<<"already in recv hash with more data\n";
-	    std::cout<<"already in expected recv hash src dest count "<<src<<" "<<dest<<" "<<count<<"\n";
+	   // std::cout<<"already in expected recv hash src dest count "<<src<<" "<<dest<<" "<<count<<"\n";
 	    t2.msg_handler(t2.fun_arg);
         }
         else{
