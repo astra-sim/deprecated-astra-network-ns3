@@ -230,6 +230,7 @@ void RdmaHw::AddQueuePair(uint64_t size, uint16_t pg, Ipv4Address sip, Ipv4Addre
 	qp->SetWin(win);
 	qp->SetBaseRtt(baseRtt);
 	qp->SetVarWin(m_var_win);
+	std::cout<<"is window variable? "<<m_var_win<<"\n";
 	qp->SetAppNotifyCallback(notifyAppFinish);
 	qp->SetAppSentCallback(notifyAppSent);
 	// add qp
@@ -240,7 +241,7 @@ void RdmaHw::AddQueuePair(uint64_t size, uint16_t pg, Ipv4Address sip, Ipv4Addre
 
 	// set init variables
 	DataRate m_bps = m_nic[nic_idx].dev->GetDataRate();
-	//std::cout<<"data rate in addqueuepair is "<<m_bps<<"\n";
+	std::cout<<"data rate of nic is CHECK IF SAME AS LINK RATE "<<m_bps<<"\n";
 	qp->m_rate = m_bps;
 	qp->m_max_rate = m_bps;
 	if (m_cc_mode == 1){

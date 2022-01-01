@@ -92,6 +92,7 @@ int SwitchNode::GetOutDev(Ptr<const Packet> p, CustomHeader &ch){
 void SwitchNode::CheckAndSendPfc(uint32_t inDev, uint32_t qIndex){
 	Ptr<QbbNetDevice> device = DynamicCast<QbbNetDevice>(m_devices[inDev]);
 	if (m_mmu->CheckShouldPause(inDev, qIndex)){
+		std::cout<<"pfc sent\n";
 		device->SendPfc(qIndex, 0);
 		m_mmu->SetPause(inDev, qIndex);
 	}
@@ -126,6 +127,7 @@ void SwitchNode::SendToDev(Ptr<Packet>p, CustomHeader &ch){
 				m_mmu->UpdateIngressAdmission(inDev, qIndex, p->GetSize());
 				m_mmu->UpdateEgressAdmission(idx, qIndex, p->GetSize());
 			}else{
+				std::cout<<"cant add packet no memory in switch DROP\n";
 				return; // Drop
 			}
 			CheckAndSendPfc(inDev, qIndex);
@@ -134,7 +136,7 @@ void SwitchNode::SendToDev(Ptr<Packet>p, CustomHeader &ch){
 		m_devices[idx]->SwitchSend(qIndex, p, ch);
 	}else
 	{
-		//std::cout<<"IDX IS NEGATIVE, PACKET DROP\n";
+		std::cout<<"IDX IS NEGATIVE, PACKET DROP\n";
 		return; // Drop
 	}
 }
