@@ -45,6 +45,7 @@ RdmaClientHelper::RdmaClientHelper (uint16_t pg, Ipv4Address sip, Ipv4Address di
   SetAttribute ("Dest", UintegerValue (dest));
   msg_handler = msg_handler;
   fun_arg = fun_arg;
+  std::cout<<"pg srcIP dstIP srcPort dstPort WriteSize BaseRTT Tag src dest "<<pg<<" "<<sip<<" "<<dip<<" "<<sport<<" "<<dport<<" "<<size<<" "<<win<<" "<<baseRtt<<" "<<tag<<" "<<src<<" "<<dest<<"\n";
 }
 
 void

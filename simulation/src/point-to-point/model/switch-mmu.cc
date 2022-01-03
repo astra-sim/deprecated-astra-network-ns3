@@ -34,6 +34,8 @@ namespace ns3 {
 		memset(egress_bytes, 0, sizeof(egress_bytes));
 	}
 	bool SwitchMmu::CheckIngressAdmission(uint32_t port, uint32_t qIndex, uint32_t psize){
+		//std::cout<<"buffer size in check is "<<buffer_size<<"\n";
+		std::cout<<"check ingress psize hdrm_bytes[port][qindex] headrooom[port] getsharedused(port, qindex), getpfcthreshold(port) for port qindex "<<psize<<" "<<hdrm_bytes[port][qIndex]<<" "<<headroom[port]<<" "<<GetSharedUsed(port, qIndex)<<" "<<GetPfcThreshold(port)<<" "<<port<<" "<<qIndex<<"\n";
 		if (psize + hdrm_bytes[port][qIndex] > headroom[port] && psize + GetSharedUsed(port, qIndex) > GetPfcThreshold(port)){
 			printf("%lu %u Drop: queue:%u,%u: Headroom full\n", Simulator::Now().GetTimeStep(), node_id, port, qIndex);
 			for (uint32_t i = 1; i < 64; i++)
@@ -48,22 +50,30 @@ namespace ns3 {
 	}
 	void SwitchMmu::UpdateIngressAdmission(uint32_t port, uint32_t qIndex, uint32_t psize){
 		uint32_t new_bytes = ingress_bytes[port][qIndex] + psize;
+		std::cout<<"update ingress new bytes reserve shared_used_bytes are "<<new_bytes<<" "<<reserve<<" "<<shared_used_bytes<<"\n";
 		if (new_bytes <= reserve){
 			ingress_bytes[port][qIndex] += psize;
+			std::cout<<"current byte "<<new_bytes<<" less than reserve "<<reserve<<"\n";
 		}else {
 			uint32_t thresh = GetPfcThreshold(port);
+			std::cout<<"reserve + thresh = "<<reserve+thresh<<"\n";
 			if (new_bytes - reserve > thresh){
+				std::cout<<"total bytes greater than resrve+thresh goes into headroom\n";
 				hdrm_bytes[port][qIndex] += psize;
+
 			}else {
+				std::cout<<"total bytes less than reserve+thresh goes into ingress and shared per port byte\n";
 				ingress_bytes[port][qIndex] += psize;
 				shared_used_bytes += std::min(psize, new_bytes - reserve);
 			}
 		}
+		std::cout<<"in update ingress hdrm_bytes[port][qindex] shared_used_bytes ingress_bytes[port][qIndex] "<< hdrm_bytes[port][qIndex]<<" "<<shared_used_bytes<<" "<<ingress_bytes[port][qIndex]<<" "<<port<<" "<<qIndex<<"\n";
 	}
 	void SwitchMmu::UpdateEgressAdmission(uint32_t port, uint32_t qIndex, uint32_t psize){
 		egress_bytes[port][qIndex] += psize;
 	}
 	void SwitchMmu::RemoveFromIngressAdmission(uint32_t port, uint32_t qIndex, uint32_t psize){
+		std::cout<<"ingress port and queue is "<<port<<" "<<qIndex<<"\n";
 		uint32_t from_hdrm = std::min(hdrm_bytes[port][qIndex], psize);
 		uint32_t from_shared = std::min(psize - from_hdrm, ingress_bytes[port][qIndex] > reserve ? ingress_bytes[port][qIndex] - reserve : 0);
 		hdrm_bytes[port][qIndex] -= from_hdrm;
@@ -71,6 +81,7 @@ namespace ns3 {
 		shared_used_bytes -= from_shared;
 	}
 	void SwitchMmu::RemoveFromEgressAdmission(uint32_t port, uint32_t qIndex, uint32_t psize){
+		std::cout<<"egress port and queue is "<<port<<" "<<qIndex<<"\n";
 		egress_bytes[port][qIndex] -= psize;
 	}
 	bool SwitchMmu::CheckShouldPause(uint32_t port, uint32_t qIndex){
@@ -90,6 +101,7 @@ namespace ns3 {
 	}
 
 	uint32_t SwitchMmu::GetPfcThreshold(uint32_t port){
+		std::cout<<"get pfc threshold "<<buffer_size - total_hdrm - total_rsrv - shared_used_bytes<<"\n";
 		return (buffer_size - total_hdrm - total_rsrv - shared_used_bytes) >> pfc_a_shift[port];
 	}
 	uint32_t SwitchMmu::GetSharedUsed(uint32_t port, uint32_t qIndex){
@@ -99,13 +111,20 @@ namespace ns3 {
 	bool SwitchMmu::ShouldSendCN(uint32_t ifindex, uint32_t qIndex){
 		if (qIndex == 0)
 			return false;
-		if (egress_bytes[ifindex][qIndex] > kmax[ifindex])
+		if (egress_bytes[ifindex][qIndex] > kmax[ifindex]){
+			std::cout<<"congestion send 1\n";
 			return true;
+		}
+			//return true;
 		if (egress_bytes[ifindex][qIndex] > kmin[ifindex]){
+			std::cout<<"congestion send\n";
 			double p = pmax[ifindex] * double(egress_bytes[ifindex][qIndex] - kmin[ifindex]) / (kmax[ifindex] - kmin[ifindex]);
 			if (UniformVariable(0, 1).GetValue() < p)
 				return true;
+			else
+				std::cout<<"congestion not send\n";
 		}
+	//	std::cout<<"not send cn \n";
 		return false;
 	}
 	void SwitchMmu::ConfigEcn(uint32_t port, uint32_t _kmin, uint32_t _kmax, double _pmax){
@@ -126,5 +145,6 @@ namespace ns3 {
 	}
 	void SwitchMmu::ConfigBufferSize(uint32_t size){
 		buffer_size = size;
+		std::cout<<"buffer size in configbuffersize is "<<buffer_size<<"\n";
 	}
 }

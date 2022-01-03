@@ -865,7 +865,7 @@ int main1(int argc, char *argv[])
 				uint64_t delay = DynamicCast<QbbChannel>(dev->GetChannel())->GetDelay().GetTimeStep();
 				uint32_t headroom = rate * delay / 8 / 1000000000 * 3;
 				sw->m_mmu->ConfigHdrm(j, headroom);
-
+				std::cout<<"rate, delay and headroom are "<<rate<<" "<<delay<<" "<<headroom<<"\n";
 				// set pfc alpha, proportional to link bw
 				sw->m_mmu->pfc_a_shift[j] = shift;
 				//std:://cout<<"rate and pfc_a_shift is "<<rate<<" "<<shift<<"\n";
@@ -958,7 +958,7 @@ int main1(int argc, char *argv[])
 				maxBdp = bdp;
 			if (rtt > maxRtt)
 				maxRtt = rtt;
-			//std:://cout<<i<<" "<<j<< " bdp and delays are "<<delay<<" "<<txDelay<<" "<<rtt<<" "<<bw<<" "<<bdp<<"\n";
+			std::cout<<i<<" "<<j<< " delay txDelay rtt bw bdp  are "<<delay<<" "<<txDelay<<" "<<rtt<<" "<<bw<<" "<<bdp<<"\n";
 		}
 	}
 	printf("maxRtt=%lu maxBdp=%lu\n", maxRtt, maxBdp);

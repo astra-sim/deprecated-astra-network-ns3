@@ -124,6 +124,7 @@ void SwitchNode::SendToDev(Ptr<Packet>p, CustomHeader &ch){
 		uint32_t inDev = t.GetFlowId();
 		if (qIndex != 0){ //not highest priority
 			if (m_mmu->CheckIngressAdmission(inDev, qIndex, p->GetSize()) && m_mmu->CheckEgressAdmission(idx, qIndex, p->GetSize())){			// Admission control
+				std::cout<<"adding to switch memory\n";
 				m_mmu->UpdateIngressAdmission(inDev, qIndex, p->GetSize());
 				m_mmu->UpdateEgressAdmission(idx, qIndex, p->GetSize());
 			}else{
