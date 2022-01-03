@@ -268,6 +268,7 @@ namespace ns3 {
 		NS_ASSERT_MSG(m_currentPkt != 0, "QbbNetDevice::TransmitComplete(): m_currentPkt zero");
 		m_phyTxEndTrace(m_currentPkt);
 		m_currentPkt = 0;
+		std::cout<<Simulator::Now()<<" dequeue and transmit called in TransmitComplete\n";
 		DequeueAndTransmit();
 		//std:://cout<<"transmit complete qbbnetdevice \n";
 	}
@@ -321,6 +322,7 @@ namespace ns3 {
 				if (m_nextSend.IsExpired() && t < Simulator::GetMaximumSimulationTime() && t > Simulator::Now()){
 					//std::cout<<"send next packet in else \n";
 					//std:://cout<<"bytes left to transmit "<<qp->GetBytesLeft()<<"\n";
+					std::cout<<t<<" dequeue and transmit called in node\n";
 					m_nextSend = Simulator::Schedule(t - Simulator::Now(), &QbbNetDevice::DequeueAndTransmit, this);
 				}
 			}
@@ -365,6 +367,7 @@ namespace ns3 {
 					}
 					if (m_nextSend.IsExpired() && t < Simulator::GetMaximumSimulationTime() && t > Simulator::Now()){
 						std::cout<<"in m_nextSend \n";
+						std::cout<<t<<" dequeue and transmit called in switch\n";
 						m_nextSend = Simulator::Schedule(t - Simulator::Now(), &QbbNetDevice::DequeueAndTransmit, this);
 					}
 				}
@@ -381,6 +384,7 @@ namespace ns3 {
 		m_paused[qIndex] = false;
 		NS_LOG_INFO("Node " << m_node->GetId() << " dev " << m_ifIndex << " queue " << qIndex <<
 			" resumed at " << Simulator::Now().GetSeconds());
+		std::cout<<Simulator::Now()<<" dequeue and transmit called in Resume\n";
 		DequeueAndTransmit();
 	}
 
@@ -444,6 +448,7 @@ namespace ns3 {
 		m_macTxTrace(packet);
 		m_traceEnqueue(packet, qIndex);
 		m_queue->Enqueue(packet, qIndex);
+		std::cout<<Simulator::Now()<<" dequeue and transmit called in SwitchSend\n";
 		DequeueAndTransmit();
 		return true;
 	}
@@ -521,12 +526,15 @@ namespace ns3 {
 
    void QbbNetDevice::NewQp(Ptr<RdmaQueuePair> qp){
 	   qp->m_nextAvail = Simulator::Now();
+	   std::cout<<Simulator::Now()<<" dequeue and transmit called in NewQp\n";
 	   DequeueAndTransmit();
    }
    void QbbNetDevice::ReassignedQp(Ptr<RdmaQueuePair> qp){
+	   std::cout<<Simulator::Now()<<" dequeue and transmit called in ReassignedQp\n";
 	   DequeueAndTransmit();
    }
    void QbbNetDevice::TriggerTransmit(void){
+	   std::cout<<Simulator::Now()<<" dequeue and transmit called in TriggerTransmit\n";
 	   DequeueAndTransmit();
    }
 
@@ -574,6 +582,7 @@ namespace ns3 {
 		if (!m_nextSend.IsExpired() && t < m_nextSend.GetTs()){
 			Simulator::Cancel(m_nextSend);
 			Time delta = t < Simulator::Now() ? Time(0) : t - Simulator::Now();
+			std::cout<<Simulator::Now()+delta<<" dequeue and transmit in UpdateNextAvail\n";
 			m_nextSend = Simulator::Schedule(delta, &QbbNetDevice::DequeueAndTransmit, this);
 		}
 	}

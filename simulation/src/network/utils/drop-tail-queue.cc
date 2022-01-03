@@ -20,6 +20,7 @@
 #include "ns3/enum.h"
 #include "ns3/uinteger.h"
 #include "drop-tail-queue.h"
+#include "ns3/simulator.h"
 
 NS_LOG_COMPONENT_DEFINE ("DropTailQueue");
 
@@ -87,7 +88,7 @@ DropTailQueue::DoEnqueue (Ptr<Packet> p)
 
   if (m_mode == QUEUE_MODE_PACKETS && (m_packets.size () >= m_maxPackets))
     {
-      std::cout<<"Enqueue: Queue full (at max packets) -- droppping pkt\n";
+      std::cout<<Simulator::Now()<<" Enqueue: Queue full (at max packets) -- droppping pkt\n";
       NS_LOG_LOGIC ("Enqueue: Queue full (at max packets) -- droppping pkt");
       Drop (p);
       return false;
@@ -95,7 +96,7 @@ DropTailQueue::DoEnqueue (Ptr<Packet> p)
 
   if (m_mode == QUEUE_MODE_BYTES && (m_bytesInQueue + p->GetSize () >= m_maxBytes))
     {
-      std::cout<<"Enqueue: Queue full (packet would exceed max bytes) -- droppping pkt\n";
+      std::cout<<Simulator::Now()<<" Enqueue: Queue full (packet would exceed max bytes) -- droppping pkt\n";
       NS_LOG_LOGIC ("Queue full (packet would exceed max bytes) -- droppping pkt");
       Drop (p);
       return false;
@@ -103,10 +104,10 @@ DropTailQueue::DoEnqueue (Ptr<Packet> p)
 
   m_bytesInQueue += p->GetSize ();
   m_packets.push (p);
-  std::cout<<"Enqueue: Number packets " << m_packets.size ()<<"\n";
-  std::cout<<"Enqueue: Number bytes " << m_bytesInQueue<<"\n";
-  NS_LOG_LOGIC ("Number packets " << m_packets.size ());
-  NS_LOG_LOGIC ("Number bytes " << m_bytesInQueue);
+  std::cout<<Simulator::Now()<<" Enqueue: Number packets " << m_packets.size ()<<"\n";
+  std::cout<<Simulator::Now()<<" Enqueue: Number bytes " << m_bytesInQueue<<"\n";
+  NS_LOG_LOGIC (" Number packets " << m_packets.size ());
+  NS_LOG_LOGIC (" Number bytes " << m_bytesInQueue);
 
   ////std:://cout << "Buffer enqueue:" << p->GetSize() << "\n";
 
@@ -120,7 +121,7 @@ DropTailQueue::DoDequeue (void)
   
   if (m_packets.empty ())
     {
-      std::cout<<"Dequeue: Queue empty\n";
+      std::cout<<Simulator::Now()<<" Dequeue: Queue empty\n";
       NS_LOG_LOGIC ("Queue empty");
       return 0;
     }
@@ -130,9 +131,9 @@ DropTailQueue::DoDequeue (void)
   Ptr<Packet> p = m_packets.front ();
   m_packets.pop ();
   m_bytesInQueue -= p->GetSize ();
-  std::cout<<"Dequeue: Popped " << p<<"\n";
-  std::cout<<"Dequeue: Number packets " << m_packets.size ()<<"\n";
-  std::cout<<"Dequeue: Number bytes " << m_bytesInQueue<<"\n";
+  std::cout<<Simulator::Now()<<" Dequeue: Popped " << p<<"\n";
+  std::cout<<Simulator::Now()<<" Dequeue: Number packets " << m_packets.size ()<<"\n";
+  std::cout<<Simulator::Now()<<" Dequeue: Number bytes " << m_bytesInQueue<<"\n";
   NS_LOG_LOGIC ("Popped " << p);
 
   NS_LOG_LOGIC ("Number packets " << m_packets.size ());
@@ -148,15 +149,15 @@ DropTailQueue::DoPeek (void) const
 
   if (m_packets.empty ())
     {
-      std::cout<<"Peek: Queue empty\n";
+      std::cout<<Simulator::Now()<<" Peek: Queue empty\n";
       NS_LOG_LOGIC ("Queue empty");
       return 0;
     }
 
   Ptr<Packet> p = m_packets.front ();
   ////std:://cout << "Buffer peek:" << p->GetSize() << "\n";
-  std::cout<<"Peek: Number packets " << m_packets.size ()<<"\n";
-  std::cout<<"Peek: Number bytes " << m_bytesInQueue<<"\n";
+  std::cout<<Simulator::Now()<<" Peek: Number packets " << m_packets.size ()<<"\n";
+  std::cout<<Simulator::Now()<<" Peek: Number bytes " << m_bytesInQueue<<"\n";
   NS_LOG_LOGIC ("Number packets " << m_packets.size ());
   NS_LOG_LOGIC ("Number bytes " << m_bytesInQueue);
 
