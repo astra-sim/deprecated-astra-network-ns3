@@ -193,10 +193,12 @@ void
 PointToPointNetDevice::SetDataRate (DataRate bps)
 {
   NS_LOG_FUNCTION_NOARGS ();
+  std::cout<<Simulator::Now()<<" set data rate in point to point model is "<<bps<<"\n";
   m_bps = bps;
 }
 
 DataRate PointToPointNetDevice::GetDataRate(){
+	std::cout<<Simulator::Now()<<" get data rate in point to point model is "<<m_bps<<"\n";
 	return m_bps;
 }
 

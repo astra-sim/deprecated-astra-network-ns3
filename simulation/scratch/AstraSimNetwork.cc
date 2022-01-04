@@ -196,7 +196,6 @@ class ASTRASimNetwork:public AstraSim::AstraNetworkAPI{
             //cout<<"event pushed\n";
         }
 };
-
 void fun_send(void* a) {
     //cout<<*(int *)a<<"Having fun in send!"<<"\n";
 }
@@ -379,7 +378,7 @@ int main (int argc, char *argv[]){
     }	
     int fun_arg=1;
     main1(argc, argv);
-    network0.sim_send(nullptr,512*1048576,-1,1,100,nullptr,&fun_send,&fun_arg);
+    network0.sim_send(nullptr,3000,-1,1,100,nullptr,&fun_send,&fun_arg);
     //network1.sim_send(nullptr,512 * 1048576,-1,1,100,nullptr,&fun_recv,&fun_arg);
     //network.sim_schedule(AstraSim::timespec_t(),&fun_sch,&fun_arg);
     //pass number of nodes
@@ -388,6 +387,7 @@ int main (int argc, char *argv[]){
     //for(int i=0;i<num_gpus;i++){
 //	systems[i]->workload->fire();	
   //  }
+    cout<<"simulator now "<<Simulator::Now()<<"\n";
     Simulator::Run ();
     //Simulator::Stop(TimeStep (0x7fffffffffffffffLL)); 
     Simulator::Stop(Seconds (2000000000));

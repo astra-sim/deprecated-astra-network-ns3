@@ -428,14 +428,14 @@ int main1(int argc, char *argv[])
 				std::string v;
 				conf >> v;
 				data_rate = v;
-				//std:://cout << "DATA_RATE\t\t\t" << data_rate << "\n";
+				std::cout << "DATA_RATE\t\t\t" << data_rate << "\n";
 			}
 			else if (key.compare("LINK_DELAY") == 0)
 			{
 				std::string v;
 				conf >> v;
 				link_delay = v;
-				//std:://cout << "LINK_DELAY\t\t\t" << link_delay << "\n";
+				std::cout << "LINK_DELAY\t\t\t" << link_delay << "\n";
 			}
 			else if (key.compare("PACKET_PAYLOAD_SIZE") == 0)
 			{
@@ -620,8 +620,8 @@ int main1(int argc, char *argv[])
 				conf >> n_k;
 				//std:://cout << "KMAX_MAP\t\t\t\t";
 				for (int i = 0; i < n_k; i++){
-					uint64_t rate;
-					uint32_t k;
+					long rate;
+					uint64_t k;
 					conf >> rate >> k;
 					rate2kmax[rate] = k;
 					//std:://cout << ' ' << rate << ' ' << k;
@@ -636,7 +636,7 @@ int main1(int argc, char *argv[])
 					uint32_t k;
 					conf >> rate >> k;
 					rate2kmin[rate] = k;
-					//std:://cout << ' ' << rate << ' ' << k;
+					//cout <<"kmin map and k rate is "<<rate<<" "<<k<<"\n";
 				}
 				//std:://cout<<'\n';
 			}else if (key.compare("PMAX_MAP") == 0){
@@ -745,7 +745,7 @@ int main1(int argc, char *argv[])
 			sw->SetAttribute("EcnEnabled", BooleanValue(enable_qcn));
 		}
 	}
-	//std:://cout<<"nodes created\n";
+	std::cout<<"nodes created\n";
 
 	NS_LOG_INFO("Create nodes.");
 
@@ -764,7 +764,7 @@ int main1(int argc, char *argv[])
 	}
 
 	NS_LOG_INFO("Create channels.");
-	//std:://cout<<"Create channels\n";
+	std::cout<<"Create channels\n";
 	//
 	// Explicitly create the channels required by the topology.
 	//
@@ -791,7 +791,7 @@ int main1(int argc, char *argv[])
 
 		qbb.SetDeviceAttribute("DataRate", StringValue(data_rate));
 		qbb.SetChannelAttribute("Delay", StringValue(link_delay));
-
+		cout<<src<<" "<<dst<<" "<<data_rate<<" "<<"src dst data_rate"<<"\n";
 		if (error_rate > 0)
 		{
 			Ptr<RateErrorModel> rem = CreateObject<RateErrorModel>();
@@ -857,6 +857,7 @@ int main1(int argc, char *argv[])
 				Ptr<QbbNetDevice> dev = DynamicCast<QbbNetDevice>(sw->GetDevice(j));
 				// set ecn
 				uint64_t rate = dev->GetDataRate().GetBitRate();
+				std::cout<<"rate for kmin is "<<rate<<"\n";
 				NS_ASSERT_MSG(rate2kmin.find(rate) != rate2kmin.end(), "must set kmin for each link speed");
 				NS_ASSERT_MSG(rate2kmax.find(rate) != rate2kmax.end(), "must set kmax for each link speed");
 				NS_ASSERT_MSG(rate2pmax.find(rate) != rate2pmax.end(), "must set pmax for each link speed");

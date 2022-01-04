@@ -278,15 +278,19 @@ namespace ns3 {
 	{
 		NS_LOG_FUNCTION(this);
 		if (!m_linkUp) return; // if link is down, return
-		if (m_txMachineState == BUSY) return;	// Quit if channel busy
-		Ptr<Packet> p;
+		if (m_txMachineState == BUSY)
+		{	
+			std::cout<<Simulator::Now()<<" channel busy \n";
+			return;	// Quit if channel busy
+			}
+			Ptr<Packet> p;
 		if (m_node->GetNodeType() == 0){
 			int qIndex = m_rdmaEQ->GetNextQindex(m_paused);
-			std::cout<<"qIndex is "<<qIndex<<"\n";
+			std::cout<<Simulator::Now()<<" qIndex is "<<qIndex<<"\n";
 			if (qIndex != -1024){
-				std::cout<<"there are packet to send\n";
+				std::cout<<Simulator::Now()<<" there are packet to send\n";
 				if (qIndex == -1){ // high prio
-					std::cout<<"there are packet to send in high priority\n";
+					std::cout<<Simulator::Now()<<" there are packet to send in high priority\n";
 					p = m_rdmaEQ->DequeueQindex(qIndex);
 					m_traceDequeue(p, 0);
 					TransmitStart(p);
@@ -298,14 +302,14 @@ namespace ns3 {
 				//std::cout<<"packet size is "<<p.GetSize()<<"\n";
 				// transmit
 				m_traceQpDequeue(p, lastQp);
-				std::cout<<"transmit started \n";
+				std::cout<<Simulator::Now()<<" transmit started \n";
 				TransmitStart(p);
 
 				// update for the next avail time
 				//std:://cout<<"next pkt update\n";
 				m_rdmaPktSent(lastQp, p, m_tInterframeGap);
 			}else { // no packet to send
-				std::cout<<"there are no packet to send\n";
+				std::cout<<Simulator::Now()<<" there are no packet to send\n";
 				//std::cout<<"PAUSE prohibits send at node " << m_node->GetId()<<"\n";
 				NS_LOG_INFO("PAUSE prohibits send at node " << m_node->GetId());
 				Time t = Simulator::GetMaximumSimulationTime();
@@ -313,7 +317,7 @@ namespace ns3 {
 				for (uint32_t i = 0; i < m_rdmaEQ->GetFlowCount(); i++){
 					Ptr<RdmaQueuePair> qp = m_rdmaEQ->GetQp(i);
 					if (qp->GetBytesLeft() == 0){
-						std::cout<<"get byte left in dequeue transmit\n";
+						std::cout<<Simulator::Now()<<" get byte left in dequeue transmit\n";
 						qp->m_notifyAppSent();
 						continue;
 					}
@@ -328,8 +332,10 @@ namespace ns3 {
 			}
 			return;
 		}else{   //switch, doesn't care about qcn, just send
+			std::cout<<Simulator::Now()<<" in switch m_paused is "<<m_paused<<"\n";
 			p = m_queue->DequeueRR(m_paused);		//this is round-robin
 			if (p != 0){
+				std::cout<<Simulator::Now()<<" queue can deliver packet \n";
 				m_snifferTrace(p);
 				m_promiscSnifferTrace(p);
 				Ipv4Header h;
@@ -339,40 +345,45 @@ namespace ns3 {
 				packet->RemoveHeader(h);
 				FlowIdTag t;
 				uint32_t qIndex = m_queue->GetLastQueue();
+				std::cout<<Simulator::Now()<<" queue index in switch is "<<qIndex<<"\n";
 				if (qIndex == 0){//this is a pause or cnp, send it immediately!
-					std::cout<<"pause or cnp in switch, send immediately\n";
+					std::cout<<Simulator::Now()<<" pause or cnp in switch, send immediately\n";
 					m_node->SwitchNotifyDequeue(m_ifIndex, qIndex, p);
 					p->RemovePacketTag(t);
 				}else{
-					std::cout<<"send packet normal from SWITCH\n";
+					std::cout<<Simulator::Now()<<" send packet normal from SWITCH\n";
 					m_node->SwitchNotifyDequeue(m_ifIndex, qIndex, p);
 					p->RemovePacketTag(t);
 				}
 				m_traceDequeue(p, qIndex);
+				std::cout<<Simulator::Now()<<" transmit start in switch \n";
 				TransmitStart(p);
+				std::cout<<Simulator::Now()<<" transmit done\n";
 				return;
 			}else{ //No queue can deliver any packet
-				std::cout<<"pause prohibits send at node in switch "<<m_node->GetId()<<"\n";
+				std::cout<<Simulator::Now()<<" no queue can delier packet pause prohibits send at node in switch "<<m_node->GetId()<<"\n";
 				NS_LOG_INFO("PAUSE prohibits send at node " << m_node->GetId());
-				if (m_node->GetNodeType() == 0 && m_qcnEnabled){ //nothing to send, possibly due to qcn flow control, if so reschedule sending
+				if (m_node->GetNodeType() == 0 && m_qcnEnabled){
+					std::cout<<Simulator::Now()<<"nothing to send, possibly due to qcn flow control, if so reschedule sending\n";
 					Time t = Simulator::GetMaximumSimulationTime();
 					for (uint32_t i = 0; i < m_rdmaEQ->GetFlowCount(); i++){
 						Ptr<RdmaQueuePair> qp = m_rdmaEQ->GetQp(i);
 						if (qp->GetBytesLeft() == 0){
-							std::cout<<"get byte left in dequeue transmit in switch\n";
+							std::cout<<Simulator::Now()<<" get byte left in dequeue transmit in switch\n";
 							qp->m_notifyAppSent();
 							continue;
 						}	
 						t = Min(qp->m_nextAvail, t);
 					}
 					if (m_nextSend.IsExpired() && t < Simulator::GetMaximumSimulationTime() && t > Simulator::Now()){
-						std::cout<<"in m_nextSend \n";
-						std::cout<<t<<" dequeue and transmit called in switch\n";
+						std::cout<<Simulator::Now()<<" in m_nextSend \n";
+						std::cout<<t<<" dequeue and transmit called in switch future call\n";
 						m_nextSend = Simulator::Schedule(t - Simulator::Now(), &QbbNetDevice::DequeueAndTransmit, this);
 					}
 				}
 			}
 		}
+		std::cout<<Simulator::Now()<<" returning from dequeue and transmit \n";
 		return;
 	}
 
@@ -392,7 +403,7 @@ namespace ns3 {
 		QbbNetDevice::Receive(Ptr<Packet> packet)
 	{
 		NS_LOG_FUNCTION(this << packet);
-		std::cout<<"receive packet \n";
+		std::cout<<Simulator::Now()<<" receive packet \n";
 		if (!m_linkUp){
 			m_traceDrop(packet, 0);
 			return;
@@ -413,7 +424,7 @@ namespace ns3 {
 		ch.getInt = 1; // parse INT header
 		packet->PeekHeader(ch);
 		if (ch.l3Prot == 0xFE){ // PFC
-			std::cout<<"receive pfc packet \n";
+			std::cout<<Simulator::Now()<<" receive pfc packet \n";
 			if (!m_qbbEnabled) return;
 			unsigned qIndex = ch.pfc.qIndex;
 			if (ch.pfc.time > 0){
@@ -424,13 +435,13 @@ namespace ns3 {
 				Resume(qIndex);
 			}
 		}else { // non-PFC packets (data, ACK, NACK, CNP...)
-			std::cout<<"receive normal packet \n";
+			std::cout<<Simulator::Now()<<" receive normal packet \n";
 			if (m_node->GetNodeType() > 0){ // switch
 				packet->AddPacketTag(FlowIdTag(m_ifIndex));
 				m_node->SwitchReceiveFromDevice(this, packet, ch);
 			}else { // NIC
 				// send to RdmaHw
-				std::cout<<"receive normal packet at normal node rdma hw \n";
+				std::cout<<Simulator::Now()<<" receive normal packet at normal node rdma hw \n";
 				int ret = m_rdmaReceiveCb(packet, ch);
 				// TODO we may based on the ret do something
 			}
@@ -498,17 +509,18 @@ namespace ns3 {
 		m_txMachineState = BUSY;
 		m_currentPkt = p;
 		m_phyTxBeginTrace(m_currentPkt);
+		std::cout<<Simulator::Now()<<" m_bps is "<<m_bps<<"\n";
 		Time txTime = Seconds(m_bps.CalculateTxTime(p->GetSize()));
-		std::cout<<"txtime for packet in sec is "<<txTime.GetSeconds()<<"\n";
+		std::cout<<Simulator::Now()<<" txtime for packet in sec is "<<txTime.GetSeconds()<<"\n";
 		Time txCompleteTime = txTime + m_tInterframeGap;
-		std::cout<<"txCompleteTime for packet in sec is "<<txCompleteTime.GetSeconds()<<"\n";
+		std::cout<<Simulator::Now()<<" txCompleteTime for packet in sec is "<<txCompleteTime.GetSeconds()<<"\n";
 		NS_LOG_LOGIC("Schedule TransmitCompleteEvent in " << txCompleteTime.GetSeconds() << "sec");
 		Simulator::Schedule(txCompleteTime, &QbbNetDevice::TransmitComplete, this);
 
 		bool result = m_channel->TransmitStart(p, this, txTime);
 		if (result == false)
 		{
-			std::cout<<"result is false drop \n";
+			std::cout<<Simulator::Now()<<" result is false drop \n";
 			m_phyTxDropTrace(p);
 		}
 		return result;
@@ -582,7 +594,7 @@ namespace ns3 {
 		if (!m_nextSend.IsExpired() && t < m_nextSend.GetTs()){
 			Simulator::Cancel(m_nextSend);
 			Time delta = t < Simulator::Now() ? Time(0) : t - Simulator::Now();
-			std::cout<<Simulator::Now()+delta<<" dequeue and transmit in UpdateNextAvail\n";
+			std::cout<<"Simulator now "<<Simulator::Now()<<" scheduler later to "<<Simulator::Now()+delta<<" dequeue and transmit in UpdateNextAvail\n";
 			m_nextSend = Simulator::Schedule(delta, &QbbNetDevice::DequeueAndTransmit, this);
 		}
 	}
