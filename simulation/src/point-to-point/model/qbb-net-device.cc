@@ -95,49 +95,51 @@ namespace ns3 {
 	int RdmaEgressQueue::GetNextQindex(bool paused[]){
 		bool found = false;
 		uint32_t qIndex;
+		std::cout<<Simulator::Now()<<" in GetNextQindex\n";
 		if (!paused[ack_q_idx] && m_ackQ->GetNPackets() > 0)
 			return -1;
 
 		// no pkt in highest priority queue, do rr for each qp
 		int res = -1024;
 		uint32_t fcount = m_qpGrp->GetN();
-		//std::cout<<"fcount and m_rrlast is "<<fcount<<" "<<m_rrlast<<"\n";
+		std::cout<<Simulator::Now()<<" fcount and m_rrlast is "<<fcount<<" "<<m_rrlast<<"\n";
 		uint32_t min_finish_id = 0xffffffff;
 		for (qIndex = 1; qIndex <= fcount; qIndex++){
 			uint32_t idx = (qIndex + m_rrlast) % fcount;
-			//std::cout<<"idx is "<<idx<<"\n";
+			std::cout<<Simulator::Now()<<" idx is "<<idx<<"\n";
 			Ptr<RdmaQueuePair> qp = m_qpGrp->Get(idx);
-			//std::cout<<"paused qp->m_pg , qp getbyteleft, qp iswinbound is "<<paused[qp->m_pg]<<" "<<qp->GetBytesLeft()<<" "<<qp->IsWinBound()<<"\n";
+			std::cout<<Simulator::Now()<<" paused qp->m_pg , qp getbyteleft, qp iswinbound is "<<paused[qp->m_pg]<<" "<<qp->GetBytesLeft()<<" "<<qp->IsWinBound()<<"\n";
 			if (!paused[qp->m_pg] && qp->GetBytesLeft() > 0 && !qp->IsWinBound()){
-				//std::cout<<"there is byte left \n";
+				std::cout<<Simulator::Now()<<" there is byte left \n";
 				if (m_qpGrp->Get(idx)->m_nextAvail.GetTimeStep() > Simulator::Now().GetTimeStep()) //not available now
 					continue;
 				res = idx;
 				break;
 			}else if (qp->IsFinished()){
 				min_finish_id = idx < min_finish_id ? idx : min_finish_id;
-			//	std::cout<<"finished id  is "<<min_finish_id<<"\n";
+				std::cout<<Simulator::Now()<<" finished id  is "<<min_finish_id<<"\n";
 			}
 		}
 
 		// clear the finished qp
 		if (min_finish_id < 0xffffffff){
 			int nxt = min_finish_id;
-			//std::cout<<"min finish id clear queue is "<<nxt<<"\n";
+			std::cout<<Simulator::Now()<<" min finish id clear queue is "<<nxt<<"\n";
 			auto &qps = m_qpGrp->m_qps;
 			for (int i = min_finish_id + 1; i < fcount; i++) if (!qps[i]->IsFinished()){
-				//std::cout<<"i is "<<i<<"\n";
+				std::cout<<Simulator::Now()<<" i is "<<i<<"\n";
 				if (i == res) // update res to the idx after removing finished qp
 					res = nxt;
-				//std::cout<<"res is "<<res<<"\n";
-				//std::cout<<"qps i is "<<qps[i]<<"\n";
+				std::cout<<Simulator::Now()<<" res is "<<res<<"\n";
+				std::cout<<Simulator::Now()<<" qps i is "<<qps[i]<<"\n";
 				qps[nxt] = qps[i];
 				nxt++;
 			}
 			qps.resize(nxt);
-			//std::cout<<"qps size is"<<qps.size()<<"\n";
+			std::cout<<Simulator::Now()<<" qps size is"<<qps.size()<<"\n";
 		}
-		//std:://cout<<"clear the finished qp \n";
+		std::cout<<Simulator::Now()<<" clear the finished qp \n";
+		std::cout<<Simulator::Now()<<" res/qindex is "<<res<<"\n";
 		return res;
 	}
 
