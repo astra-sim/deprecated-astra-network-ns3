@@ -17,7 +17,8 @@ public:
 	Time startTime;
 	Ipv4Address sip, dip;
 	uint16_t sport, dport;
-	uint64_t m_size;
+	uint64_t m_size, m_init_size, m_tag;
+	uint32_t m_src, m_dest;
 	uint64_t snd_nxt, snd_una; // next seq to send, the highest unacked seq
 	uint16_t m_pg;
 	uint16_t m_ipid;
@@ -93,6 +94,11 @@ public:
 	void SetAppSentCallback(Callback<void> notifyAppSent);
 
 	uint64_t GetBytesLeft();
+	uint64_t GetInitialSize();
+	uint32_t GetSrc();
+	uint32_t GetDest();
+	uint64_t GetTag();
+	void SetTag(uint64_t tag);void SetSrc(uint32_t src);void SetDest(uint32_t dest);void SetInitialSize(uint64_t size);
 	uint32_t GetHash(void);
 	void Acknowledge(uint64_t ack);
 	uint64_t GetOnTheFly();

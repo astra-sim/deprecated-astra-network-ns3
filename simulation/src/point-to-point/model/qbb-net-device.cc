@@ -47,9 +47,10 @@
 #include "ns3/seq-ts-header.h"
 #include "ns3/pointer.h"
 #include "ns3/custom-header.h"
-
+#include "ns3/workerQueue.h"
 #include <iostream>
-
+map<pair<int,pair<int,int> >, struct task1> sentHash;
+map<pair<int,int>,int> nodeHash;
 NS_LOG_COMPONENT_DEFINE("QbbNetDevice");
 
 namespace ns3 {
@@ -107,7 +108,30 @@ namespace ns3 {
 			uint32_t idx = (qIndex + m_rrlast) % fcount;
 			//std::cout<<"idx is "<<idx<<"\n";
 			Ptr<RdmaQueuePair> qp = m_qpGrp->Get(idx);
-			//std::cout<<"paused qp->m_pg , qp getbyteleft, qp iswinbound is "<<paused[qp->m_pg]<<" "<<qp->GetBytesLeft()<<" "<<qp->IsWinBound()<<"\n";
+			//if (qp->GetBytesLeft() <= 4000)
+				//std::cout<<"byteleft is "<<qp->GetBytesLeft()<<"\n";
+				//std::cout<<"paused qp->m_pg , qp getbyteleft, qp iswinbound is "<<paused[qp->m_pg]<<" "<<qp->GetBytesLeft()<<" "<<qp->IsWinBound()<<"\n";
+			if(qp->GetBytesLeft()<=0){
+				int sender_node = qp->GetSrc();
+				int receiver_node = qp->GetDest();
+				int tag = qp->GetTag();
+				int t_count = qp->GetInitialSize();
+				if(sentHash.find(make_pair(tag,make_pair(sender_node, receiver_node)))!=sentHash.end()){
+					task1 t2 = sentHash[make_pair(tag,make_pair(sender_node, receiver_node))];
+					//sentHash.erase(make_pair(tag,make_pair(sender_node, receiver_node)));
+					if(t2.count==t_count)
+					{	
+						sentHash.erase(make_pair(tag,make_pair(sender_node, receiver_node)));
+						if(nodeHash.find(make_pair(sender_node, 0))==nodeHash.end()){
+     							nodeHash[make_pair(sender_node, 0)] = t_count;
+  						 }
+   						else{
+     							nodeHash[make_pair(sender_node, 0)] += t_count;
+  						 }
+						t2.msg_handler(t2.fun_arg);
+					}
+				}
+			}
 			if (!paused[qp->m_pg] && qp->GetBytesLeft() > 0 && !qp->IsWinBound()){
 				//std::cout<<"there is byte left \n";
 				if (m_qpGrp->Get(idx)->m_nextAvail.GetTimeStep() > Simulator::Now().GetTimeStep()) //not available now
@@ -115,6 +139,11 @@ namespace ns3 {
 				res = idx;
 				break;
 			}else if (qp->IsFinished()){
+				//if(qp->GetBytesLeft() > 0){
+					//std::cout<<"qp finished though bytes not finished\n";
+				//	qp->m_notifyAppSent();
+				//}
+				//qp->m_notifyAppSent();
 				min_finish_id = idx < min_finish_id ? idx : min_finish_id;
 			//	std::cout<<"finished id  is "<<min_finish_id<<"\n";
 			}
@@ -311,11 +340,11 @@ namespace ns3 {
 			//	std::cout<<"maximum simulation time is "<<t<<"\n";
 				for (uint32_t i = 0; i < m_rdmaEQ->GetFlowCount(); i++){
 					Ptr<RdmaQueuePair> qp = m_rdmaEQ->GetQp(i);
-					if (qp->GetBytesLeft() == 0){
+					//if (qp->GetBytesLeft() == 0){
 						//std::cout<<"get byte left in dequeue transmit\n";
-						qp->m_notifyAppSent();
-						continue;
-					}
+					//	qp->m_notifyAppSent();
+					//	continue;
+					//}
 					t = Min(qp->m_nextAvail, t);
 				}
 				if (m_nextSend.IsExpired() && t < Simulator::GetMaximumSimulationTime() && t > Simulator::Now()){
@@ -356,11 +385,11 @@ namespace ns3 {
 					Time t = Simulator::GetMaximumSimulationTime();
 					for (uint32_t i = 0; i < m_rdmaEQ->GetFlowCount(); i++){
 						Ptr<RdmaQueuePair> qp = m_rdmaEQ->GetQp(i);
-						if (qp->GetBytesLeft() == 0){
+						//if (qp->GetBytesLeft() == 0){
 							//std::cout<<"get byte left in dequeue transmit in switch\n";
-							qp->m_notifyAppSent();
-							continue;
-						}	
+							//qp->m_notifyAppSent();
+							//continue;
+						//}	
 						t = Min(qp->m_nextAvail, t);
 					}
 					if (m_nextSend.IsExpired() && t < Simulator::GetMaximumSimulationTime() && t > Simulator::Now()){

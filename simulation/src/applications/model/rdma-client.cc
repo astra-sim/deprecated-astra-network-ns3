@@ -39,7 +39,7 @@
 #include "ns3/workerQueue.h"
 map<pair<int,pair<int,int> >,int > recvHash;
 map<pair<int,pair<int,int> >, struct task1> expeRecvHash;
-map<pair<int,pair<int,int> >, struct task1> sentHash;
+//map<pair<int,pair<int,int> >, struct task1> sentHash;
 map<pair<int,int>,int> nodeHash;
 namespace ns3 {
 
@@ -145,21 +145,26 @@ void RdmaClient::Sent(){
    //std::cout<<"sim sent \n";
    int sender_node = src;
    int receiver_node = dest;
-   if(sentHash.find(make_pair(tag,make_pair(sender_node, receiver_node)))!=sentHash.end()){
+   //static int totalsendAcks = 0;
+   //totalsendAcks++;
+   //std::cout<<"total send acks ns3 "<<totalsendAcks<<"\n";
+   //if(sentHash.find(make_pair(tag,make_pair(sender_node, receiver_node)))!=sentHash.end()){
      //std::cout<<"in senthash "<<src<<" "<<dest<<" "<<tag<<"\n";
-     task1 t2 = sentHash[make_pair(tag,make_pair(sender_node, receiver_node))];
-     sentHash.erase(make_pair(tag,make_pair(sender_node, receiver_node)));
-      if(nodeHash.find(make_pair(sender_node, 0))==nodeHash.end()){
-        nodeHash[make_pair(sender_node, 0)] = m_size;
-      }
-      else{
-        nodeHash[make_pair(sender_node, 0)] += m_size;
-      }
-      t2.msg_handler(t2.fun_arg);
-   }
-   else{
+     //task1 t2 = sentHash[make_pair(tag,make_pair(sender_node, receiver_node))];
+     //sentHash.erase(make_pair(tag,make_pair(sender_node, receiver_node)));
+     // if(nodeHash.find(make_pair(sender_node, 0))==nodeHash.end()){
+       // nodeHash[make_pair(sender_node, 0)] = m_size;
+     // }
+      //else{
+       // nodeHash[make_pair(sender_node, 0)] += m_size;
+     // }
+      //totalsendAcks++;
+      //std::cout<<"total send acks ns3 "<<totalsendAcks<<"\n";
+     // t2.msg_handler(t2.fun_arg);
+  // }
+   //else{
      //std::cout<<"not in senthash "<<src<<" "<<dest<<" "<<tag<<"\n";
-   }
+   //}
 }
 
 void RdmaClient::Finish(){
@@ -170,6 +175,7 @@ void RdmaClient::Finish(){
   int count = m_size;
   int sender_node = src;
   int receiver_node = dest;
+  //static int totalRecvs=0;
   //std::cout<<"finish count src dest "<<count<<" "<<src<<" "<<dest<<"\n";
   if(expeRecvHash.find(make_pair(tag,make_pair(sender_node, receiver_node)))!=expeRecvHash.end()){
         task1 t2 = expeRecvHash[make_pair(tag,make_pair(sender_node, receiver_node))];
@@ -178,13 +184,17 @@ void RdmaClient::Finish(){
         {
           expeRecvHash.erase(make_pair(tag,make_pair(sender_node, receiver_node)));
 	 // std::cout<<"already in expected recv hash src dest count "<<src<<" "<<dest<<" "<<count<<"\n";
-          t2.msg_handler(t2.fun_arg);
+          //totalRecvs++;
+          //cout<<"total recvs: "<<totalRecvs<<endl;
+	  t2.msg_handler(t2.fun_arg);
         }
         else if (count > t2.count){
             recvHash[make_pair(tag,make_pair(sender_node, receiver_node))] = count - t2.count;
             expeRecvHash.erase(make_pair(tag,make_pair(sender_node, receiver_node)));
 	    //std::cout<<"already in recv hash with more data\n";
 	   // std::cout<<"already in expected recv hash src dest count "<<src<<" "<<dest<<" "<<count<<"\n";
+	    //totalRecvs++;
+            //cout<<"total recvs: "<<totalRecvs<<endl;
 	    t2.msg_handler(t2.fun_arg);
         }
         else{
@@ -234,7 +244,7 @@ void RdmaClient::StartApplication (void)
   Ptr<Node> node = GetNode();
   Ptr<RdmaDriver> rdma = node->GetObject<RdmaDriver>();
   //cout<<"size in rdmaclient is "<<m_size<<"\n";
-  rdma->AddQueuePair(m_size, m_pg, m_sip, m_dip, m_sport, m_dport, m_win, m_baseRtt, MakeCallback(&RdmaClient::Finish, this), MakeCallback(&RdmaClient::Sent, this));
+  rdma->AddQueuePair(src,dest,tag,m_size, m_pg, m_sip, m_dip, m_sport, m_dport, m_win, m_baseRtt, MakeCallback(&RdmaClient::Finish, this), MakeCallback(&RdmaClient::Sent, this));
 }
 
 void RdmaClient::StopApplication ()

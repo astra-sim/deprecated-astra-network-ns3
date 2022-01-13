@@ -32,7 +32,7 @@ using namespace ns3;
 //   double time_val;
 // };
 // extern int global_variable;
-std::vector<int> physical_dims{2,2};
+std::vector<int> physical_dims{128};
 queue<struct task1> workerQueue;
 unsigned long long tempcnt = 999;
 unsigned long long  cnt = 0;
@@ -128,7 +128,10 @@ class ASTRASimNetwork:public AstraSim::AstraNetworkAPI{
                 // workerQueue.push(t); 
                 // udp[t.src]->SendPacket(t.dest, t.fun_arg, t.msg_handler, t.count, tag);
 		//cout<<"COUNT and PACKET is "<<count<<" "<<maxPacketCount<<"\n";
-                cout<<"src dst cOUNT IN SEND IS "<<rank<<" "<<dst<<" "<<count<<"\n";
+                //static int totalSends=0;
+                //totalSends++;
+                //cout<<"total sends: "<<totalSends<<" src dest count "<<rank<<" "<<dst<<" "<<count<<endl;
+		//cout<<"src dst cOUNT IN SEND IS "<<rank<<" "<<dst<<" "<<count<<"\n";
 		sentHash[make_pair(tag,make_pair(t.src,t.dest))] = t;
                 SendFlow(rank, dst , count, msg_handler, fun_arg,tag);
 	        //cout<<"event at sender pushed "<<t.src<<" "<<" "<<t.dest<<" "<<tag<<"\n";
@@ -336,7 +339,7 @@ int main (int argc, char *argv[]){
     }
     std::string system_input;
     if(physical_dims.size()==1){
-        system_input="sample_1D_switch_sys.txt";
+        system_input="sample_a2a_sys.txt";
     }
     else if(physical_dims.size()==2){
         system_input="sample_2D_switch_sys.txt";
@@ -365,8 +368,8 @@ int main (int argc, char *argv[]){
         	physical_dims, // dimensions
         	queues_per_dim, // queues per corresponding dimension
         	"../astra-sim/inputs/system/"+system_input, // system configuration
-        	"../astra-sim/inputs/workload/DLRM_HybridParallel.txt", //DLRM_HybridParallel.txt, // Resnet50_DataParallel.txt, // workload configuration
-        	1, // communication scale
+        	"../astra-sim/inputs/workload/microAllReduce.txt", //DLRM_HybridParallel.txt, // Resnet50_DataParallel.txt, // workload configuration
+        	512, // communication scale
         	1, // computation scale
         	1, // injection scale
         	1,

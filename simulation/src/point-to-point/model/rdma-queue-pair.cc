@@ -14,7 +14,7 @@ namespace ns3 {
  *************************/
 TypeId RdmaQueuePair::GetTypeId (void)
 {
-	static TypeId tid = TypeId ("ns3::RdmaQueuePair")
+static TypeId tid = TypeId ("ns3::RdmaQueuePair")
 		.SetParent<Object> ()
 		;
 	return tid;
@@ -28,6 +28,10 @@ RdmaQueuePair::RdmaQueuePair(uint16_t pg, Ipv4Address _sip, Ipv4Address _dip, ui
 	dport = _dport;
 	//std::cout<<"sip dip sport dport is "<<sip<<" "<<dip<<" "<<sport<<" "<<dport<<"\n";
 	m_size = 0;
+	m_init_size = 0;
+	m_src = -1;
+	m_dest = -1;
+	m_tag = -1;
 	snd_nxt = snd_una = 0;
 	m_pg = pg;
 	m_ipid = 0;
@@ -71,6 +75,38 @@ RdmaQueuePair::RdmaQueuePair(uint16_t pg, Ipv4Address _sip, Ipv4Address _dip, ui
 
 void RdmaQueuePair::SetSize(uint64_t size){
 	m_size = size;
+}
+
+void RdmaQueuePair::SetSrc(uint32_t src){
+	m_src = src;
+}
+
+void RdmaQueuePair::SetDest(uint32_t dest){
+	m_dest = dest;
+}
+
+uint32_t RdmaQueuePair::GetSrc(){
+	return m_src;
+}
+
+uint32_t RdmaQueuePair::GetDest(){
+	return m_dest;
+}
+
+void RdmaQueuePair::SetTag(uint64_t tag){
+	m_tag = tag;
+}
+
+uint64_t RdmaQueuePair::GetTag(){
+	return m_tag;
+}
+
+void RdmaQueuePair::SetInitialSize(uint64_t size){
+	m_init_size = size;
+}
+
+uint64_t RdmaQueuePair::GetInitialSize(){
+	return m_init_size;
 }
 
 void RdmaQueuePair::SetWin(uint32_t win){
