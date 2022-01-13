@@ -583,7 +583,7 @@ int main1(int argc, char *argv[])
 				uint32_t v;
 				conf >> v;
 				var_win = v;
-				//std:://cout << "VAR_WIN\t\t" << v << '\n';
+				//std::cout << "VAR_WIN\t\t" << v <<" bool val "<<BooleanValue(var_win)<< '\n';
 			}else if (key.compare("FAST_REACT") == 0){
 				uint32_t v;
 				conf >> v;
@@ -877,7 +877,7 @@ int main1(int argc, char *argv[])
 				//std:://cout<<"rate and pfc_a_shift is "<<rate<<" "<<shift<<"\n";
 			}
 			sw->m_mmu->ConfigNPort(sw->GetNDevices()-1);
-			sw->m_mmu->ConfigBufferSize(buffer_size* 1024 * 1024);
+			sw->m_mmu->ConfigBufferSize(buffer_size* 20 * 1024);
 			//std:://cout<<"buffer size, ports and node id of the switch is "<<buffer_size<<" MB, "<<sw->GetNDevices()-1<<sw->GetId()<<"\n";
 			sw->m_mmu->node_id = sw->GetId();
 		}

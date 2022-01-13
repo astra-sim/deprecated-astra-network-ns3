@@ -224,6 +224,7 @@ private:
   double m_lInterm;
   // Ns-1 compatibility
   bool m_isNs1Compat;
+  uint32_t m_maxBytes;
   // Link bandwidth
   DataRate m_linkBandwidth;
   // Link delay

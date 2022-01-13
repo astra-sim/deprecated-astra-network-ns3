@@ -1,0 +1,1174 @@
+Success in opening system file
+Var is: scheduling-policy: ,val is: LIFO
+Var is: endpoint-delay: ,val is: 10
+Var is: active-chunks-per-dimension: ,val is: 1
+Var is: preferred-dataset-splits: ,val is: 4
+Var is: boost-mode: ,val is: 0
+Var is: all-reduce-implementation: ,val is: halvingDoubling
+Var is: all-gather-implementation: ,val is: halvingDoubling
+Var is: reduce-scatter-implementation: ,val is: halvingDoubling
+Var is: all-to-all-implementation: ,val is: direct
+Var is: collective-optimization: ,val is: localBWAware
+Var is:  ,val is: localBWAware
+The final active chunks per dimension 1 after allocating to queues is: 1
+ring of node 0, id: 0 dimension: local total nodes in ring: 2 index in ring: 0 offset: 1total nodes in ring: 2
+ring of node 0, id: 0 dimension: local total nodes in ring: 2 index in ring: 0 offset: 1total nodes in ring: 2
+ring of node 0, id: 0 dimension: local total nodes in ring: 2 index in ring: 0 offset: 1total nodes in ring: 2
+ring of node 0, id: 0 dimension: local total nodes in ring: 2 index in ring: 0 offset: 1total nodes in ring: 2
+total nodes: 2
+LogGP model, the local reduction delay is: 1
+LogGP model, the local reduction delay is: 1
+LogGP model, the local reduction delay is: 1
+LogGP model, the local reduction delay is: 1
+Shared bus modeling enabled? false
+LogGP model, the L is:0 ,o is: 0 ,g is: 0 ,G is: 0.0038
+communication delay (in the case of disabled shared bus): 10
+Shared bus modeling enabled? false
+LogGP model, the L is:0 ,o is: 0 ,g is: 0 ,G is: 0
+communication delay (in the case of disabled shared bus): 10
+Success in opening workload file
+id: conv1 , depen: -1 , wg_comp_time: 5
+type: MICRO ,num passes: 1 ,lines: 1 compute scale: 1 ,comm scale: 512
+stat path: scratch/results/ ,total rows: 1 ,stat row: 0
+CSV path and filename: scratch/results/detailed.csv
+Success in opening CSV file for writing the report.
+CSV path and filename: scratch/results/EndToEnd.csv
+Success in opening CSV file for writing the report.
+nodes created
+Create channels
+2 0 100Gbps src dst data_rate
++0.0ns get data rate in point to point model is 100000000000bps
++0.0ns get data rate in point to point model is 100000000000bps
+2 1 0.001Gbps src dst data_rate
++0.0ns get data rate in point to point model is 1000000bps
++0.0ns get data rate in point to point model is 1000000bps
++0.0ns get data rate in point to point model is 100000000000bps
++0.0ns get data rate in point to point model is 100000000000bps
+rate for kmin is 100000000000
+rate, delay and headroom are 100000000000 9 336
++0.0ns get data rate in point to point model is 1000000bps
+rate for kmin is 1000000
+rate, delay and headroom are 1000000 1000000 375
++0.0ns buffer size in configbuffersize is 20480
+0 0 delay txDelay rtt bw bdp  are 0 0 0 18446744073709551615 0
+0 1 delay txDelay rtt bw bdp  are 1000009 8000080 10000098 1000000 1250
+1 0 delay txDelay rtt bw bdp  are 1000009 8000080 10000098 1000000 1250
+1 1 delay txDelay rtt bw bdp  are 0 0 0 18446744073709551615 0
+maxRtt=10000098 maxBdp=1250
++0.0ns get data rate in point to point model is 100000000000bps
++0.0ns get data rate in point to point model is 1000000bps
++0.0ns get data rate in point to point model is 100000000000bps
++0.0ns get data rate in point to point model is 1000000bps
+Running Simulation.
+lets go 
+src dst cOUNT IN SEND IS 0 1 9000
+pg srcIP dstIP srcPort dstPort WriteSize BaseRTT Tag src dest 3 0.0 0.1 10000 100 9000 1250 10000098 100 0 1
+simulator now +0.0ns
+window size is 1250
+basertt is 10000098
+is window variable? false
++0.0ns get data rate in point to point model is 100000000000bps
+data rate of nic is CHECK IF SAME AS LINK RATE 100000000000bps
++0.0ns dequeue and transmit called in NewQp
++0.0ns in GetNextQindex
++0.0ns fcount and m_rrlast is 1 0
++0.0ns idx is 0
+window is 1250
+get on the fly packets 0 0 0
++0.0ns paused qp->m_pg , qp getbyteleft, qp iswinbound is false 9000 false
+window is 1250
+get on the fly packets 0 0 0
++0.0ns there is byte left 
++0.0ns clear the finished qp 
++0.0ns res/qindex is 0
++0.0ns qIndex is 0
++0.0ns there are packet to send
++0.0ns transmit started 
++0.0ns m_bps is 100000000000bps
++0.0ns txtime for packet in sec is 8.3e-08
++0.0ns txCompleteTime for packet in sec is 8.3e-08
++83.0ns dequeue and transmit called in TransmitComplete
++83.0ns in GetNextQindex
++83.0ns fcount and m_rrlast is 1 0
++83.0ns idx is 0
+window is 1250
+get on the fly packets 1000 0 1000
++83.0ns paused qp->m_pg , qp getbyteleft, qp iswinbound is false 8000 false
+window is 1250
+get on the fly packets 1000 0 1000
++83.0ns there is byte left 
++83.0ns clear the finished qp 
++83.0ns res/qindex is 0
++83.0ns qIndex is 0
++83.0ns there are packet to send
++83.0ns transmit started 
++83.0ns m_bps is 100000000000bps
++83.0ns txtime for packet in sec is 8.3e-08
++83.0ns txCompleteTime for packet in sec is 8.3e-08
++92.0ns receive packet 
++92.0ns receive normal packet 
++92.0ns buffer.size() 20480 711 8192 0
++92.0ns get pfc threshold 11577
++92.0ns check ingress psize hdrm_bytes[port][qindex] headrooom[port] getsharedused(port, qindex), getpfcthreshold(port) for port qindex 1048 0 336 0 1447 1 3
++92.0ns buffer.size() 20480 711 8192 0
++92.0ns get pfc threshold 11577
++92.0ns adding to switch memory
++92.0ns update ingress new bytes reserve shared_used_bytes are 1048 4096 0
++92.0ns current byte 1048 less than reserve 4096
++92.0ns in update ingress hdrm_bytes[port][qindex] shared_used_bytes ingress_bytes[port][qIndex] 0 0 1048 1 3
++92.0ns buffer.size() 20480 711 8192 0
++92.0ns get pfc threshold 11577
++92.0ns Enqueue: Number packets 1
++92.0ns Enqueue: Number bytes 1048
++92.0ns dequeue and transmit called in SwitchSend
++92.0ns in switch m_paused is 0x563283841a08
++92.0ns Dequeue: Popped 0x563283806b40
++92.0ns Dequeue: Number packets 0
++92.0ns Dequeue: Number bytes 0
++92.0ns queue can deliver packet 
++92.0ns queue index in switch is 3
++92.0ns send packet normal from SWITCH
++92.0ns ingress port and queue is 1 3
++92.0ns egress port and queue is 2 3
++92.0ns transmit start in switch 
++92.0ns m_bps is 1000000bps
++92.0ns txtime for packet in sec is 0.008384
++92.0ns txCompleteTime for packet in sec is 0.008384
++92.0ns transmit done
++166.0ns dequeue and transmit called in TransmitComplete
++166.0ns in GetNextQindex
++166.0ns fcount and m_rrlast is 1 0
++166.0ns idx is 0
+window is 1250
+get on the fly packets 2000 0 2000
++166.0ns paused qp->m_pg , qp getbyteleft, qp iswinbound is false 7000 true
+window is 1250
+get on the fly packets 2000 0 2000
++166.0ns clear the finished qp 
++166.0ns res/qindex is -1024
++166.0ns qIndex is -1024
++166.0ns there are no packet to send
++175.0ns receive packet 
++175.0ns receive normal packet 
++175.0ns buffer.size() 20480 711 8192 0
++175.0ns get pfc threshold 11577
++175.0ns check ingress psize hdrm_bytes[port][qindex] headrooom[port] getsharedused(port, qindex), getpfcthreshold(port) for port qindex 1048 0 336 0 1447 1 3
++175.0ns buffer.size() 20480 711 8192 0
++175.0ns get pfc threshold 11577
++175.0ns adding to switch memory
++175.0ns update ingress new bytes reserve shared_used_bytes are 1048 4096 0
++175.0ns current byte 1048 less than reserve 4096
++175.0ns in update ingress hdrm_bytes[port][qindex] shared_used_bytes ingress_bytes[port][qIndex] 0 0 1048 1 3
++175.0ns buffer.size() 20480 711 8192 0
++175.0ns get pfc threshold 11577
++175.0ns Enqueue: Number packets 1
++175.0ns Enqueue: Number bytes 1048
++175.0ns dequeue and transmit called in SwitchSend
++175.0ns channel busy 
++8384092.0ns dequeue and transmit called in TransmitComplete
++8384092.0ns in switch m_paused is 0x563283841a08
++8384092.0ns Dequeue: Popped 0x563283801850
++8384092.0ns Dequeue: Number packets 0
++8384092.0ns Dequeue: Number bytes 0
++8384092.0ns queue can deliver packet 
++8384092.0ns queue index in switch is 3
++8384092.0ns send packet normal from SWITCH
++8384092.0ns ingress port and queue is 1 3
++8384092.0ns egress port and queue is 2 3
++8384092.0ns transmit start in switch 
++8384092.0ns m_bps is 1000000bps
++8384092.0ns txtime for packet in sec is 0.008384
++8384092.0ns txCompleteTime for packet in sec is 0.008384
++8384092.0ns transmit done
++9384092.0ns receive packet 
++9384092.0ns receive normal packet 
++9384092.0ns receive normal packet at normal node rdma hw 
++9384092.0ns Enqueue: Number packets 1
++9384092.0ns Enqueue: Number bytes 60
++9384092.0ns dequeue and transmit called in TriggerTransmit
++9384092.0ns in GetNextQindex
++9384092.0ns qIndex is -1
++9384092.0ns there are packet to send
++9384092.0ns there are packet to send in high priority
++9384092.0ns Dequeue: Popped 0x563283801930
++9384092.0ns Dequeue: Number packets 0
++9384092.0ns Dequeue: Number bytes 0
++9384092.0ns m_bps is 1000000bps
++9384092.0ns txtime for packet in sec is 0.00048
++9384092.0ns txCompleteTime for packet in sec is 0.00048
++9864092.0ns dequeue and transmit called in TransmitComplete
++9864092.0ns in GetNextQindex
++9864092.0ns fcount and m_rrlast is 0 0
++9864092.0ns clear the finished qp 
++9864092.0ns res/qindex is -1024
++9864092.0ns qIndex is -1024
++9864092.0ns there are no packet to send
++10864092.0ns receive packet 
++10864092.0ns receive normal packet 
++10864092.0ns buffer.size() 20480 711 8192 0
++10864092.0ns get pfc threshold 11577
++10864092.0ns check ingress psize hdrm_bytes[port][qindex] headrooom[port] getsharedused(port, qindex), getpfcthreshold(port) for port qindex 60 0 375 0 1447 2 3
++10864092.0ns adding to switch memory
++10864092.0ns update ingress new bytes reserve shared_used_bytes are 60 4096 0
++10864092.0ns current byte 60 less than reserve 4096
++10864092.0ns in update ingress hdrm_bytes[port][qindex] shared_used_bytes ingress_bytes[port][qIndex] 0 0 60 2 3
++10864092.0ns buffer.size() 20480 711 8192 0
++10864092.0ns get pfc threshold 11577
++10864092.0ns Enqueue: Number packets 1
++10864092.0ns Enqueue: Number bytes 60
++10864092.0ns dequeue and transmit called in SwitchSend
++10864092.0ns in switch m_paused is 0x563283808468
++10864092.0ns Dequeue: Popped 0x563283801930
++10864092.0ns Dequeue: Number packets 0
++10864092.0ns Dequeue: Number bytes 0
++10864092.0ns queue can deliver packet 
++10864092.0ns queue index in switch is 3
++10864092.0ns send packet normal from SWITCH
++10864092.0ns ingress port and queue is 2 3
++10864092.0ns egress port and queue is 1 3
++10864092.0ns transmit start in switch 
++10864092.0ns m_bps is 100000000000bps
++10864092.0ns txtime for packet in sec is 4e-09
++10864092.0ns txCompleteTime for packet in sec is 4e-09
++10864092.0ns transmit done
++10864096.0ns dequeue and transmit called in TransmitComplete
++10864096.0ns in switch m_paused is 0x563283808468
++10864096.0ns no queue can delier packet pause prohibits send at node in switch 2
++10864096.0ns returning from dequeue and transmit 
++10864105.0ns receive packet 
++10864105.0ns receive normal packet 
++10864105.0ns receive normal packet at normal node rdma hw 
++10864105.0ns dequeue and transmit called in TriggerTransmit
++10864105.0ns in GetNextQindex
++10864105.0ns fcount and m_rrlast is 1 0
++10864105.0ns idx is 0
+window is 1250
+get on the fly packets 2000 1000 1000
++10864105.0ns paused qp->m_pg , qp getbyteleft, qp iswinbound is false 7000 false
+window is 1250
+get on the fly packets 2000 1000 1000
++10864105.0ns there is byte left 
++10864105.0ns clear the finished qp 
++10864105.0ns res/qindex is 0
++10864105.0ns qIndex is 0
++10864105.0ns there are packet to send
++10864105.0ns transmit started 
++10864105.0ns m_bps is 100000000000bps
++10864105.0ns txtime for packet in sec is 8.3e-08
++10864105.0ns txCompleteTime for packet in sec is 8.3e-08
++10864188.0ns dequeue and transmit called in TransmitComplete
++10864188.0ns in GetNextQindex
++10864188.0ns fcount and m_rrlast is 1 0
++10864188.0ns idx is 0
+window is 1250
+get on the fly packets 3000 1000 2000
++10864188.0ns paused qp->m_pg , qp getbyteleft, qp iswinbound is false 6000 true
+window is 1250
+get on the fly packets 3000 1000 2000
++10864188.0ns clear the finished qp 
++10864188.0ns res/qindex is -1024
++10864188.0ns qIndex is -1024
++10864188.0ns there are no packet to send
++10864197.0ns receive packet 
++10864197.0ns receive normal packet 
++10864197.0ns buffer.size() 20480 711 8192 0
++10864197.0ns get pfc threshold 11577
++10864197.0ns check ingress psize hdrm_bytes[port][qindex] headrooom[port] getsharedused(port, qindex), getpfcthreshold(port) for port qindex 1048 0 336 0 1447 1 3
++10864197.0ns buffer.size() 20480 711 8192 0
++10864197.0ns get pfc threshold 11577
++10864197.0ns adding to switch memory
++10864197.0ns update ingress new bytes reserve shared_used_bytes are 1048 4096 0
++10864197.0ns current byte 1048 less than reserve 4096
++10864197.0ns in update ingress hdrm_bytes[port][qindex] shared_used_bytes ingress_bytes[port][qIndex] 0 0 1048 1 3
++10864197.0ns buffer.size() 20480 711 8192 0
++10864197.0ns get pfc threshold 11577
++10864197.0ns Enqueue: Number packets 1
++10864197.0ns Enqueue: Number bytes 1048
++10864197.0ns dequeue and transmit called in SwitchSend
++10864197.0ns channel busy 
++16768092.0ns dequeue and transmit called in TransmitComplete
++16768092.0ns in switch m_paused is 0x563283841a08
++16768092.0ns Dequeue: Popped 0x563283806b40
++16768092.0ns Dequeue: Number packets 0
++16768092.0ns Dequeue: Number bytes 0
++16768092.0ns queue can deliver packet 
++16768092.0ns queue index in switch is 3
++16768092.0ns send packet normal from SWITCH
++16768092.0ns ingress port and queue is 1 3
++16768092.0ns egress port and queue is 2 3
++16768092.0ns transmit start in switch 
++16768092.0ns m_bps is 1000000bps
++16768092.0ns txtime for packet in sec is 0.008384
++16768092.0ns txCompleteTime for packet in sec is 0.008384
++16768092.0ns transmit done
++17768092.0ns receive packet 
++17768092.0ns receive normal packet 
++17768092.0ns receive normal packet at normal node rdma hw 
++17768092.0ns Enqueue: Number packets 1
++17768092.0ns Enqueue: Number bytes 60
++17768092.0ns dequeue and transmit called in TriggerTransmit
++17768092.0ns in GetNextQindex
++17768092.0ns qIndex is -1
++17768092.0ns there are packet to send
++17768092.0ns there are packet to send in high priority
++17768092.0ns Dequeue: Popped 0x563283801930
++17768092.0ns Dequeue: Number packets 0
++17768092.0ns Dequeue: Number bytes 0
++17768092.0ns m_bps is 1000000bps
++17768092.0ns txtime for packet in sec is 0.00048
++17768092.0ns txCompleteTime for packet in sec is 0.00048
++18248092.0ns dequeue and transmit called in TransmitComplete
++18248092.0ns in GetNextQindex
++18248092.0ns fcount and m_rrlast is 0 0
++18248092.0ns clear the finished qp 
++18248092.0ns res/qindex is -1024
++18248092.0ns qIndex is -1024
++18248092.0ns there are no packet to send
++19248092.0ns receive packet 
++19248092.0ns receive normal packet 
++19248092.0ns buffer.size() 20480 711 8192 0
++19248092.0ns get pfc threshold 11577
++19248092.0ns check ingress psize hdrm_bytes[port][qindex] headrooom[port] getsharedused(port, qindex), getpfcthreshold(port) for port qindex 60 0 375 0 1447 2 3
++19248092.0ns adding to switch memory
++19248092.0ns update ingress new bytes reserve shared_used_bytes are 60 4096 0
++19248092.0ns current byte 60 less than reserve 4096
++19248092.0ns in update ingress hdrm_bytes[port][qindex] shared_used_bytes ingress_bytes[port][qIndex] 0 0 60 2 3
++19248092.0ns buffer.size() 20480 711 8192 0
++19248092.0ns get pfc threshold 11577
++19248092.0ns Enqueue: Number packets 1
++19248092.0ns Enqueue: Number bytes 60
++19248092.0ns dequeue and transmit called in SwitchSend
++19248092.0ns in switch m_paused is 0x563283808468
++19248092.0ns Dequeue: Popped 0x563283801930
++19248092.0ns Dequeue: Number packets 0
++19248092.0ns Dequeue: Number bytes 0
++19248092.0ns queue can deliver packet 
++19248092.0ns queue index in switch is 3
++19248092.0ns send packet normal from SWITCH
++19248092.0ns ingress port and queue is 2 3
++19248092.0ns egress port and queue is 1 3
++19248092.0ns transmit start in switch 
++19248092.0ns m_bps is 100000000000bps
++19248092.0ns txtime for packet in sec is 4e-09
++19248092.0ns txCompleteTime for packet in sec is 4e-09
++19248092.0ns transmit done
++19248096.0ns dequeue and transmit called in TransmitComplete
++19248096.0ns in switch m_paused is 0x563283808468
++19248096.0ns no queue can delier packet pause prohibits send at node in switch 2
++19248096.0ns returning from dequeue and transmit 
++19248105.0ns receive packet 
++19248105.0ns receive normal packet 
++19248105.0ns receive normal packet at normal node rdma hw 
++19248105.0ns dequeue and transmit called in TriggerTransmit
++19248105.0ns in GetNextQindex
++19248105.0ns fcount and m_rrlast is 1 0
++19248105.0ns idx is 0
+window is 1250
+get on the fly packets 3000 2000 1000
++19248105.0ns paused qp->m_pg , qp getbyteleft, qp iswinbound is false 6000 false
+window is 1250
+get on the fly packets 3000 2000 1000
++19248105.0ns there is byte left 
++19248105.0ns clear the finished qp 
++19248105.0ns res/qindex is 0
++19248105.0ns qIndex is 0
++19248105.0ns there are packet to send
++19248105.0ns transmit started 
++19248105.0ns m_bps is 100000000000bps
++19248105.0ns txtime for packet in sec is 8.3e-08
++19248105.0ns txCompleteTime for packet in sec is 8.3e-08
++19248188.0ns dequeue and transmit called in TransmitComplete
++19248188.0ns in GetNextQindex
++19248188.0ns fcount and m_rrlast is 1 0
++19248188.0ns idx is 0
+window is 1250
+get on the fly packets 4000 2000 2000
++19248188.0ns paused qp->m_pg , qp getbyteleft, qp iswinbound is false 5000 true
+window is 1250
+get on the fly packets 4000 2000 2000
++19248188.0ns clear the finished qp 
++19248188.0ns res/qindex is -1024
++19248188.0ns qIndex is -1024
++19248188.0ns there are no packet to send
++19248197.0ns receive packet 
++19248197.0ns receive normal packet 
++19248197.0ns buffer.size() 20480 711 8192 0
++19248197.0ns get pfc threshold 11577
++19248197.0ns check ingress psize hdrm_bytes[port][qindex] headrooom[port] getsharedused(port, qindex), getpfcthreshold(port) for port qindex 1048 0 336 0 1447 1 3
++19248197.0ns buffer.size() 20480 711 8192 0
++19248197.0ns get pfc threshold 11577
++19248197.0ns adding to switch memory
++19248197.0ns update ingress new bytes reserve shared_used_bytes are 1048 4096 0
++19248197.0ns current byte 1048 less than reserve 4096
++19248197.0ns in update ingress hdrm_bytes[port][qindex] shared_used_bytes ingress_bytes[port][qIndex] 0 0 1048 1 3
++19248197.0ns buffer.size() 20480 711 8192 0
++19248197.0ns get pfc threshold 11577
++19248197.0ns Enqueue: Number packets 1
++19248197.0ns Enqueue: Number bytes 1048
++19248197.0ns dequeue and transmit called in SwitchSend
++19248197.0ns channel busy 
++25152092.0ns dequeue and transmit called in TransmitComplete
++25152092.0ns in switch m_paused is 0x563283841a08
++25152092.0ns Dequeue: Popped 0x563283801850
++25152092.0ns Dequeue: Number packets 0
++25152092.0ns Dequeue: Number bytes 0
++25152092.0ns queue can deliver packet 
++25152092.0ns queue index in switch is 3
++25152092.0ns send packet normal from SWITCH
++25152092.0ns ingress port and queue is 1 3
++25152092.0ns egress port and queue is 2 3
++25152092.0ns transmit start in switch 
++25152092.0ns m_bps is 1000000bps
++25152092.0ns txtime for packet in sec is 0.008384
++25152092.0ns txCompleteTime for packet in sec is 0.008384
++25152092.0ns transmit done
++26152092.0ns receive packet 
++26152092.0ns receive normal packet 
++26152092.0ns receive normal packet at normal node rdma hw 
++26152092.0ns Enqueue: Number packets 1
++26152092.0ns Enqueue: Number bytes 60
++26152092.0ns dequeue and transmit called in TriggerTransmit
++26152092.0ns in GetNextQindex
++26152092.0ns qIndex is -1
++26152092.0ns there are packet to send
++26152092.0ns there are packet to send in high priority
++26152092.0ns Dequeue: Popped 0x563283801930
++26152092.0ns Dequeue: Number packets 0
++26152092.0ns Dequeue: Number bytes 0
++26152092.0ns m_bps is 1000000bps
++26152092.0ns txtime for packet in sec is 0.00048
++26152092.0ns txCompleteTime for packet in sec is 0.00048
++26632092.0ns dequeue and transmit called in TransmitComplete
++26632092.0ns in GetNextQindex
++26632092.0ns fcount and m_rrlast is 0 0
++26632092.0ns clear the finished qp 
++26632092.0ns res/qindex is -1024
++26632092.0ns qIndex is -1024
++26632092.0ns there are no packet to send
++27632092.0ns receive packet 
++27632092.0ns receive normal packet 
++27632092.0ns buffer.size() 20480 711 8192 0
++27632092.0ns get pfc threshold 11577
++27632092.0ns check ingress psize hdrm_bytes[port][qindex] headrooom[port] getsharedused(port, qindex), getpfcthreshold(port) for port qindex 60 0 375 0 1447 2 3
++27632092.0ns adding to switch memory
++27632092.0ns update ingress new bytes reserve shared_used_bytes are 60 4096 0
++27632092.0ns current byte 60 less than reserve 4096
++27632092.0ns in update ingress hdrm_bytes[port][qindex] shared_used_bytes ingress_bytes[port][qIndex] 0 0 60 2 3
++27632092.0ns buffer.size() 20480 711 8192 0
++27632092.0ns get pfc threshold 11577
++27632092.0ns Enqueue: Number packets 1
++27632092.0ns Enqueue: Number bytes 60
++27632092.0ns dequeue and transmit called in SwitchSend
++27632092.0ns in switch m_paused is 0x563283808468
++27632092.0ns Dequeue: Popped 0x563283801930
++27632092.0ns Dequeue: Number packets 0
++27632092.0ns Dequeue: Number bytes 0
++27632092.0ns queue can deliver packet 
++27632092.0ns queue index in switch is 3
++27632092.0ns send packet normal from SWITCH
++27632092.0ns ingress port and queue is 2 3
++27632092.0ns egress port and queue is 1 3
++27632092.0ns transmit start in switch 
++27632092.0ns m_bps is 100000000000bps
++27632092.0ns txtime for packet in sec is 4e-09
++27632092.0ns txCompleteTime for packet in sec is 4e-09
++27632092.0ns transmit done
++27632096.0ns dequeue and transmit called in TransmitComplete
++27632096.0ns in switch m_paused is 0x563283808468
++27632096.0ns no queue can delier packet pause prohibits send at node in switch 2
++27632096.0ns returning from dequeue and transmit 
++27632105.0ns receive packet 
++27632105.0ns receive normal packet 
++27632105.0ns receive normal packet at normal node rdma hw 
++27632105.0ns dequeue and transmit called in TriggerTransmit
++27632105.0ns in GetNextQindex
++27632105.0ns fcount and m_rrlast is 1 0
++27632105.0ns idx is 0
+window is 1250
+get on the fly packets 4000 3000 1000
++27632105.0ns paused qp->m_pg , qp getbyteleft, qp iswinbound is false 5000 false
+window is 1250
+get on the fly packets 4000 3000 1000
++27632105.0ns there is byte left 
++27632105.0ns clear the finished qp 
++27632105.0ns res/qindex is 0
++27632105.0ns qIndex is 0
++27632105.0ns there are packet to send
++27632105.0ns transmit started 
++27632105.0ns m_bps is 100000000000bps
++27632105.0ns txtime for packet in sec is 8.3e-08
++27632105.0ns txCompleteTime for packet in sec is 8.3e-08
++27632188.0ns dequeue and transmit called in TransmitComplete
++27632188.0ns in GetNextQindex
++27632188.0ns fcount and m_rrlast is 1 0
++27632188.0ns idx is 0
+window is 1250
+get on the fly packets 5000 3000 2000
++27632188.0ns paused qp->m_pg , qp getbyteleft, qp iswinbound is false 4000 true
+window is 1250
+get on the fly packets 5000 3000 2000
++27632188.0ns clear the finished qp 
++27632188.0ns res/qindex is -1024
++27632188.0ns qIndex is -1024
++27632188.0ns there are no packet to send
++27632197.0ns receive packet 
++27632197.0ns receive normal packet 
++27632197.0ns buffer.size() 20480 711 8192 0
++27632197.0ns get pfc threshold 11577
++27632197.0ns check ingress psize hdrm_bytes[port][qindex] headrooom[port] getsharedused(port, qindex), getpfcthreshold(port) for port qindex 1048 0 336 0 1447 1 3
++27632197.0ns buffer.size() 20480 711 8192 0
++27632197.0ns get pfc threshold 11577
++27632197.0ns adding to switch memory
++27632197.0ns update ingress new bytes reserve shared_used_bytes are 1048 4096 0
++27632197.0ns current byte 1048 less than reserve 4096
++27632197.0ns in update ingress hdrm_bytes[port][qindex] shared_used_bytes ingress_bytes[port][qIndex] 0 0 1048 1 3
++27632197.0ns buffer.size() 20480 711 8192 0
++27632197.0ns get pfc threshold 11577
++27632197.0ns Enqueue: Number packets 1
++27632197.0ns Enqueue: Number bytes 1048
++27632197.0ns dequeue and transmit called in SwitchSend
++27632197.0ns channel busy 
++33536092.0ns dequeue and transmit called in TransmitComplete
++33536092.0ns in switch m_paused is 0x563283841a08
++33536092.0ns Dequeue: Popped 0x563283806b40
++33536092.0ns Dequeue: Number packets 0
++33536092.0ns Dequeue: Number bytes 0
++33536092.0ns queue can deliver packet 
++33536092.0ns queue index in switch is 3
++33536092.0ns send packet normal from SWITCH
++33536092.0ns ingress port and queue is 1 3
++33536092.0ns egress port and queue is 2 3
++33536092.0ns transmit start in switch 
++33536092.0ns m_bps is 1000000bps
++33536092.0ns txtime for packet in sec is 0.008384
++33536092.0ns txCompleteTime for packet in sec is 0.008384
++33536092.0ns transmit done
++34536092.0ns receive packet 
++34536092.0ns receive normal packet 
++34536092.0ns receive normal packet at normal node rdma hw 
++34536092.0ns Enqueue: Number packets 1
++34536092.0ns Enqueue: Number bytes 60
++34536092.0ns dequeue and transmit called in TriggerTransmit
++34536092.0ns in GetNextQindex
++34536092.0ns qIndex is -1
++34536092.0ns there are packet to send
++34536092.0ns there are packet to send in high priority
++34536092.0ns Dequeue: Popped 0x563283801930
++34536092.0ns Dequeue: Number packets 0
++34536092.0ns Dequeue: Number bytes 0
++34536092.0ns m_bps is 1000000bps
++34536092.0ns txtime for packet in sec is 0.00048
++34536092.0ns txCompleteTime for packet in sec is 0.00048
++35016092.0ns dequeue and transmit called in TransmitComplete
++35016092.0ns in GetNextQindex
++35016092.0ns fcount and m_rrlast is 0 0
++35016092.0ns clear the finished qp 
++35016092.0ns res/qindex is -1024
++35016092.0ns qIndex is -1024
++35016092.0ns there are no packet to send
++36016092.0ns receive packet 
++36016092.0ns receive normal packet 
++36016092.0ns buffer.size() 20480 711 8192 0
++36016092.0ns get pfc threshold 11577
++36016092.0ns check ingress psize hdrm_bytes[port][qindex] headrooom[port] getsharedused(port, qindex), getpfcthreshold(port) for port qindex 60 0 375 0 1447 2 3
++36016092.0ns adding to switch memory
++36016092.0ns update ingress new bytes reserve shared_used_bytes are 60 4096 0
++36016092.0ns current byte 60 less than reserve 4096
++36016092.0ns in update ingress hdrm_bytes[port][qindex] shared_used_bytes ingress_bytes[port][qIndex] 0 0 60 2 3
++36016092.0ns buffer.size() 20480 711 8192 0
++36016092.0ns get pfc threshold 11577
++36016092.0ns Enqueue: Number packets 1
++36016092.0ns Enqueue: Number bytes 60
++36016092.0ns dequeue and transmit called in SwitchSend
++36016092.0ns in switch m_paused is 0x563283808468
++36016092.0ns Dequeue: Popped 0x563283801930
++36016092.0ns Dequeue: Number packets 0
++36016092.0ns Dequeue: Number bytes 0
++36016092.0ns queue can deliver packet 
++36016092.0ns queue index in switch is 3
++36016092.0ns send packet normal from SWITCH
++36016092.0ns ingress port and queue is 2 3
++36016092.0ns egress port and queue is 1 3
++36016092.0ns transmit start in switch 
++36016092.0ns m_bps is 100000000000bps
++36016092.0ns txtime for packet in sec is 4e-09
++36016092.0ns txCompleteTime for packet in sec is 4e-09
++36016092.0ns transmit done
++36016096.0ns dequeue and transmit called in TransmitComplete
++36016096.0ns in switch m_paused is 0x563283808468
++36016096.0ns no queue can delier packet pause prohibits send at node in switch 2
++36016096.0ns returning from dequeue and transmit 
++36016105.0ns receive packet 
++36016105.0ns receive normal packet 
++36016105.0ns receive normal packet at normal node rdma hw 
++36016105.0ns dequeue and transmit called in TriggerTransmit
++36016105.0ns in GetNextQindex
++36016105.0ns fcount and m_rrlast is 1 0
++36016105.0ns idx is 0
+window is 1250
+get on the fly packets 5000 4000 1000
++36016105.0ns paused qp->m_pg , qp getbyteleft, qp iswinbound is false 4000 false
+window is 1250
+get on the fly packets 5000 4000 1000
++36016105.0ns there is byte left 
++36016105.0ns clear the finished qp 
++36016105.0ns res/qindex is 0
++36016105.0ns qIndex is 0
++36016105.0ns there are packet to send
++36016105.0ns transmit started 
++36016105.0ns m_bps is 100000000000bps
++36016105.0ns txtime for packet in sec is 8.3e-08
++36016105.0ns txCompleteTime for packet in sec is 8.3e-08
++36016188.0ns dequeue and transmit called in TransmitComplete
++36016188.0ns in GetNextQindex
++36016188.0ns fcount and m_rrlast is 1 0
++36016188.0ns idx is 0
+window is 1250
+get on the fly packets 6000 4000 2000
++36016188.0ns paused qp->m_pg , qp getbyteleft, qp iswinbound is false 3000 true
+window is 1250
+get on the fly packets 6000 4000 2000
++36016188.0ns clear the finished qp 
++36016188.0ns res/qindex is -1024
++36016188.0ns qIndex is -1024
++36016188.0ns there are no packet to send
++36016197.0ns receive packet 
++36016197.0ns receive normal packet 
++36016197.0ns buffer.size() 20480 711 8192 0
++36016197.0ns get pfc threshold 11577
++36016197.0ns check ingress psize hdrm_bytes[port][qindex] headrooom[port] getsharedused(port, qindex), getpfcthreshold(port) for port qindex 1048 0 336 0 1447 1 3
++36016197.0ns buffer.size() 20480 711 8192 0
++36016197.0ns get pfc threshold 11577
++36016197.0ns adding to switch memory
++36016197.0ns update ingress new bytes reserve shared_used_bytes are 1048 4096 0
++36016197.0ns current byte 1048 less than reserve 4096
++36016197.0ns in update ingress hdrm_bytes[port][qindex] shared_used_bytes ingress_bytes[port][qIndex] 0 0 1048 1 3
++36016197.0ns buffer.size() 20480 711 8192 0
++36016197.0ns get pfc threshold 11577
++36016197.0ns Enqueue: Number packets 1
++36016197.0ns Enqueue: Number bytes 1048
++36016197.0ns dequeue and transmit called in SwitchSend
++36016197.0ns channel busy 
++41920092.0ns dequeue and transmit called in TransmitComplete
++41920092.0ns in switch m_paused is 0x563283841a08
++41920092.0ns Dequeue: Popped 0x563283801850
++41920092.0ns Dequeue: Number packets 0
++41920092.0ns Dequeue: Number bytes 0
++41920092.0ns queue can deliver packet 
++41920092.0ns queue index in switch is 3
++41920092.0ns send packet normal from SWITCH
++41920092.0ns ingress port and queue is 1 3
++41920092.0ns egress port and queue is 2 3
++41920092.0ns transmit start in switch 
++41920092.0ns m_bps is 1000000bps
++41920092.0ns txtime for packet in sec is 0.008384
++41920092.0ns txCompleteTime for packet in sec is 0.008384
++41920092.0ns transmit done
++42920092.0ns receive packet 
++42920092.0ns receive normal packet 
++42920092.0ns receive normal packet at normal node rdma hw 
++42920092.0ns Enqueue: Number packets 1
++42920092.0ns Enqueue: Number bytes 60
++42920092.0ns dequeue and transmit called in TriggerTransmit
++42920092.0ns in GetNextQindex
++42920092.0ns qIndex is -1
++42920092.0ns there are packet to send
++42920092.0ns there are packet to send in high priority
++42920092.0ns Dequeue: Popped 0x563283801930
++42920092.0ns Dequeue: Number packets 0
++42920092.0ns Dequeue: Number bytes 0
++42920092.0ns m_bps is 1000000bps
++42920092.0ns txtime for packet in sec is 0.00048
++42920092.0ns txCompleteTime for packet in sec is 0.00048
++43400092.0ns dequeue and transmit called in TransmitComplete
++43400092.0ns in GetNextQindex
++43400092.0ns fcount and m_rrlast is 0 0
++43400092.0ns clear the finished qp 
++43400092.0ns res/qindex is -1024
++43400092.0ns qIndex is -1024
++43400092.0ns there are no packet to send
++44400092.0ns receive packet 
++44400092.0ns receive normal packet 
++44400092.0ns buffer.size() 20480 711 8192 0
++44400092.0ns get pfc threshold 11577
++44400092.0ns check ingress psize hdrm_bytes[port][qindex] headrooom[port] getsharedused(port, qindex), getpfcthreshold(port) for port qindex 60 0 375 0 1447 2 3
++44400092.0ns adding to switch memory
++44400092.0ns update ingress new bytes reserve shared_used_bytes are 60 4096 0
++44400092.0ns current byte 60 less than reserve 4096
++44400092.0ns in update ingress hdrm_bytes[port][qindex] shared_used_bytes ingress_bytes[port][qIndex] 0 0 60 2 3
++44400092.0ns buffer.size() 20480 711 8192 0
++44400092.0ns get pfc threshold 11577
++44400092.0ns Enqueue: Number packets 1
++44400092.0ns Enqueue: Number bytes 60
++44400092.0ns dequeue and transmit called in SwitchSend
++44400092.0ns in switch m_paused is 0x563283808468
++44400092.0ns Dequeue: Popped 0x563283801930
++44400092.0ns Dequeue: Number packets 0
++44400092.0ns Dequeue: Number bytes 0
++44400092.0ns queue can deliver packet 
++44400092.0ns queue index in switch is 3
++44400092.0ns send packet normal from SWITCH
++44400092.0ns ingress port and queue is 2 3
++44400092.0ns egress port and queue is 1 3
++44400092.0ns transmit start in switch 
++44400092.0ns m_bps is 100000000000bps
++44400092.0ns txtime for packet in sec is 4e-09
++44400092.0ns txCompleteTime for packet in sec is 4e-09
++44400092.0ns transmit done
++44400096.0ns dequeue and transmit called in TransmitComplete
++44400096.0ns in switch m_paused is 0x563283808468
++44400096.0ns no queue can delier packet pause prohibits send at node in switch 2
++44400096.0ns returning from dequeue and transmit 
++44400105.0ns receive packet 
++44400105.0ns receive normal packet 
++44400105.0ns receive normal packet at normal node rdma hw 
++44400105.0ns dequeue and transmit called in TriggerTransmit
++44400105.0ns in GetNextQindex
++44400105.0ns fcount and m_rrlast is 1 0
++44400105.0ns idx is 0
+window is 1250
+get on the fly packets 6000 5000 1000
++44400105.0ns paused qp->m_pg , qp getbyteleft, qp iswinbound is false 3000 false
+window is 1250
+get on the fly packets 6000 5000 1000
++44400105.0ns there is byte left 
++44400105.0ns clear the finished qp 
++44400105.0ns res/qindex is 0
++44400105.0ns qIndex is 0
++44400105.0ns there are packet to send
++44400105.0ns transmit started 
++44400105.0ns m_bps is 100000000000bps
++44400105.0ns txtime for packet in sec is 8.3e-08
++44400105.0ns txCompleteTime for packet in sec is 8.3e-08
++44400188.0ns dequeue and transmit called in TransmitComplete
++44400188.0ns in GetNextQindex
++44400188.0ns fcount and m_rrlast is 1 0
++44400188.0ns idx is 0
+window is 1250
+get on the fly packets 7000 5000 2000
++44400188.0ns paused qp->m_pg , qp getbyteleft, qp iswinbound is false 2000 true
+window is 1250
+get on the fly packets 7000 5000 2000
++44400188.0ns clear the finished qp 
++44400188.0ns res/qindex is -1024
++44400188.0ns qIndex is -1024
++44400188.0ns there are no packet to send
++44400197.0ns receive packet 
++44400197.0ns receive normal packet 
++44400197.0ns buffer.size() 20480 711 8192 0
++44400197.0ns get pfc threshold 11577
++44400197.0ns check ingress psize hdrm_bytes[port][qindex] headrooom[port] getsharedused(port, qindex), getpfcthreshold(port) for port qindex 1048 0 336 0 1447 1 3
++44400197.0ns buffer.size() 20480 711 8192 0
++44400197.0ns get pfc threshold 11577
++44400197.0ns adding to switch memory
++44400197.0ns update ingress new bytes reserve shared_used_bytes are 1048 4096 0
++44400197.0ns current byte 1048 less than reserve 4096
++44400197.0ns in update ingress hdrm_bytes[port][qindex] shared_used_bytes ingress_bytes[port][qIndex] 0 0 1048 1 3
++44400197.0ns buffer.size() 20480 711 8192 0
++44400197.0ns get pfc threshold 11577
++44400197.0ns Enqueue: Number packets 1
++44400197.0ns Enqueue: Number bytes 1048
++44400197.0ns dequeue and transmit called in SwitchSend
++44400197.0ns channel busy 
++50304092.0ns dequeue and transmit called in TransmitComplete
++50304092.0ns in switch m_paused is 0x563283841a08
++50304092.0ns Dequeue: Popped 0x563283806b40
++50304092.0ns Dequeue: Number packets 0
++50304092.0ns Dequeue: Number bytes 0
++50304092.0ns queue can deliver packet 
++50304092.0ns queue index in switch is 3
++50304092.0ns send packet normal from SWITCH
++50304092.0ns ingress port and queue is 1 3
++50304092.0ns egress port and queue is 2 3
++50304092.0ns transmit start in switch 
++50304092.0ns m_bps is 1000000bps
++50304092.0ns txtime for packet in sec is 0.008384
++50304092.0ns txCompleteTime for packet in sec is 0.008384
++50304092.0ns transmit done
++51304092.0ns receive packet 
++51304092.0ns receive normal packet 
++51304092.0ns receive normal packet at normal node rdma hw 
++51304092.0ns Enqueue: Number packets 1
++51304092.0ns Enqueue: Number bytes 60
++51304092.0ns dequeue and transmit called in TriggerTransmit
++51304092.0ns in GetNextQindex
++51304092.0ns qIndex is -1
++51304092.0ns there are packet to send
++51304092.0ns there are packet to send in high priority
++51304092.0ns Dequeue: Popped 0x563283801930
++51304092.0ns Dequeue: Number packets 0
++51304092.0ns Dequeue: Number bytes 0
++51304092.0ns m_bps is 1000000bps
++51304092.0ns txtime for packet in sec is 0.00048
++51304092.0ns txCompleteTime for packet in sec is 0.00048
++51784092.0ns dequeue and transmit called in TransmitComplete
++51784092.0ns in GetNextQindex
++51784092.0ns fcount and m_rrlast is 0 0
++51784092.0ns clear the finished qp 
++51784092.0ns res/qindex is -1024
++51784092.0ns qIndex is -1024
++51784092.0ns there are no packet to send
++52784092.0ns receive packet 
++52784092.0ns receive normal packet 
++52784092.0ns buffer.size() 20480 711 8192 0
++52784092.0ns get pfc threshold 11577
++52784092.0ns check ingress psize hdrm_bytes[port][qindex] headrooom[port] getsharedused(port, qindex), getpfcthreshold(port) for port qindex 60 0 375 0 1447 2 3
++52784092.0ns adding to switch memory
++52784092.0ns update ingress new bytes reserve shared_used_bytes are 60 4096 0
++52784092.0ns current byte 60 less than reserve 4096
++52784092.0ns in update ingress hdrm_bytes[port][qindex] shared_used_bytes ingress_bytes[port][qIndex] 0 0 60 2 3
++52784092.0ns buffer.size() 20480 711 8192 0
++52784092.0ns get pfc threshold 11577
++52784092.0ns Enqueue: Number packets 1
++52784092.0ns Enqueue: Number bytes 60
++52784092.0ns dequeue and transmit called in SwitchSend
++52784092.0ns in switch m_paused is 0x563283808468
++52784092.0ns Dequeue: Popped 0x563283801930
++52784092.0ns Dequeue: Number packets 0
++52784092.0ns Dequeue: Number bytes 0
++52784092.0ns queue can deliver packet 
++52784092.0ns queue index in switch is 3
++52784092.0ns send packet normal from SWITCH
++52784092.0ns ingress port and queue is 2 3
++52784092.0ns egress port and queue is 1 3
++52784092.0ns transmit start in switch 
++52784092.0ns m_bps is 100000000000bps
++52784092.0ns txtime for packet in sec is 4e-09
++52784092.0ns txCompleteTime for packet in sec is 4e-09
++52784092.0ns transmit done
++52784096.0ns dequeue and transmit called in TransmitComplete
++52784096.0ns in switch m_paused is 0x563283808468
++52784096.0ns no queue can delier packet pause prohibits send at node in switch 2
++52784096.0ns returning from dequeue and transmit 
++52784105.0ns receive packet 
++52784105.0ns receive normal packet 
++52784105.0ns receive normal packet at normal node rdma hw 
++52784105.0ns dequeue and transmit called in TriggerTransmit
++52784105.0ns in GetNextQindex
++52784105.0ns fcount and m_rrlast is 1 0
++52784105.0ns idx is 0
+window is 1250
+get on the fly packets 7000 6000 1000
++52784105.0ns paused qp->m_pg , qp getbyteleft, qp iswinbound is false 2000 false
+window is 1250
+get on the fly packets 7000 6000 1000
++52784105.0ns there is byte left 
++52784105.0ns clear the finished qp 
++52784105.0ns res/qindex is 0
++52784105.0ns qIndex is 0
++52784105.0ns there are packet to send
++52784105.0ns transmit started 
++52784105.0ns m_bps is 100000000000bps
++52784105.0ns txtime for packet in sec is 8.3e-08
++52784105.0ns txCompleteTime for packet in sec is 8.3e-08
++52784188.0ns dequeue and transmit called in TransmitComplete
++52784188.0ns in GetNextQindex
++52784188.0ns fcount and m_rrlast is 1 0
++52784188.0ns idx is 0
+window is 1250
+get on the fly packets 8000 6000 2000
++52784188.0ns paused qp->m_pg , qp getbyteleft, qp iswinbound is false 1000 true
+window is 1250
+get on the fly packets 8000 6000 2000
++52784188.0ns clear the finished qp 
++52784188.0ns res/qindex is -1024
++52784188.0ns qIndex is -1024
++52784188.0ns there are no packet to send
++52784197.0ns receive packet 
++52784197.0ns receive normal packet 
++52784197.0ns buffer.size() 20480 711 8192 0
++52784197.0ns get pfc threshold 11577
++52784197.0ns check ingress psize hdrm_bytes[port][qindex] headrooom[port] getsharedused(port, qindex), getpfcthreshold(port) for port qindex 1048 0 336 0 1447 1 3
++52784197.0ns buffer.size() 20480 711 8192 0
++52784197.0ns get pfc threshold 11577
++52784197.0ns adding to switch memory
++52784197.0ns update ingress new bytes reserve shared_used_bytes are 1048 4096 0
++52784197.0ns current byte 1048 less than reserve 4096
++52784197.0ns in update ingress hdrm_bytes[port][qindex] shared_used_bytes ingress_bytes[port][qIndex] 0 0 1048 1 3
++52784197.0ns buffer.size() 20480 711 8192 0
++52784197.0ns get pfc threshold 11577
++52784197.0ns Enqueue: Number packets 1
++52784197.0ns Enqueue: Number bytes 1048
++52784197.0ns dequeue and transmit called in SwitchSend
++52784197.0ns channel busy 
++58688092.0ns dequeue and transmit called in TransmitComplete
++58688092.0ns in switch m_paused is 0x563283841a08
++58688092.0ns Dequeue: Popped 0x563283801850
++58688092.0ns Dequeue: Number packets 0
++58688092.0ns Dequeue: Number bytes 0
++58688092.0ns queue can deliver packet 
++58688092.0ns queue index in switch is 3
++58688092.0ns send packet normal from SWITCH
++58688092.0ns ingress port and queue is 1 3
++58688092.0ns egress port and queue is 2 3
++58688092.0ns transmit start in switch 
++58688092.0ns m_bps is 1000000bps
++58688092.0ns txtime for packet in sec is 0.008384
++58688092.0ns txCompleteTime for packet in sec is 0.008384
++58688092.0ns transmit done
++59688092.0ns receive packet 
++59688092.0ns receive normal packet 
++59688092.0ns receive normal packet at normal node rdma hw 
++59688092.0ns Enqueue: Number packets 1
++59688092.0ns Enqueue: Number bytes 60
++59688092.0ns dequeue and transmit called in TriggerTransmit
++59688092.0ns in GetNextQindex
++59688092.0ns qIndex is -1
++59688092.0ns there are packet to send
++59688092.0ns there are packet to send in high priority
++59688092.0ns Dequeue: Popped 0x563283801930
++59688092.0ns Dequeue: Number packets 0
++59688092.0ns Dequeue: Number bytes 0
++59688092.0ns m_bps is 1000000bps
++59688092.0ns txtime for packet in sec is 0.00048
++59688092.0ns txCompleteTime for packet in sec is 0.00048
++60168092.0ns dequeue and transmit called in TransmitComplete
++60168092.0ns in GetNextQindex
++60168092.0ns fcount and m_rrlast is 0 0
++60168092.0ns clear the finished qp 
++60168092.0ns res/qindex is -1024
++60168092.0ns qIndex is -1024
++60168092.0ns there are no packet to send
++61168092.0ns receive packet 
++61168092.0ns receive normal packet 
++61168092.0ns buffer.size() 20480 711 8192 0
++61168092.0ns get pfc threshold 11577
++61168092.0ns check ingress psize hdrm_bytes[port][qindex] headrooom[port] getsharedused(port, qindex), getpfcthreshold(port) for port qindex 60 0 375 0 1447 2 3
++61168092.0ns adding to switch memory
++61168092.0ns update ingress new bytes reserve shared_used_bytes are 60 4096 0
++61168092.0ns current byte 60 less than reserve 4096
++61168092.0ns in update ingress hdrm_bytes[port][qindex] shared_used_bytes ingress_bytes[port][qIndex] 0 0 60 2 3
++61168092.0ns buffer.size() 20480 711 8192 0
++61168092.0ns get pfc threshold 11577
++61168092.0ns Enqueue: Number packets 1
++61168092.0ns Enqueue: Number bytes 60
++61168092.0ns dequeue and transmit called in SwitchSend
++61168092.0ns in switch m_paused is 0x563283808468
++61168092.0ns Dequeue: Popped 0x563283801930
++61168092.0ns Dequeue: Number packets 0
++61168092.0ns Dequeue: Number bytes 0
++61168092.0ns queue can deliver packet 
++61168092.0ns queue index in switch is 3
++61168092.0ns send packet normal from SWITCH
++61168092.0ns ingress port and queue is 2 3
++61168092.0ns egress port and queue is 1 3
++61168092.0ns transmit start in switch 
++61168092.0ns m_bps is 100000000000bps
++61168092.0ns txtime for packet in sec is 4e-09
++61168092.0ns txCompleteTime for packet in sec is 4e-09
++61168092.0ns transmit done
++61168096.0ns dequeue and transmit called in TransmitComplete
++61168096.0ns in switch m_paused is 0x563283808468
++61168096.0ns no queue can delier packet pause prohibits send at node in switch 2
++61168096.0ns returning from dequeue and transmit 
++61168105.0ns receive packet 
++61168105.0ns receive normal packet 
++61168105.0ns receive normal packet at normal node rdma hw 
++61168105.0ns dequeue and transmit called in TriggerTransmit
++61168105.0ns in GetNextQindex
++61168105.0ns fcount and m_rrlast is 1 0
++61168105.0ns idx is 0
+window is 1250
+get on the fly packets 8000 7000 1000
++61168105.0ns paused qp->m_pg , qp getbyteleft, qp iswinbound is false 1000 false
+window is 1250
+get on the fly packets 8000 7000 1000
++61168105.0ns there is byte left 
++61168105.0ns clear the finished qp 
++61168105.0ns res/qindex is 0
++61168105.0ns qIndex is 0
++61168105.0ns there are packet to send
++61168105.0ns transmit started 
++61168105.0ns m_bps is 100000000000bps
++61168105.0ns txtime for packet in sec is 8.3e-08
++61168105.0ns txCompleteTime for packet in sec is 8.3e-08
++61168188.0ns dequeue and transmit called in TransmitComplete
++61168188.0ns in GetNextQindex
++61168188.0ns fcount and m_rrlast is 1 0
++61168188.0ns idx is 0
+window is 1250
+get on the fly packets 9000 7000 2000
++61168188.0ns paused qp->m_pg , qp getbyteleft, qp iswinbound is false 0 true
++61168188.0ns clear the finished qp 
++61168188.0ns res/qindex is -1024
++61168188.0ns qIndex is -1024
++61168188.0ns there are no packet to send
++61168188.0ns get byte left in dequeue transmit
++61168197.0ns receive packet 
++61168197.0ns receive normal packet 
++61168197.0ns buffer.size() 20480 711 8192 0
++61168197.0ns get pfc threshold 11577
++61168197.0ns check ingress psize hdrm_bytes[port][qindex] headrooom[port] getsharedused(port, qindex), getpfcthreshold(port) for port qindex 1048 0 336 0 1447 1 3
++61168197.0ns buffer.size() 20480 711 8192 0
++61168197.0ns get pfc threshold 11577
++61168197.0ns adding to switch memory
++61168197.0ns update ingress new bytes reserve shared_used_bytes are 1048 4096 0
++61168197.0ns current byte 1048 less than reserve 4096
++61168197.0ns in update ingress hdrm_bytes[port][qindex] shared_used_bytes ingress_bytes[port][qIndex] 0 0 1048 1 3
++61168197.0ns buffer.size() 20480 711 8192 0
++61168197.0ns get pfc threshold 11577
++61168197.0ns Enqueue: Number packets 1
++61168197.0ns Enqueue: Number bytes 1048
++61168197.0ns dequeue and transmit called in SwitchSend
++61168197.0ns channel busy 
++67072092.0ns dequeue and transmit called in TransmitComplete
++67072092.0ns in switch m_paused is 0x563283841a08
++67072092.0ns Dequeue: Popped 0x563283806b40
++67072092.0ns Dequeue: Number packets 0
++67072092.0ns Dequeue: Number bytes 0
++67072092.0ns queue can deliver packet 
++67072092.0ns queue index in switch is 3
++67072092.0ns send packet normal from SWITCH
++67072092.0ns ingress port and queue is 1 3
++67072092.0ns egress port and queue is 2 3
++67072092.0ns transmit start in switch 
++67072092.0ns m_bps is 1000000bps
++67072092.0ns txtime for packet in sec is 0.008384
++67072092.0ns txCompleteTime for packet in sec is 0.008384
++67072092.0ns transmit done
++68072092.0ns receive packet 
++68072092.0ns receive normal packet 
++68072092.0ns receive normal packet at normal node rdma hw 
++68072092.0ns Enqueue: Number packets 1
++68072092.0ns Enqueue: Number bytes 60
++68072092.0ns dequeue and transmit called in TriggerTransmit
++68072092.0ns in GetNextQindex
++68072092.0ns qIndex is -1
++68072092.0ns there are packet to send
++68072092.0ns there are packet to send in high priority
++68072092.0ns Dequeue: Popped 0x563283801930
++68072092.0ns Dequeue: Number packets 0
++68072092.0ns Dequeue: Number bytes 0
++68072092.0ns m_bps is 1000000bps
++68072092.0ns txtime for packet in sec is 0.00048
++68072092.0ns txCompleteTime for packet in sec is 0.00048
++68552092.0ns dequeue and transmit called in TransmitComplete
++68552092.0ns in GetNextQindex
++68552092.0ns fcount and m_rrlast is 0 0
++68552092.0ns clear the finished qp 
++68552092.0ns res/qindex is -1024
++68552092.0ns qIndex is -1024
++68552092.0ns there are no packet to send
++69552092.0ns receive packet 
++69552092.0ns receive normal packet 
++69552092.0ns buffer.size() 20480 711 8192 0
++69552092.0ns get pfc threshold 11577
++69552092.0ns check ingress psize hdrm_bytes[port][qindex] headrooom[port] getsharedused(port, qindex), getpfcthreshold(port) for port qindex 60 0 375 0 1447 2 3
++69552092.0ns adding to switch memory
++69552092.0ns update ingress new bytes reserve shared_used_bytes are 60 4096 0
++69552092.0ns current byte 60 less than reserve 4096
++69552092.0ns in update ingress hdrm_bytes[port][qindex] shared_used_bytes ingress_bytes[port][qIndex] 0 0 60 2 3
++69552092.0ns buffer.size() 20480 711 8192 0
++69552092.0ns get pfc threshold 11577
++69552092.0ns Enqueue: Number packets 1
++69552092.0ns Enqueue: Number bytes 60
++69552092.0ns dequeue and transmit called in SwitchSend
++69552092.0ns in switch m_paused is 0x563283808468
++69552092.0ns Dequeue: Popped 0x563283801930
++69552092.0ns Dequeue: Number packets 0
++69552092.0ns Dequeue: Number bytes 0
++69552092.0ns queue can deliver packet 
++69552092.0ns queue index in switch is 3
++69552092.0ns send packet normal from SWITCH
++69552092.0ns ingress port and queue is 2 3
++69552092.0ns egress port and queue is 1 3
++69552092.0ns transmit start in switch 
++69552092.0ns m_bps is 100000000000bps
++69552092.0ns txtime for packet in sec is 4e-09
++69552092.0ns txCompleteTime for packet in sec is 4e-09
++69552092.0ns transmit done
++69552096.0ns dequeue and transmit called in TransmitComplete
++69552096.0ns in switch m_paused is 0x563283808468
++69552096.0ns no queue can delier packet pause prohibits send at node in switch 2
++69552096.0ns returning from dequeue and transmit 
++69552105.0ns receive packet 
++69552105.0ns receive normal packet 
++69552105.0ns receive normal packet at normal node rdma hw 
++69552105.0ns dequeue and transmit called in TriggerTransmit
++69552105.0ns in GetNextQindex
++69552105.0ns fcount and m_rrlast is 1 0
++69552105.0ns idx is 0
+window is 1250
+get on the fly packets 9000 8000 1000
++69552105.0ns paused qp->m_pg , qp getbyteleft, qp iswinbound is false 0 false
++69552105.0ns clear the finished qp 
++69552105.0ns res/qindex is -1024
++69552105.0ns qIndex is -1024
++69552105.0ns there are no packet to send
++69552105.0ns get byte left in dequeue transmit
++75456092.0ns dequeue and transmit called in TransmitComplete
++75456092.0ns in switch m_paused is 0x563283841a08
++75456092.0ns no queue can delier packet pause prohibits send at node in switch 2
++75456092.0ns returning from dequeue and transmit 
++76456092.0ns receive packet 
++76456092.0ns receive normal packet 
++76456092.0ns receive normal packet at normal node rdma hw 
++76456092.0ns Enqueue: Number packets 1
++76456092.0ns Enqueue: Number bytes 60
++76456092.0ns dequeue and transmit called in TriggerTransmit
++76456092.0ns in GetNextQindex
++76456092.0ns qIndex is -1
++76456092.0ns there are packet to send
++76456092.0ns there are packet to send in high priority
++76456092.0ns Dequeue: Popped 0x563283801930
++76456092.0ns Dequeue: Number packets 0
++76456092.0ns Dequeue: Number bytes 0
++76456092.0ns m_bps is 1000000bps
++76456092.0ns txtime for packet in sec is 0.00048
++76456092.0ns txCompleteTime for packet in sec is 0.00048
++76936092.0ns dequeue and transmit called in TransmitComplete
++76936092.0ns in GetNextQindex
++76936092.0ns fcount and m_rrlast is 0 0
++76936092.0ns clear the finished qp 
++76936092.0ns res/qindex is -1024
++76936092.0ns qIndex is -1024
++76936092.0ns there are no packet to send
++77936092.0ns receive packet 
++77936092.0ns receive normal packet 
++77936092.0ns buffer.size() 20480 711 8192 0
++77936092.0ns get pfc threshold 11577
++77936092.0ns check ingress psize hdrm_bytes[port][qindex] headrooom[port] getsharedused(port, qindex), getpfcthreshold(port) for port qindex 60 0 375 0 1447 2 3
++77936092.0ns adding to switch memory
++77936092.0ns update ingress new bytes reserve shared_used_bytes are 60 4096 0
++77936092.0ns current byte 60 less than reserve 4096
++77936092.0ns in update ingress hdrm_bytes[port][qindex] shared_used_bytes ingress_bytes[port][qIndex] 0 0 60 2 3
++77936092.0ns buffer.size() 20480 711 8192 0
++77936092.0ns get pfc threshold 11577
++77936092.0ns Enqueue: Number packets 1
++77936092.0ns Enqueue: Number bytes 60
++77936092.0ns dequeue and transmit called in SwitchSend
++77936092.0ns in switch m_paused is 0x563283808468
++77936092.0ns Dequeue: Popped 0x563283801930
++77936092.0ns Dequeue: Number packets 0
++77936092.0ns Dequeue: Number bytes 0
++77936092.0ns queue can deliver packet 
++77936092.0ns queue index in switch is 3
++77936092.0ns send packet normal from SWITCH
++77936092.0ns ingress port and queue is 2 3
++77936092.0ns egress port and queue is 1 3
++77936092.0ns transmit start in switch 
++77936092.0ns m_bps is 100000000000bps
++77936092.0ns txtime for packet in sec is 4e-09
++77936092.0ns txCompleteTime for packet in sec is 4e-09
++77936092.0ns transmit done
++77936096.0ns dequeue and transmit called in TransmitComplete
++77936096.0ns in switch m_paused is 0x563283808468
++77936096.0ns no queue can delier packet pause prohibits send at node in switch 2
++77936096.0ns returning from dequeue and transmit 
++77936105.0ns receive packet 
++77936105.0ns receive normal packet 
++77936105.0ns receive normal packet at normal node rdma hw 
++77936105.0ns dequeue and transmit called in TriggerTransmit
++77936105.0ns in GetNextQindex
++77936105.0ns fcount and m_rrlast is 1 0
++77936105.0ns idx is 0
+window is 1250
+get on the fly packets 9000 9000 0
++77936105.0ns paused qp->m_pg , qp getbyteleft, qp iswinbound is false 0 false
++77936105.0ns finished id  is 0
++77936105.0ns min finish id clear queue is 0
++77936105.0ns qps size is0
++77936105.0ns clear the finished qp 
++77936105.0ns res/qindex is -1024
++77936105.0ns qIndex is -1024
++77936105.0ns there are no packet to send

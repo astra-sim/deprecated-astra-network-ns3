@@ -1,0 +1,229 @@
+Success in opening system file
+Var is: scheduling-policy: ,val is: LIFO
+Var is: endpoint-delay: ,val is: 10
+Var is: active-chunks-per-dimension: ,val is: 1
+Var is: preferred-dataset-splits: ,val is: 4
+Var is: boost-mode: ,val is: 0
+Var is: all-reduce-implementation: ,val is: halvingDoubling
+Var is: all-gather-implementation: ,val is: halvingDoubling
+Var is: reduce-scatter-implementation: ,val is: halvingDoubling
+Var is: all-to-all-implementation: ,val is: direct
+Var is: collective-optimization: ,val is: localBWAware
+Var is:  ,val is: localBWAware
+The final active chunks per dimension 1 after allocating to queues is: 1
+ring of node 0, id: 0 dimension: local total nodes in ring: 2 index in ring: 0 offset: 1total nodes in ring: 2
+ring of node 0, id: 0 dimension: local total nodes in ring: 2 index in ring: 0 offset: 1total nodes in ring: 2
+ring of node 0, id: 0 dimension: local total nodes in ring: 2 index in ring: 0 offset: 1total nodes in ring: 2
+ring of node 0, id: 0 dimension: local total nodes in ring: 2 index in ring: 0 offset: 1total nodes in ring: 2
+total nodes: 2
+LogGP model, the local reduction delay is: 1
+LogGP model, the local reduction delay is: 1
+LogGP model, the local reduction delay is: 1
+LogGP model, the local reduction delay is: 1
+Shared bus modeling enabled? false
+LogGP model, the L is:0 ,o is: 0 ,g is: 0 ,G is: 0.0038
+communication delay (in the case of disabled shared bus): 10
+Shared bus modeling enabled? false
+LogGP model, the L is:0 ,o is: 0 ,g is: 0 ,G is: 0
+communication delay (in the case of disabled shared bus): 10
+Success in opening workload file
+id: conv1 , depen: -1 , wg_comp_time: 5
+type: MICRO ,num passes: 1 ,lines: 1 compute scale: 1 ,comm scale: 512
+stat path: scratch/results/ ,total rows: 1 ,stat row: 0
+CSV path and filename: scratch/results/detailed.csv
+Success in opening CSV file for writing the report.
+CSV path and filename: scratch/results/EndToEnd.csv
+Success in opening CSV file for writing the report.
+nodes created
+Create channels
+2 0 1Gbps src dst data_rate
++0.0ns get data rate in point to point model is 1000000000bps
++0.0ns get data rate in point to point model is 1000000000bps
+2 1 0.001Gbps src dst data_rate
++0.0ns get data rate in point to point model is 1000000bps
++0.0ns get data rate in point to point model is 1000000bps
++0.0ns get data rate in point to point model is 1000000000bps
++0.0ns get data rate in point to point model is 1000000000bps
+rate, delay and headroom are 1000000000 1000 375
++0.0ns get data rate in point to point model is 1000000bps
+rate, delay and headroom are 1000000 1000000 375
+buffer size in configbuffersize is 1048576
+0 0 delay txDelay rtt bw bdp  are 0 0 0 18446744073709551615 0
+0 1 delay txDelay rtt bw bdp  are 1001000 8008000 10010000 1000000 1251
+1 0 delay txDelay rtt bw bdp  are 1001000 8008000 10010000 1000000 1251
+1 1 delay txDelay rtt bw bdp  are 0 0 0 18446744073709551615 0
+maxRtt=10010000 maxBdp=1251
++0.0ns get data rate in point to point model is 1000000000bps
++0.0ns get data rate in point to point model is 1000000bps
++0.0ns get data rate in point to point model is 1000000000bps
++0.0ns get data rate in point to point model is 1000000bps
+Running Simulation.
+lets go 
+src dst cOUNT IN SEND IS 0 1 2000
+pg srcIP dstIP srcPort dstPort WriteSize BaseRTT Tag src dest 3 0.0 0.1 10000 100 2000 1251 10010000 100 0 1
+simulator now +0.0ns
+window size is 1251
+basertt is 10010000
+is window variable? true
++0.0ns get data rate in point to point model is 1000000000bps
+data rate of nic is CHECK IF SAME AS LINK RATE 1000000000bps
++0.0ns dequeue and transmit called in NewQp
+qIndex is 0
+there are packet to send
+transmit started 
++0.0ns m_bps is 1000000000bps
+txtime for packet in sec is 8.383e-06
+txCompleteTime for packet in sec is 8.383e-06
++8383.0ns dequeue and transmit called in TransmitComplete
+qIndex is 0
+there are packet to send
+transmit started 
++8383.0ns m_bps is 1000000000bps
+txtime for packet in sec is 8.383e-06
+txCompleteTime for packet in sec is 8.383e-06
+receive packet 
+receive normal packet 
+get pfc threshold 1039634
+check ingress psize hdrm_bytes[port][qindex] headrooom[port] getsharedused(port, qindex), getpfcthreshold(port) for port qindex 1048 0 375 0 129954 1 3
+get pfc threshold 1039634
+adding to switch memory
+update ingress new bytes reserve shared_used_bytes are 1048 4096 0
+current byte 1048 less than reserve 4096
+in update ingress hdrm_bytes[port][qindex] shared_used_bytes ingress_bytes[port][qIndex] 0 0 1048 1 3
+get pfc threshold 1039634
++9383.0ns Enqueue: Number packets 1
++9383.0ns Enqueue: Number bytes 1048
++9383.0ns dequeue and transmit called in SwitchSend
++9383.0ns Dequeue: Popped 0x557ba67dda70
++9383.0ns Dequeue: Number packets 0
++9383.0ns Dequeue: Number bytes 0
+send packet normal from SWITCH
+ingress port and queue is 1 3
+egress port and queue is 2 3
++9383.0ns m_bps is 1000000bps
+txtime for packet in sec is 0.008384
+txCompleteTime for packet in sec is 0.008384
++16766.0ns dequeue and transmit called in TransmitComplete
+qIndex is -1024
+there are no packet to send
+get byte left in dequeue transmit
+receive packet 
+receive normal packet 
+get pfc threshold 1039634
+check ingress psize hdrm_bytes[port][qindex] headrooom[port] getsharedused(port, qindex), getpfcthreshold(port) for port qindex 1048 0 375 0 129954 1 3
+get pfc threshold 1039634
+adding to switch memory
+update ingress new bytes reserve shared_used_bytes are 1048 4096 0
+current byte 1048 less than reserve 4096
+in update ingress hdrm_bytes[port][qindex] shared_used_bytes ingress_bytes[port][qIndex] 0 0 1048 1 3
+get pfc threshold 1039634
++17766.0ns Enqueue: Number packets 1
++17766.0ns Enqueue: Number bytes 1048
++17766.0ns dequeue and transmit called in SwitchSend
++8393383.0ns dequeue and transmit called in TransmitComplete
++8393383.0ns Dequeue: Popped 0x557ba67d8850
++8393383.0ns Dequeue: Number packets 0
++8393383.0ns Dequeue: Number bytes 0
+send packet normal from SWITCH
+ingress port and queue is 1 3
+egress port and queue is 2 3
++8393383.0ns m_bps is 1000000bps
+txtime for packet in sec is 0.008384
+txCompleteTime for packet in sec is 0.008384
+receive packet 
+receive normal packet 
+receive normal packet at normal node rdma hw 
++9393383.0ns Enqueue: Number packets 1
++9393383.0ns Enqueue: Number bytes 60
++9393383.0ns dequeue and transmit called in TriggerTransmit
+qIndex is -1
+there are packet to send
+there are packet to send in high priority
++9393383.0ns Dequeue: Popped 0x557ba67d8930
++9393383.0ns Dequeue: Number packets 0
++9393383.0ns Dequeue: Number bytes 0
++9393383.0ns m_bps is 1000000bps
+txtime for packet in sec is 0.00048
+txCompleteTime for packet in sec is 0.00048
++9873383.0ns dequeue and transmit called in TransmitComplete
+qIndex is -1024
+there are no packet to send
+receive packet 
+receive normal packet 
+get pfc threshold 1039634
+check ingress psize hdrm_bytes[port][qindex] headrooom[port] getsharedused(port, qindex), getpfcthreshold(port) for port qindex 60 0 375 0 129954 2 3
+adding to switch memory
+update ingress new bytes reserve shared_used_bytes are 60 4096 0
+current byte 60 less than reserve 4096
+in update ingress hdrm_bytes[port][qindex] shared_used_bytes ingress_bytes[port][qIndex] 0 0 60 2 3
+get pfc threshold 1039634
++10873383.0ns Enqueue: Number packets 1
++10873383.0ns Enqueue: Number bytes 60
++10873383.0ns dequeue and transmit called in SwitchSend
++10873383.0ns Dequeue: Popped 0x557ba67d8930
++10873383.0ns Dequeue: Number packets 0
++10873383.0ns Dequeue: Number bytes 0
+send packet normal from SWITCH
+ingress port and queue is 2 3
+egress port and queue is 1 3
++10873383.0ns m_bps is 1000000000bps
+txtime for packet in sec is 4.79e-07
+txCompleteTime for packet in sec is 4.79e-07
++10873862.0ns dequeue and transmit called in TransmitComplete
+pause prohibits send at node in switch 2
+receive packet 
+receive normal packet 
+receive normal packet at normal node rdma hw 
++10874862.0ns dequeue and transmit called in TriggerTransmit
+qIndex is -1024
+there are no packet to send
+get byte left in dequeue transmit
++16777383.0ns dequeue and transmit called in TransmitComplete
+pause prohibits send at node in switch 2
+receive packet 
+receive normal packet 
+receive normal packet at normal node rdma hw 
++17777383.0ns Enqueue: Number packets 1
++17777383.0ns Enqueue: Number bytes 60
++17777383.0ns dequeue and transmit called in TriggerTransmit
+qIndex is -1
+there are packet to send
+there are packet to send in high priority
++17777383.0ns Dequeue: Popped 0x557ba67d8930
++17777383.0ns Dequeue: Number packets 0
++17777383.0ns Dequeue: Number bytes 0
++17777383.0ns m_bps is 1000000bps
+txtime for packet in sec is 0.00048
+txCompleteTime for packet in sec is 0.00048
++18257383.0ns dequeue and transmit called in TransmitComplete
+qIndex is -1024
+there are no packet to send
+receive packet 
+receive normal packet 
+get pfc threshold 1039634
+check ingress psize hdrm_bytes[port][qindex] headrooom[port] getsharedused(port, qindex), getpfcthreshold(port) for port qindex 60 0 375 0 129954 2 3
+adding to switch memory
+update ingress new bytes reserve shared_used_bytes are 60 4096 0
+current byte 60 less than reserve 4096
+in update ingress hdrm_bytes[port][qindex] shared_used_bytes ingress_bytes[port][qIndex] 0 0 60 2 3
+get pfc threshold 1039634
++19257383.0ns Enqueue: Number packets 1
++19257383.0ns Enqueue: Number bytes 60
++19257383.0ns dequeue and transmit called in SwitchSend
++19257383.0ns Dequeue: Popped 0x557ba67d8930
++19257383.0ns Dequeue: Number packets 0
++19257383.0ns Dequeue: Number bytes 0
+send packet normal from SWITCH
+ingress port and queue is 2 3
+egress port and queue is 1 3
++19257383.0ns m_bps is 1000000000bps
+txtime for packet in sec is 4.79e-07
+txCompleteTime for packet in sec is 4.79e-07
++19257862.0ns dequeue and transmit called in TransmitComplete
+pause prohibits send at node in switch 2
+receive packet 
+receive normal packet 
+receive normal packet at normal node rdma hw 
++19258862.0ns dequeue and transmit called in TriggerTransmit
+qIndex is -1024
+there are no packet to send
