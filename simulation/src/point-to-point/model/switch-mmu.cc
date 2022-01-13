@@ -101,6 +101,7 @@ namespace ns3 {
 	}
 
 	uint32_t SwitchMmu::GetPfcThreshold(uint32_t port){
+		std::cout<<Simulator::Now()<<" buffer.size() "<<buffer_size<<" "<<total_hdrm<<" "<<total_rsrv<<" "<<shared_used_bytes<<"\n";
 		std::cout<<Simulator::Now()<<" get pfc threshold "<<buffer_size - total_hdrm - total_rsrv - shared_used_bytes<<"\n";
 		return (buffer_size - total_hdrm - total_rsrv - shared_used_bytes) >> pfc_a_shift[port];
 	}

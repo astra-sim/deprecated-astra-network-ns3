@@ -127,11 +127,13 @@ void RdmaQueuePair::Acknowledge(uint64_t ack){
 }
 
 uint64_t RdmaQueuePair::GetOnTheFly(){
+	std::cout<<"get on the fly packets "<<snd_nxt<<" "<<snd_una<<" "<<snd_nxt-snd_una<<"\n";
 	return snd_nxt - snd_una;
 }
 
 bool RdmaQueuePair::IsWinBound(){
 	uint64_t w = GetWin();
+	std::cout<<"window is "<<w<<"\n";
 	return w != 0 && GetOnTheFly() >= w;
 }
 

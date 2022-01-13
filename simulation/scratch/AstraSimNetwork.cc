@@ -32,7 +32,7 @@ using namespace ns3;
 //   double time_val;
 // };
 // extern int global_variable;
-std::vector<int> physical_dims{2};
+std::vector<int> physical_dims{4};
 queue<struct task1> workerQueue;
 unsigned long long tempcnt = 999;
 unsigned long long  cnt = 0;
@@ -335,7 +335,7 @@ int main (int argc, char *argv[]){
     }
     std::string system_input;
     if(physical_dims.size()==1){
-        system_input="sample_1D_switch_sys.txt";
+        system_input="sample_a2a_sys.txt";
     }
     else if(physical_dims.size()==2){
         system_input="sample_2D_switch_sys.txt";
@@ -364,8 +364,8 @@ int main (int argc, char *argv[]){
         	physical_dims, // dimensions
         	queues_per_dim, // queues per corresponding dimension
         	"../astra-sim/inputs/system/"+system_input, // system configuration
-        	"../astra-sim/inputs/workload/microAllToAll.txt", //DLRM_HybridParallel.txt, // Resnet50_DataParallel.txt, // workload configuration
-        	512, // communication scale
+        	"../astra-sim/inputs/workload/microAllReduce.txt", //DLRM_HybridParallel.txt, // Resnet50_DataParallel.txt, // workload configuration
+        	1, // communication scale
         	1, // computation scale
         	1, // injection scale
         	1,
@@ -378,15 +378,15 @@ int main (int argc, char *argv[]){
     }	
     int fun_arg=1;
     main1(argc, argv);
-    network0.sim_send(nullptr,3000,-1,1,100,nullptr,&fun_send,&fun_arg);
+    //network0.sim_send(nullptr,9000,-1,1,100,nullptr,&fun_send,&fun_arg);
     //network1.sim_send(nullptr,512 * 1048576,-1,1,100,nullptr,&fun_recv,&fun_arg);
     //network.sim_schedule(AstraSim::timespec_t(),&fun_sch,&fun_arg);
     //pass number of nodes
     // Ptr<SimpleUdpApplication> *udp = sim_init(num_gpus);
     //fun_recv(&fun_arg);
-    //for(int i=0;i<num_gpus;i++){
-//	systems[i]->workload->fire();	
-  //  }
+    for(int i=0;i<num_gpus;i++){
+	systems[i]->workload->fire();	
+    }
     cout<<"simulator now "<<Simulator::Now()<<"\n";
     Simulator::Run ();
     //Simulator::Stop(TimeStep (0x7fffffffffffffffLL)); 
