@@ -1,10 +1,10 @@
-nodes = 7
-switch_nodes = 3
-links = 8
+nodes = 137
+switch_nodes = 9
+links = 256
 latency = "0.0005ms"
 bandwidth = "200Gbps"
 error_rate = "0"
-per_switch_node  = 2
+per_switch_node  = 16
 file_name = str(nodes)+"_nodes_"+str(switch_nodes)+"_switch_topology.txt"
 with open(file_name, 'w') as f:
     first_line = str(nodes)+" "+str(switch_nodes)+" "+str(links)
