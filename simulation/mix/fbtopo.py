@@ -1,6 +1,6 @@
 nodes = 240 #128nodes+112switches
 switch_nodes = 112 #8(tor) + 96(nvswitch 6 per server(8 gpus)) + 8(spine switch) + 0(route switch)
-links = 832 #6(nvswitch)*8(gpus)*2(servers)*8(tors)+8(tors)*8(spine)
+links = 960 #6(nvswitch)*8(gpus)*2(servers)*8(tors)+16(gpus)*8(tors)+8(tors)*8(spine)
 latency = "0.0005ms"
 bandwidth = "200Gbps"
 error_rate = "0"
