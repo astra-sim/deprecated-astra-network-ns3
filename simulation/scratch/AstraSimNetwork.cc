@@ -32,7 +32,7 @@ using namespace ns3;
 //   double time_val;
 // };
 // extern int global_variable;
-std::vector<int> physical_dims{8,64};
+std::vector<int> physical_dims{8,8};
 queue<struct task1> workerQueue;
 unsigned long long tempcnt = 999;
 unsigned long long  cnt = 0;
