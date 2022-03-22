@@ -32,7 +32,7 @@ using namespace ns3;
 //   double time_val;
 // };
 // extern int global_variable;
-std::vector<int> physical_dims{8,8};
+std::vector<int> physical_dims{16,8};
 queue<struct task1> workerQueue;
 unsigned long long tempcnt = 999;
 unsigned long long  cnt = 0;
@@ -369,7 +369,7 @@ int main (int argc, char *argv[]){
         	queues_per_dim, // queues per corresponding dimension
         	"../astra-sim/inputs/system/"+system_input, // system configuration
         	"../astra-sim/inputs/workload/microAllReduce.txt", //DLRM_HybridParallel.txt, // Resnet50_DataParallel.txt, // workload configuration
-        	1, // communication scale
+        	256, // communication scale
         	1, // computation scale
         	1, // injection scale
         	1,
