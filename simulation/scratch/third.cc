@@ -876,8 +876,11 @@ int main1(int argc, char *argv[])
 				//std:://cout<<"rate and pfc_a_shift is "<<rate<<" "<<shift<<"\n";
 			}
 			sw->m_mmu->ConfigNPort(sw->GetNDevices()-1);
+			if(i>=128 && i<=223){
+			sw->m_mmu->ConfigBufferSize(1024* 1024 * 1024);
+			}else{
 			sw->m_mmu->ConfigBufferSize(buffer_size* 1024 * 1024);
-			//std:://cout<<"buffer size, ports and node id of the switch is "<<buffer_size<<" MB, "<<sw->GetNDevices()-1<<sw->GetId()<<"\n";
+			}//std:://cout<<"buffer size, ports and node id of the switch is "<<buffer_size<<" MB, "<<sw->GetNDevices()-1<<sw->GetId()<<"\n";
 			sw->m_mmu->node_id = sw->GetId();
 		}
 	}

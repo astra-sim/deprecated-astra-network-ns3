@@ -15,6 +15,7 @@ tor_per_level3_switch = 8
 level3_switch_per_agg = 0
 nodes_per_tor = 16 #nodes_per_nv_switch * nv_switch_per_tor 
 file_name = str(gpu)+"_nodes_"+str(switch_nodes)+"_switch_topology.txt"
+print(file_name)
 with open(file_name, 'w') as f:
     first_line = str(nodes)+" "+str(switch_nodes)+" "+str(links)
     f.write(first_line)
@@ -56,15 +57,15 @@ with open(file_name, 'w') as f:
             tor_node = 1
             ind_tor = ind_tor + 1
         for ii in range(6): #nvswitches per gpu
-            line = str(i)+" "+str(nv_switch[ind_nv+ii])+" 1200Gbps "+latency+" "+error_rate
+            line = str(i)+" "+str(nv_switch[ind_nv+ii])+" 2400Gbps 0.000025ms "+error_rate
             f.write(line)
             f.write('\n')
-        line = str(i)+" "+str(tor_switch[ind_tor])+" "+bandwidth+" 0.001ms "+error_rate
+        line = str(i)+" "+str(tor_switch[ind_tor])+" 200Gbps 0.005ms "+error_rate
         f.write(line)
         f.write('\n')
     for i in tor_switch:
         for j in level3_switch:
-            line = str(i)+" "+str(j)+" 200Gbps 0.005ms "+error_rate
+            line = str(i)+" "+str(j)+" 200Gbps 0.0125ms "+error_rate
             f.write(line)
             f.write('\n')
     #for i in level3_switch:
