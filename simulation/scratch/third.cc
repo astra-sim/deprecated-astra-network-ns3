@@ -78,8 +78,8 @@ uint32_t enable_trace = 1;
 
 uint32_t buffer_size = 16;
 
-uint32_t qlen_dump_interval = 100000000, qlen_mon_interval = 100;
-uint64_t qlen_mon_start = 2000000000, qlen_mon_end = 2100000000;
+uint32_t qlen_dump_interval = 1000, qlen_mon_interval = 100;
+uint64_t qlen_mon_start = 0, qlen_mon_end = 2100000000;
 string qlen_mon_file;
 
 unordered_map<uint64_t, uint32_t> rate2kmax, rate2kmin;
@@ -202,34 +202,55 @@ struct QlenDistribution{
 		cnt[kb]++;
 	}
 };
-map<uint32_t, map<uint32_t, QlenDistribution> > queue_result;
+map<uint32_t, map<uint32_t, uint32_t > > queue_result;
 void monitor_buffer(FILE* qlen_output, NodeContainer *n){
 	for (uint32_t i = 0; i < n->GetN(); i++){
 		if (n->Get(i)->GetNodeType() == 1){ // is switch
 			Ptr<SwitchNode> sw = DynamicCast<SwitchNode>(n->Get(i));
 			if (queue_result.find(i) == queue_result.end())
 				queue_result[i];
+			//fprintf(qlen_output, "\n");
+			//fprintf(qlen_output, "time: %lu\n", Simulator::Now().GetTimeStep());
 			for (uint32_t j = 1; j < sw->GetNDevices(); j++){
 				uint32_t size = 0;
 				for (uint32_t k = 0; k < SwitchMmu::qCnt; k++)
 					size += sw->m_mmu->egress_bytes[j][k];
-				queue_result[i][j].add(size);
+				//if (queue_result[i].find(j) == queue_result[i].end())
+				//{
+				//	vector<uint32_t> v;
+				//	queue_result[i][j] = v;
+				//}
+				if(size > 1000){
+				queue_result[i][j] = size;// .push_back(size);
+				if(j==1){
+				fprintf(qlen_output, "%lu %u j %u %u ", Simulator::Now().GetTimeStep(), i, j, size);
+				}else if (j<8){
+				fprintf(qlen_output, "j %u %u ", j, size);
+				}else if (j==8){
+				fprintf(qlen_output, "j %u %u\n", j, size);
+				}
+				}
+				//else
+				//	queue_result[i][j]+=size;
+				//queue_result[i][j].add(size);
 			}
+			//fprintf(qlen_output, "\n");
 		}
 	}
-	if (Simulator::Now().GetTimeStep() % qlen_dump_interval == 0){
-		fprintf(qlen_output, "time: %lu\n", Simulator::Now().GetTimeStep());
-		for (auto &it0 : queue_result)
-			for (auto &it1 : it0.second){
-				fprintf(qlen_output, "%u %u", it0.first, it1.first);
-				auto &dist = it1.second.cnt;
-				for (uint32_t i = 0; i < dist.size(); i++)
-					fprintf(qlen_output, " %u", dist[i]);
-				fprintf(qlen_output, "\n");
-			}
-		fflush(qlen_output);
-	}
-	if (Simulator::Now().GetTimeStep() < qlen_mon_end)
+	 fflush(qlen_output);
+	//if (Simulator::Now().GetTimeStep() % qlen_dump_interval == 0){
+		//fprintf(qlen_output, "time: %lu\n", Simulator::Now().GetTimeStep());
+		//for (auto &it0 : queue_result)
+	//		for (auto &it1 : it0.second){
+	//			fprintf(qlen_output, "%u %u %u ", it0.first, it1.first, it1.second);
+	//			//auto &dist = it1.second;
+				//for (uint32_t i = 0; i < dist.size(); i++)
+				//	fprintf(qlen_output, " %u", dist[i]);
+	//			fprintf(qlen_output, "\n");
+	//		}
+	//	fflush(qlen_output);
+	//}
+	//if (Simulator::Now().GetTimeStep() < qlen_mon_end)
 		Simulator::Schedule(NanoSeconds(qlen_mon_interval), &monitor_buffer, qlen_output, n);
 }
 
@@ -876,11 +897,11 @@ int main1(int argc, char *argv[])
 				//std:://cout<<"rate and pfc_a_shift is "<<rate<<" "<<shift<<"\n";
 			}
 			sw->m_mmu->ConfigNPort(sw->GetNDevices()-1);
-			if(i>=128 && i<=223){
-			sw->m_mmu->ConfigBufferSize(1024* 1024 * 1024);
-			}else{
+			//if(i>=128 && i<=223){
+			//sw->m_mmu->ConfigBufferSize(1024* 1024 * 1024);
+			//}else{
 			sw->m_mmu->ConfigBufferSize(buffer_size* 1024 * 1024);
-			}//std:://cout<<"buffer size, ports and node id of the switch is "<<buffer_size<<" MB, "<<sw->GetNDevices()-1<<sw->GetId()<<"\n";
+			//}//std:://cout<<"buffer size, ports and node id of the switch is "<<buffer_size<<" MB, "<<sw->GetNDevices()-1<<sw->GetId()<<"\n";
 			sw->m_mmu->node_id = sw->GetId();
 		}
 	}
@@ -1042,8 +1063,8 @@ int main1(int argc, char *argv[])
 	}
 
 	// schedule buffer monitor
-	// FILE* qlen_output = fopen(qlen_mon_file.c_str(), "w");
-	// Simulator::Schedule(NanoSeconds(qlen_mon_start), &monitor_buffer, qlen_output, &n);
+	FILE* qlen_output = fopen(qlen_mon_file.c_str(), "w");
+	Simulator::Schedule(NanoSeconds(qlen_mon_start), &monitor_buffer, qlen_output, &n);
 
 	//
 	// Now, do the actual simulation.
