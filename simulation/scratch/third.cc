@@ -211,6 +211,7 @@ void monitor_buffer(FILE* qlen_output, NodeContainer *n){
 				queue_result[i];
 			//fprintf(qlen_output, "\n");
 			//fprintf(qlen_output, "time: %lu\n", Simulator::Now().GetTimeStep());
+			int test = 0;
 			for (uint32_t j = 1; j < sw->GetNDevices(); j++){
 				uint32_t size = 0;
 				for (uint32_t k = 0; k < SwitchMmu::qCnt; k++)
@@ -220,15 +221,24 @@ void monitor_buffer(FILE* qlen_output, NodeContainer *n){
 				//	vector<uint32_t> v;
 				//	queue_result[i][j] = v;
 				//}
-				if(size > 1000){
+				if(size >= 1000){
 				queue_result[i][j] = size;// .push_back(size);
-				if(j==1){
-				fprintf(qlen_output, "%lu %u j %u %u ", Simulator::Now().GetTimeStep(), i, j, size);
-				}else if (j<8){
-				fprintf(qlen_output, "j %u %u ", j, size);
-				}else if (j==8){
-				fprintf(qlen_output, "j %u %u\n", j, size);
+				if(test==0){
+				test = 1;
+				fprintf(qlen_output, "time %lu %u ", Simulator::Now().GetTimeStep(), i);
 				}
+				//if(j==1){
+				//fprintf(qlen_output, "t %lu %u j %u %u ", Simulator::Now().GetTimeStep(), i, j, size);
+				if (j<sw->GetNDevices()-1){
+				test = 2;
+				fprintf(qlen_output, "j %u %u ", j, size);
+				}else if (j==sw->GetNDevices()-1){
+				fprintf(qlen_output, "j %u %u\n", j, size);
+				test = 3;
+				}
+				}
+				if(j == sw->GetNDevices()-1 && test==2){
+				fprintf(qlen_output, "\n");
 				}
 				//else
 				//	queue_result[i][j]+=size;
