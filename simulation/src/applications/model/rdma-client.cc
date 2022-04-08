@@ -18,6 +18,8 @@
  * Author: Amine Ismail <amine.ismail@sophia.inria.fr>
  *                      <amine.ismail@udcast.com>
  */
+#include <time.h>
+#include "chrono"
 #include "ns3/log.h"
 #include "ns3/ipv4-address.h"
 #include "ns3/nstime.h"
@@ -222,6 +224,8 @@ void RdmaClient::Finish(){
    else{
      nodeHash[make_pair(receiver_node, 1)] += m_size;
    }
+   auto now1 = std::chrono::system_clock::now();
+   std::cout<<"in finish "<<src<<" "<<dest<<" "<<std::chrono::system_clock::to_time_t( now1 )<<"\n";
 	m_node->DeleteApplication(this);
 }
 
