@@ -32,7 +32,7 @@ using namespace ns3;
 //   double time_val;
 // };
 // extern int global_variable;
-std::vector<int> physical_dims{8,16};
+std::vector<int> physical_dims{8};
 queue<struct task1> workerQueue;
 unsigned long long tempcnt = 999;
 unsigned long long  cnt = 0;
@@ -393,9 +393,14 @@ int main (int argc, char *argv[]){
     /*for(int i=0;i<num_gpus;i++){
 	systems[i]->workload->fire();	
     }*/
-    auto now = chrono::system_clock::now();
-    auto now_c = std::chrono::system_clock::to_time_t(now);
-    std::cout<<"at time "<<now_c<<"\n"; //std::ctime(&now_c)<<"\n";
+    auto now = chrono::high_resolution_clock::now();
+    auto now_c = std::chrono::high_resolution_clock::to_time_t(now);
+    std::cout<<"at time "<<now_c<<"\n"; 
+    //int64_t timestamp = std::chrono::duration_cast<std::chrono::nanoseconds>(std::chrono::system_clock::now().time_since_epoch()).count();
+    //std::cout<<"timestamp "<<timestamp<<"\n";
+    //auto start = std::chrono::high_resolution_clock::now();
+    //std::cout << std::chrono::duration_cast<std::chrono::nanoseconds>(start).count() << "ns\n";
+    std::cout<<"nano sec "<<Simulator::Now().GetNanoSeconds()<<"\n";
     for(int i=0;i<num_gpus;i++){
         if(i==0){
             //Recevive from Other GPUs

@@ -12,7 +12,8 @@
 #include "ppp-header.h"
 #include "qbb-header.h"
 #include "cn-header.h"
-
+#include <time.h>
+#include "chrono"
 namespace ns3{
 
 TypeId RdmaHw::GetTypeId (void)
@@ -522,9 +523,11 @@ void RdmaHw::QpComplete(Ptr<RdmaQueuePair> qp){
 	// This callback will log info
 	// It may also delete the rxQp on the receiver
 	m_qpCompleteCallback(qp);
-
+	int64_t timestamp = std::chrono::duration_cast<std::chrono::nanoseconds>(std::chrono::system_clock::now().time_since_epoch()).count();
+    //std::cout<<"timestamp before calling finish"<<timestamp<<"\n";
 	qp->m_notifyAppFinish();
-
+	int64_t timestamp1 = std::chrono::duration_cast<std::chrono::nanoseconds>(std::chrono::system_clock::now().time_since_epoch()).count();
+    //std::cout<<"timestamp after caling finish"<<timestamp1<<"\n";
 	// delete the qp
 	DeleteQueuePair(qp);
 }
@@ -601,25 +604,40 @@ Ptr<Packet> RdmaHw::GetNxtPacket(Ptr<RdmaQueuePair> qp){
 void RdmaHw::PktSent(Ptr<RdmaQueuePair> qp, Ptr<Packet> pkt, Time interframeGap){
 	qp->lastPktSize = pkt->GetSize();
 	//std:://cout<<"last packet size is "<<pkt->GetSize()<<"\n";
+//	 if(m_node->GetId() == 1)
+//	std::cout<<"next qp available in pktsent is "<<qp->m_nextAvail<<"\n";
 	UpdateNextAvail(qp, interframeGap, pkt->GetSize());
 }
 
 void RdmaHw::UpdateNextAvail(Ptr<RdmaQueuePair> qp, Time interframeGap, uint32_t pkt_size){
 	Time sendingTime;
+//	if(m_node->GetId() == 1)
+//		std::cout<<"qp rate and maxrate is "<<qp->m_rate<<" "<<qp->m_max_rate<<"\n";
 	if (m_rateBound)
+	{
 		sendingTime = interframeGap + Seconds(qp->m_rate.CalculateTxTime(pkt_size));
-	else
+	//	if(m_node->GetId() == 1)
+	//	std::cout<<"sending time in rate bound is "<<sendingTime<<"\n";
+	}else{
 		sendingTime = interframeGap + Seconds(qp->m_max_rate.CalculateTxTime(pkt_size));
-	//std:://cout<<"interframeGap is  "<<sendingTime.GetSeconds()<<" transmit time is "<<Seconds(qp->m_rate.CalculateTxTime(pkt_size))<<"\n";
+	//	if(m_node->GetId() == 1)
+          //      std::cout<<"sending time not in rate bound is "<<sendingTime<<"\n";
+	}//std::cout<<"sendingTime is  "<<sendingTime<<" transmit time is "<<(qp->m_rate.CalculateTxTime(pkt_size))<<"\n";
 	//std:://cout<<"sending time is  "<<sendingTime.GetSeconds()<<"\n";
 	qp->m_nextAvail = Simulator::Now() + sendingTime;
+	//if(m_node->GetId() == 1)
+	//std::cout<<"next qp available in updatenextavail is "<<qp->m_nextAvail<<"\n";
 }
 
 void RdmaHw::ChangeRate(Ptr<RdmaQueuePair> qp, DataRate new_rate){
 	#if 1
 	Time sendingTime = Seconds(qp->m_rate.CalculateTxTime(qp->lastPktSize));
 	Time new_sendintTime = Seconds(new_rate.CalculateTxTime(qp->lastPktSize));
+	//if(m_node->GetId() == 1)
+	//std::cout<<"sending time changesd from "<<sendingTime<<" to "<<new_sendintTime<<" "<<qp->m_nextAvail<<"\n";
 	qp->m_nextAvail = qp->m_nextAvail + new_sendintTime - sendingTime;
+	//if(m_node->GetId() == 1)
+        //std::cout<<"qp next avail changesd to "<<qp->m_nextAvail<<"\n";
 	// update nic's next avail event
 	uint32_t nic_idx = GetNicIdxOfQp(qp);
 	m_nic[nic_idx].dev->UpdateNextAvail(qp->m_nextAvail);
@@ -660,6 +678,8 @@ void RdmaHw::cnp_received_mlx(Ptr<RdmaQueuePair> q){
 		// init alpha
 		q->mlx.m_alpha = 1;
 		q->mlx.m_alpha_cnp_arrived = false;
+		//if(m_node->GetId() == 1)
+		//	std::cout<<"in cnp_received_mlx first rtt \n";
 		// schedule alpha update
 		ScheduleUpdateAlphaMlx(q);
 		// schedule rate decrease
@@ -668,6 +688,7 @@ void RdmaHw::cnp_received_mlx(Ptr<RdmaQueuePair> q){
 		q->mlx.m_targetRate = q->m_rate = m_rateOnFirstCNP * q->m_rate;
 		q->mlx.m_first_cnp = false;
 	}
+	//std::cout<<"in cnp_received_mlx \n";
 }
 
 void RdmaHw::CheckRateDecreaseMlx(Ptr<RdmaQueuePair> q){
@@ -685,6 +706,8 @@ void RdmaHw::CheckRateDecreaseMlx(Ptr<RdmaQueuePair> q){
 			q->mlx.m_targetRate = q->m_rate;
 		q->m_rate = std::max(m_minRate, q->m_rate * (1 - q->mlx.m_alpha / 2));
 		// reset rate increase related things
+		//if(m_node->GetId() == 1)
+		//	std::cout<<"new q->m_rate in checkratedecreasemlx is "<<q->m_rate<<"\n";
 		q->mlx.m_rpTimeStage = 0;
 		q->mlx.m_decrease_cnp_arrived = false;
 		Simulator::Cancel(q->mlx.m_rpTimer);
@@ -706,10 +729,16 @@ void RdmaHw::RateIncEventTimerMlx(Ptr<RdmaQueuePair> q){
 void RdmaHw::RateIncEventMlx(Ptr<RdmaQueuePair> q){
 	// check which increase phase: fast recovery, active increase, hyper increase
 	if (q->mlx.m_rpTimeStage < m_rpgThreshold){ // fast recovery
+		// if(m_node->GetId() == 1)
+	//	std::cout<<"fast recovery rateincevnetmlx\n";
 		FastRecoveryMlx(q);
 	}else if (q->mlx.m_rpTimeStage == m_rpgThreshold){ // active increase
+	//	 if(m_node->GetId() == 1) 
+	//	std::cout<<"active increase RateIncEventMlx\n";
 		ActiveIncreaseMlx(q);
 	}else { // hyper increase
+	//	 if(m_node->GetId() == 1)
+	//	std::cout<<"hyper increase RateIncEventMlx\n";
 		HyperIncreaseMlx(q);
 	}
 }
@@ -719,9 +748,11 @@ void RdmaHw::FastRecoveryMlx(Ptr<RdmaQueuePair> q){
 	printf("%lu fast recovery: %08x %08x %u %u (%0.3lf %.3lf)->", Simulator::Now().GetTimeStep(), q->sip.Get(), q->dip.Get(), q->sport, q->dport, q->mlx.m_targetRate.GetBitRate() * 1e-9, q->m_rate.GetBitRate() * 1e-9);
 	#endif
 	q->m_rate = (q->m_rate / 2) + (q->mlx.m_targetRate / 2);
-	#if PRINT_LOG
-	printf("(%.3lf %.3lf)\n", q->mlx.m_targetRate.GetBitRate() * 1e-9, q->m_rate.GetBitRate() * 1e-9);
-	#endif
+//	#if PRINT_LOG
+///	printf("(%.3lf %.3lf)\n", q->mlx.m_targetRate.GetBitRate() * 1e-9, q->m_rate.GetBitRate() * 1e-9);
+	//if(m_node->GetId() == 1)
+	//	 std::cout<<"new rate in FastRecoveryMlx is "<<q->m_rate<<"\n";
+//	#endif
 }
 void RdmaHw::ActiveIncreaseMlx(Ptr<RdmaQueuePair> q){
 	#if PRINT_LOG
@@ -735,9 +766,11 @@ void RdmaHw::ActiveIncreaseMlx(Ptr<RdmaQueuePair> q){
 	if (q->mlx.m_targetRate > dev->GetDataRate())
 		q->mlx.m_targetRate = dev->GetDataRate();
 	q->m_rate = (q->m_rate / 2) + (q->mlx.m_targetRate / 2);
-	#if PRINT_LOG
-	printf("(%.3lf %.3lf)\n", q->mlx.m_targetRate.GetBitRate() * 1e-9, q->m_rate.GetBitRate() * 1e-9);
-	#endif
+//	#if PRINT_LOG
+	//if(m_node->GetId() == 1)
+          //       std::cout<<"new rate in ActiveIncreaseMlx is "<<q->m_rate<<"\n";
+//	printf("(%.3lf %.3lf)\n", q->mlx.m_targetRate.GetBitRate() * 1e-9, q->m_rate.GetBitRate() * 1e-9);
+//	#endif
 }
 void RdmaHw::HyperIncreaseMlx(Ptr<RdmaQueuePair> q){
 	#if PRINT_LOG
@@ -751,6 +784,8 @@ void RdmaHw::HyperIncreaseMlx(Ptr<RdmaQueuePair> q){
 	if (q->mlx.m_targetRate > dev->GetDataRate())
 		q->mlx.m_targetRate = dev->GetDataRate();
 	q->m_rate = (q->m_rate / 2) + (q->mlx.m_targetRate / 2);
+//	if(m_node->GetId() == 1)
+  //               std::cout<<"new rate in HyperIncreaseMlx is "<<q->m_rate<<"\n";
 	#if PRINT_LOG
 	printf("(%.3lf %.3lf)\n", q->mlx.m_targetRate.GetBitRate() * 1e-9, q->m_rate.GetBitRate() * 1e-9);
 	#endif
@@ -763,8 +798,12 @@ void RdmaHw::HandleAckHp(Ptr<RdmaQueuePair> qp, Ptr<Packet> p, CustomHeader &ch)
 	uint32_t ack_seq = ch.ack.seq;
 	// update rate
 	if (ack_seq > qp->hp.m_lastUpdateSeq){ // if full RTT feedback is ready, do full update
+		//if(m_node->GetId() == 1)
+	//	std::cout<<" UPDATE RATE hp\n";
 		UpdateRateHp(qp, p, ch, false);
 	}else{ // do fast react
+	//	if(m_node->GetId() == 1)
+          //      std::cout<<" FAST REACT hp\n";
 		FastReactHp(qp, p, ch);
 	}
 }
@@ -783,7 +822,10 @@ void RdmaHw::UpdateRateHp(Ptr<RdmaQueuePair> qp, Ptr<Packet> p, CustomHeader &ch
 		if (print){
 			printf("%lu %s %08x %08x %u %u [%u,%u,%u]", Simulator::Now().GetTimeStep(), fast_react? "fast" : "update", qp->sip.Get(), qp->dip.Get(), qp->sport, qp->dport, qp->hp.m_lastUpdateSeq, ch.ack.seq, next_seq);
 			for (uint32_t i = 0; i < ih.nhop; i++)
-				printf(" %u %lu %lu", ih.hop[i].GetQlen(), ih.hop[i].GetBytes(), ih.hop[i].GetTime());
+				{
+				//	std::cout<<"first rtt qlen, bytes, time is "<<ih.hop[i].GetQlen()<<" "<<ih.hop[i].GetBytes()<<" "<<ih.hop[i].GetTime()<<"\n"
+					printf(" %u %lu %lu", ih.hop[i].GetQlen(), ih.hop[i].GetBytes(), ih.hop[i].GetTime());
+				}
 			printf("\n");
 		}
 		#endif
@@ -809,6 +851,7 @@ void RdmaHw::UpdateRateHp(Ptr<RdmaQueuePair> qp, Ptr<Packet> p, CustomHeader &ch
 				}
 				updated[i] = updated_any = true;
 				#if PRINT_LOG
+			//	std::cout<<" qlen, bytes and time old versus new "<<ih.hop[i].GetQlen()<<" "<<qp->hp.hop[i].GetQlen()<<" "<<ih.hop[i].GetBytes()<<" "<<qp->hp.hop[i].GetBytes()<<" "<<ih.hop[i].GetTime()<<" "<<qp->hp.hop[i].GetTime()<<"\n";
 				if (print)
 					printf(" %u(%u) %lu(%lu) %lu(%lu)", ih.hop[i].GetQlen(), qp->hp.hop[i].GetQlen(), ih.hop[i].GetBytes(), qp->hp.hop[i].GetBytes(), ih.hop[i].GetTime(), qp->hp.hop[i].GetTime());
 				#endif
@@ -858,6 +901,8 @@ void RdmaHw::UpdateRateHp(Ptr<RdmaQueuePair> qp, Ptr<Packet> p, CustomHeader &ch
 						new_rate = m_minRate;
 					if (new_rate > qp->m_max_rate)
 						new_rate = qp->m_max_rate;
+				//	if(m_node->GetId() == 1)
+				//		std::cout<<"node: new rate is "<< m_node->GetId()<<" "<<new_rate<<"\n";
 					#if PRINT_LOG
 					if (print)
 						printf(" u=%.6lf U=%.3lf dt=%u max_c=%.3lf", qp->hp.u, U, dt, max_c);
@@ -889,6 +934,7 @@ void RdmaHw::UpdateRateHp(Ptr<RdmaQueuePair> qp, Ptr<Packet> p, CustomHeader &ch
 						if (new_rate_per_hop[i] < new_rate)
 							new_rate = new_rate_per_hop[i];
 						#if PRINT_LOG
+					//	std::cout<<"per hop rate and new rate are "<<new_rate_per_hope[i]<<" "<<new_rate<<"\n";
 						if (print)
 							printf(" [%u]u=%.6lf c=%.3lf", i, qp->hp.hopState[i].u, c);
 						#endif
@@ -940,10 +986,13 @@ void RdmaHw::FastReactHp(Ptr<RdmaQueuePair> qp, Ptr<Packet> p, CustomHeader &ch)
  *********************/
 void RdmaHw::HandleAckTimely(Ptr<RdmaQueuePair> qp, Ptr<Packet> p, CustomHeader &ch){
 	uint32_t ack_seq = ch.ack.seq;
+	//std::cout<<"ack seq and tmly last update window is "<<ack_seq<<" "<<qp->tmly.window<<"\n";
 	// update rate
-	if (ack_seq > qp->tmly.m_lastUpdateSeq){ // if full RTT feedback is ready, do full update
+	if (ack_seq > qp->tmly.window){//qp->tmly.m_lastUpdateSeq){ // if full RTT feedback is ready, do full update
+		//std::cout<<"update is ready "<<qp->tmly.window<<"\n";
 		UpdateRateTimely(qp, p, ch, false);
 	}else{ // do fast react
+		//std::cout<<"fast react timely\n";
 		FastReactTimely(qp, p, ch);
 	}
 }
@@ -951,7 +1000,7 @@ void RdmaHw::UpdateRateTimely(Ptr<RdmaQueuePair> qp, Ptr<Packet> p, CustomHeader
 	uint32_t next_seq = qp->snd_nxt;
 	uint64_t rtt = Simulator::Now().GetTimeStep() - ch.ack.ih.ts;
 	bool print = !us;
-	if (qp->tmly.m_lastUpdateSeq != 0){ // not first RTT
+	if (qp->tmly.window != 0){ // not first RTT
 		int64_t new_rtt_diff = (int64_t)rtt - (int64_t)qp->tmly.lastRtt;
 		double rtt_diff = (1 - m_tmly_alpha) * qp->tmly.rttDiff + m_tmly_alpha * new_rtt_diff;
 		double gradient = rtt_diff / m_tmly_minRtt;
@@ -961,50 +1010,64 @@ void RdmaHw::UpdateRateTimely(Ptr<RdmaQueuePair> qp, Ptr<Packet> p, CustomHeader
 		if (print)
 			printf("%lu node:%u rtt:%lu rttDiff:%.0lf gradient:%.3lf rate:%.3lf", Simulator::Now().GetTimeStep(), m_node->GetId(), rtt, rtt_diff, gradient, qp->tmly.m_curRate.GetBitRate() * 1e-9);
 		#endif
+	//	std::cout<<"node rtt rttDiff gradient timely_rate is "<<Simulator::Now().GetTimeStep()<<" "<<m_node->GetId()<<" "<<rtt<<" "<<rtt_diff<<" "<<gradient<<" "<<qp->tmly.m_curRate.GetBitRate()*1e-9<<"\n";
 		if (rtt < m_tmly_TLow){
 			inc = true;
+		//	std::cout<<"rtt less thn mtimely low "<<rtt<<" "<<m_tmly_TLow<<"\n";
 		}else if (rtt > m_tmly_THigh){
 			c = 1 - m_tmly_beta * (1 - (double)m_tmly_THigh / rtt);
 			inc = false;
+		//	std::cout<<"rtt greater than m timely high which is "<<m_tmly_THigh<<"\n";
 		}else if (gradient <= 0){
 			inc = true;
+		//	std::cout<<"gradient is less than 0 \n";
 		}else{
 			c = 1 - m_tmly_beta * gradient;
 			if (c < 0)
 				c = 0;
 			inc = false;
+		//	std::cout<<"c less than 0 wont increase \n";
 		}
 		if (inc){
 			if (qp->tmly.m_incStage < 5){
 				qp->m_rate = qp->tmly.m_curRate + m_rai;
+			  //      std::cout<<"rate inc by m_Rai\n";
 			}else{
 				qp->m_rate = qp->tmly.m_curRate + m_rhai;
+			//	std::cout<<"rate inc by m_Rhai\n";
 			}
 			if (qp->m_rate > qp->m_max_rate)
 				qp->m_rate = qp->m_max_rate;
+		//	std::cout<<"rate already max\n";
 			if (!us){
 				qp->tmly.m_curRate = qp->m_rate;
 				qp->tmly.m_incStage++;
 				qp->tmly.rttDiff = rtt_diff;
+			//	std::cout<<"whatever happens happens increase\n";
 			}
+		//	std::cout<<"rate increased "<<qp->m_rate<<"\n";
 		}else{
 			qp->m_rate = std::max(m_minRate, qp->tmly.m_curRate * c); 
 			if (!us){
 				qp->tmly.m_curRate = qp->m_rate;
 				qp->tmly.m_incStage = 0;
 				qp->tmly.rttDiff = rtt_diff;
+			//	std::cout<<"whatever happens happends decrease\n";
 			}
+		//	std::cout<<"rate not increased "<<qp->m_rate<<"\n";
 		}
 		#if PRINT_LOG
-		if (print){
+		if (print){ //print
 			printf(" %c %.3lf\n", inc? '^':'v', qp->m_rate.GetBitRate() * 1e-9);
 		}
 		#endif
 	}
-	if (!us && next_seq > qp->tmly.m_lastUpdateSeq){
-		qp->tmly.m_lastUpdateSeq = next_seq;
+	if (!us && ch.ack.seq > qp->tmly.window){//next_seq > qp->tmly.m_lastUpdateSeq){
+		//qp->tmly.m_lastUpdateSeq = next_seq;
 		// update
+		qp->tmly.window = qp->tmly.window + 52000;
 		qp->tmly.lastRtt = rtt;
+	//	std::cout<<"last update seq is now "<<qp->tmly.window<<"\n";
 	}
 }
 void RdmaHw::FastReactTimely(Ptr<RdmaQueuePair> qp, Ptr<Packet> p, CustomHeader &ch){

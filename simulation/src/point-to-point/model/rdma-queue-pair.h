@@ -66,6 +66,7 @@ public:
 		uint32_t m_incStage;
 		uint64_t lastRtt;
 		double rttDiff;
+		uint32_t window;
 	} tmly;
 	struct{
 		uint32_t m_lastUpdateSeq;

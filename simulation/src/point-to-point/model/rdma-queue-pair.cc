@@ -61,7 +61,8 @@ RdmaQueuePair::RdmaQueuePair(uint16_t pg, Ipv4Address _sip, Ipv4Address _dip, ui
 	tmly.m_incStage = 0;
 	tmly.lastRtt = 0;
 	tmly.rttDiff = 0;
-
+	tmly.window = 0;
+	
 	dctcp.m_lastUpdateSeq = 0;
 	dctcp.m_caState = 0;
 	dctcp.m_highSeq = 0;
