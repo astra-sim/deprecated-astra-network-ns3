@@ -224,8 +224,9 @@ void RdmaClient::Finish(){
    else{
      nodeHash[make_pair(receiver_node, 1)] += m_size;
    }
-   auto now1 = std::chrono::system_clock::now();
-   std::cout<<"in finish "<<src<<" "<<dest<<" "<<std::chrono::system_clock::to_time_t( now1 )<<"\n";
+  std::cout<<"in finish "<<src<<" "<<dest<<" "<<Simulator::Now().GetNanoSeconds()<<"\n";
+  //auto now1 = std::chrono::system_clock::now();
+  // std::cout<<"in finish "<<src<<" "<<dest<<" "<<std::chrono::system_clock::to_time_t( now1 )<<"\n";
 	m_node->DeleteApplication(this);
 }
 
