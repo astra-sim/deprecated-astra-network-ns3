@@ -174,11 +174,18 @@ TypeId RdmaHw::GetTypeId (void)
 				UintegerValue(65536),
 				MakeUintegerAccessor(&RdmaHw::pint_smpl_thresh),
 				MakeUintegerChecker<uint32_t>())
+		.AddAttribute("TotalPauseTimes",
+				"The number of pause times to simulate PFC pause due to PCIe",
+				UintegerValue(0),
+				MakeUintegerAccessor(&RdmaHw::m_total_pause_times),
+				MakeUintegerChecker<uint64_t>());
 		;
 	return tid;
 }
 
 RdmaHw::RdmaHw(){
+	enable_pcie_pause = true;
+	m_paused_times = 0;
 }
 
 void RdmaHw::SetNode(Ptr<Node> node){
@@ -205,10 +212,8 @@ void RdmaHw::Setup(QpCompleteCallback cb){
 uint32_t RdmaHw::GetNicIdxOfQp(Ptr<RdmaQueuePair> qp){
 	auto &v = m_rtTable[qp->dip.Get()];
 	if (v.size() > 0){
-		//std::cout<<"nic id is "<<v[qp->GetHash()%v.size()]<<"\n";
 		return v[qp->GetHash() % v.size()];
 	}else{
-		//std::cout<<"no nic is alive, no ECMP ports to that dest ip\n";
 		NS_ASSERT_MSG(false, "We assume at least one NIC is alive");
 	}
 }
@@ -225,7 +230,6 @@ Ptr<RdmaQueuePair> RdmaHw::GetQp(uint32_t dip, uint16_t sport, uint16_t pg){
 void RdmaHw::AddQueuePair(uint32_t src, uint32_t dest, uint64_t tag, uint64_t size, uint16_t pg, Ipv4Address sip, Ipv4Address dip, uint16_t sport, uint16_t dport, uint32_t win, uint64_t baseRtt, Callback<void> notifyAppFinish, Callback<void> notifyAppSent){
 	// create qp
 	Ptr<RdmaQueuePair> qp = CreateObject<RdmaQueuePair>(pg, sip, dip, sport, dport);
-	//std::cout<<"size and qp is "<<size<<" "<<qp<<"\n";
 	qp->SetSrc(src);
 	qp->SetDest(dest);
 	qp->SetTag(tag);
@@ -244,7 +248,6 @@ void RdmaHw::AddQueuePair(uint32_t src, uint32_t dest, uint64_t tag, uint64_t si
 
 	// set init variables
 	DataRate m_bps = m_nic[nic_idx].dev->GetDataRate();
-	//std::cout<<"data rate in addqueuepair is "<<m_bps<<"\n";
 	qp->m_rate = m_bps;
 	qp->m_max_rate = m_bps;
 	if (m_cc_mode == 1){
@@ -305,6 +308,31 @@ void RdmaHw::DeleteRxQp(uint32_t dip, uint16_t pg, uint16_t dport){
 	m_rxQpMap.erase(key);
 }
 
+void RdmaHw::PCIeResume(uint32_t nic_idx, uint32_t qIndex){
+	Ptr<QbbNetDevice> dev = m_nic[nic_idx].dev;
+	Ptr<Packet> p = dev->NICSendPfc(qIndex, 1);
+	m_nic[nic_idx].dev->RdmaEnqueueHighPrioQ(p);
+    m_nic[nic_idx].dev->TriggerTransmit();
+    Simulator::Schedule(MicroSeconds(1000), &RdmaHw::EnablePause, this);	
+}
+
+void RdmaHw::EnablePause(){
+	enable_pcie_pause = true;
+}
+
+void RdmaHw::PCIePause(uint32_t nic_idx, uint32_t qIndex){
+	if (m_paused_times >= m_total_pause_times){
+		return ;
+	}
+	m_paused_times++;
+	Ptr<QbbNetDevice> dev = m_nic[nic_idx].dev;
+	Ptr<Packet> p = dev->NICSendPfc(qIndex, 0);
+	m_nic[nic_idx].dev->RdmaEnqueueHighPrioQ(p);
+    m_nic[nic_idx].dev->TriggerTransmit();
+	std::cout << "NIC pause "<< m_node->GetId() << " at " << Simulator::Now().GetNanoSeconds() << " paused " << m_paused_times << std::endl;
+    Simulator::Schedule(MicroSeconds(10), &RdmaHw::PCIeResume, this, nic_idx, qIndex);	
+}
+
 int RdmaHw::ReceiveUdp(Ptr<Packet> p, CustomHeader &ch){
 	uint8_t ecnbits = ch.GetIpv4EcnBits();
 
@@ -312,6 +340,11 @@ int RdmaHw::ReceiveUdp(Ptr<Packet> p, CustomHeader &ch){
 	//std:://cout<<"payload size  in receive udp in rdma-hw is "<<payload_size<<"\n";
 	// TODO find corresponding rx queue pair
 	Ptr<RdmaRxQueuePair> rxQp = GetRxQp(ch.dip, ch.sip, ch.udp.dport, ch.udp.sport, ch.udp.pg, true);
+	uint32_t nic_id = GetNicIdxOfRxQp(rxQp);
+    if (enable_pcie_pause){ //&& ((m_node->GetId())%16 == 0 || (m_node->GetId())%16 == 8)) { //&& Simulator::Now().GetMicroSeconds() > m_node->GetId(4)
+      PCIePause(nic_id, ch.udp.pg);
+      enable_pcie_pause = false;
+    }
 	if (ecnbits != 0){
 		rxQp->m_ecn_source.ecnbits |= ecnbits;
 		rxQp->m_ecn_source.qfb++;
@@ -320,6 +353,16 @@ int RdmaHw::ReceiveUdp(Ptr<Packet> p, CustomHeader &ch){
 	rxQp->m_milestone_rx = m_ack_interval;
 
 	int x = ReceiverCheckSeq(ch.udp.seq, rxQp, payload_size);
+
+	if(x !=1 && x!=2){
+		std::cout << Simulator::Now().GetNanoSeconds() << " Rx ";
+		Ipv4Address(ch.sip).Print(std::cout);
+		std::cout << " " << ch.udp.sport << " ";
+		Ipv4Address(ch.dip).Print(std::cout);
+		std::cout << " " << ch.udp.dport << " " << ch.udp.seq << " " << ch.udp.pg << " " << p->GetSize() << " " << payload_size;
+		std::cout << " ReceiverCheckSeq " << x << std::endl;
+	}
+	
 	if (x == 1 || x == 2){ //generate ACK or NACK
 		//std:://cout<<"generate ack or nack "<<x<<"\n";
 		qbbHeader seqh;
