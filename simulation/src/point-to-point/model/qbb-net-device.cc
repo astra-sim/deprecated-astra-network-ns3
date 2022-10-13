@@ -502,7 +502,8 @@ namespace ns3 {
 	// std::cout << "m_pausetime " << pauseh.GetTime() << " " << pauseh.GetQIndex() <<std::endl;
 	p->AddHeader(pauseh);
 	Ipv4Header ipv4h;  // Prepare IPv4 header
-	ipv4h.SetProtocol(L3ProtType::kPFC);
+	ipv4h.SetProtocol(0xFE);
+	//ipv4h.SetProtocol(L3ProtType::kPFC);
 	ipv4h.SetSource(
 		m_node->GetObject<Ipv4>()->GetAddress(m_ifIndex, 0).GetLocal());
 	ipv4h.SetDestination(Ipv4Address("255.255.255.255"));

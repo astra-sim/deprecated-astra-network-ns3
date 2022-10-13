@@ -69,6 +69,7 @@ double pint_prob = 1.0;
 double u_target = 0.95;
 uint32_t int_multi = 1;
 bool rate_bound = true;
+int nic_total_pause_time = 0; //slightly less than finish time without inefficiency in us
 
 uint32_t ack_high_prio = 0;
 uint64_t link_down_time = 0;
@@ -637,7 +638,11 @@ int main1(int argc, char *argv[])
 			}else if (key.compare("DCTCP_RATE_AI") == 0){
 				conf >> dctcp_rate_ai;
 				//std:://cout << "DCTCP_RATE_AI\t\t\t\t" << dctcp_rate_ai << "\n";
-			}else if (key.compare("PFC_OUTPUT_FILE") == 0){
+			}else if (key.compare("NIC_TOTAL_PAUSE_TIME") == 0){
+				conf >> nic_total_pause_time;
+				//std:://cout << "DCTCP_RATE_AI\t\t\t\t" << dctcp_rate_ai << "\n";
+			}
+			else if (key.compare("PFC_OUTPUT_FILE") == 0){
 				conf >> pfc_output_file;
 				//std:://cout << "PFC_OUTPUT_FILE\t\t\t\t" << pfc_output_file << '\n';
 			}else if (key.compare("LINK_DOWN") == 0){
@@ -948,6 +953,7 @@ int main1(int argc, char *argv[])
 			rdmaHw->SetAttribute("RateBound", BooleanValue(rate_bound));
 			rdmaHw->SetAttribute("DctcpRateAI", DataRateValue(DataRate(dctcp_rate_ai)));
 			rdmaHw->SetPintSmplThresh(pint_prob);
+			rdmaHw->SetAttribute("TotalPauseTimes", UintegerValue(nic_total_pause_time));
 			// create and install RdmaDriver
 			Ptr<RdmaDriver> rdma = CreateObject<RdmaDriver>();
 			Ptr<Node> node = n.Get(i);
