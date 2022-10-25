@@ -26,7 +26,6 @@ RdmaQueuePair::RdmaQueuePair(uint16_t pg, Ipv4Address _sip, Ipv4Address _dip, ui
 	dip = _dip;
 	sport = _sport;
 	dport = _dport;
-	//std::cout<<"sip dip sport dport is "<<sip<<" "<<dip<<" "<<sport<<" "<<dport<<"\n";
 	m_size = 0;
 	m_init_size = 0;
 	m_src = -1;
@@ -122,22 +121,15 @@ void RdmaQueuePair::SetVarWin(bool v){
 }
 
 void RdmaQueuePair::SetAppNotifyCallback(Callback<void> notifyAppFinish){
-	//std:://cout<<"notify to finish\n";
 	m_notifyAppFinish = notifyAppFinish;
 }
 
 void RdmaQueuePair::SetAppSentCallback(Callback<void> notifyAppSent){
-	//std:://cout<<"notify to sent\n";
 	m_notifyAppSent = notifyAppSent;
 }
 
 
 uint64_t RdmaQueuePair::GetBytesLeft(){
-	//std:://cout<<"byte left is "<<m_size - snd_nxt<<"\n";
-	// if(m_size-snd_nxt<=0){
-	// 	//std:://cout<<"inside byte "<<m_size - snd_nxt<<"\n";
-	// 	m_notifyAppSent();
-	// }
 	return m_size >= snd_nxt ? m_size - snd_nxt : 0;
 }
 

@@ -205,10 +205,8 @@ void RdmaHw::Setup(QpCompleteCallback cb){
 uint32_t RdmaHw::GetNicIdxOfQp(Ptr<RdmaQueuePair> qp){
 	auto &v = m_rtTable[qp->dip.Get()];
 	if (v.size() > 0){
-		//std::cout<<"nic id is "<<v[qp->GetHash()%v.size()]<<"\n";
 		return v[qp->GetHash() % v.size()];
 	}else{
-		//std::cout<<"no nic is alive, no ECMP ports to that dest ip\n";
 		NS_ASSERT_MSG(false, "We assume at least one NIC is alive");
 	}
 }
@@ -225,7 +223,6 @@ Ptr<RdmaQueuePair> RdmaHw::GetQp(uint32_t dip, uint16_t sport, uint16_t pg){
 void RdmaHw::AddQueuePair(uint32_t src, uint32_t dest, uint64_t tag, uint64_t size, uint16_t pg, Ipv4Address sip, Ipv4Address dip, uint16_t sport, uint16_t dport, uint32_t win, uint64_t baseRtt, Callback<void> notifyAppFinish, Callback<void> notifyAppSent){
 	// create qp
 	Ptr<RdmaQueuePair> qp = CreateObject<RdmaQueuePair>(pg, sip, dip, sport, dport);
-	//std::cout<<"size and qp is "<<size<<" "<<qp<<"\n";
 	qp->SetSrc(src);
 	qp->SetDest(dest);
 	qp->SetTag(tag);
@@ -244,7 +241,6 @@ void RdmaHw::AddQueuePair(uint32_t src, uint32_t dest, uint64_t tag, uint64_t si
 
 	// set init variables
 	DataRate m_bps = m_nic[nic_idx].dev->GetDataRate();
-	//std::cout<<"data rate in addqueuepair is "<<m_bps<<"\n";
 	qp->m_rate = m_bps;
 	qp->m_max_rate = m_bps;
 	if (m_cc_mode == 1){
@@ -262,7 +258,6 @@ void RdmaHw::AddQueuePair(uint32_t src, uint32_t dest, uint64_t tag, uint64_t si
 	}
 
 	// Notify Nic
-	//std::cout<<"nic idx is "<<nic_idx<<"\n";
 	m_nic[nic_idx].dev->NewQp(qp);
 }
 
@@ -309,7 +304,6 @@ int RdmaHw::ReceiveUdp(Ptr<Packet> p, CustomHeader &ch){
 	uint8_t ecnbits = ch.GetIpv4EcnBits();
 
 	uint32_t payload_size = p->GetSize() - ch.GetSerializedSize();
-	//std:://cout<<"payload size  in receive udp in rdma-hw is "<<payload_size<<"\n";
 	// TODO find corresponding rx queue pair
 	Ptr<RdmaRxQueuePair> rxQp = GetRxQp(ch.dip, ch.sip, ch.udp.dport, ch.udp.sport, ch.udp.pg, true);
 	if (ecnbits != 0){
@@ -321,7 +315,6 @@ int RdmaHw::ReceiveUdp(Ptr<Packet> p, CustomHeader &ch){
 
 	int x = ReceiverCheckSeq(ch.udp.seq, rxQp, payload_size);
 	if (x == 1 || x == 2){ //generate ACK or NACK
-		//std:://cout<<"generate ack or nack "<<x<<"\n";
 		qbbHeader seqh;
 		seqh.SetSeq(rxQp->ReceiverNextExpectedSeq);
 		seqh.SetPG(ch.udp.pg);
@@ -348,7 +341,6 @@ int RdmaHw::ReceiveUdp(Ptr<Packet> p, CustomHeader &ch){
 		uint32_t nic_idx = GetNicIdxOfRxQp(rxQp);
 		m_nic[nic_idx].dev->RdmaEnqueueHighPrioQ(newp);
 		m_nic[nic_idx].dev->TriggerTransmit();
-		//std:://cout<<"transmit triggered\n";
 	}
 	return 0;
 }
@@ -360,7 +352,6 @@ int RdmaHw::ReceiveCnp(Ptr<Packet> p, CustomHeader &ch){
 	// We assume, without verify, the packet is destinated to me
 	uint32_t qIndex = ch.cnp.qIndex;
 	if (qIndex == 1){		//DCTCP
-		//std:://cout << "TCP--ignore\n";
 		return 0;
 	}
 	uint16_t udpport = ch.cnp.fid; // corresponds to the sport
@@ -403,10 +394,8 @@ int RdmaHw::ReceiveAck(Ptr<Packet> p, CustomHeader &ch){
 	uint32_t seq = ch.ack.seq;
 	uint8_t cnp = (ch.ack.flags >> qbbHeader::FLAG_CNP) & 1;
 	int i;
-	//std::cout<<"receive ack \n";
 	Ptr<RdmaQueuePair> qp = GetQp(ch.sip, port, qIndex);
 	if (qp == NULL){
-		//std:://cout << "ERROR: " << "node:" << m_node->GetId() << ' ' << (ch.l3Prot == 0xFC ? "ACK" : "NACK") << " NIC cannot find the flow\n";
 		return 0;
 	}
 
@@ -456,10 +445,8 @@ int RdmaHw::Receive(Ptr<Packet> p, CustomHeader &ch){
 	}else if (ch.l3Prot == 0xFF){ // CNP
 		ReceiveCnp(p, ch);
 	}else if (ch.l3Prot == 0xFD){ // NACK
-		//std:://cout<<"Received nack \n";
 		ReceiveAck(p, ch);
 	}else if (ch.l3Prot == 0xFC){ // ACK
-		//std:://cout<<"Received ack \n";
 		ReceiveAck(p, ch);
 	}
 	return 0;
@@ -600,7 +587,6 @@ Ptr<Packet> RdmaHw::GetNxtPacket(Ptr<RdmaQueuePair> qp){
 
 void RdmaHw::PktSent(Ptr<RdmaQueuePair> qp, Ptr<Packet> pkt, Time interframeGap){
 	qp->lastPktSize = pkt->GetSize();
-	//std:://cout<<"last packet size is "<<pkt->GetSize()<<"\n";
 	UpdateNextAvail(qp, interframeGap, pkt->GetSize());
 }
 
@@ -610,8 +596,6 @@ void RdmaHw::UpdateNextAvail(Ptr<RdmaQueuePair> qp, Time interframeGap, uint32_t
 		sendingTime = interframeGap + Seconds(qp->m_rate.CalculateTxTime(pkt_size));
 	else
 		sendingTime = interframeGap + Seconds(qp->m_max_rate.CalculateTxTime(pkt_size));
-	//std:://cout<<"interframeGap is  "<<sendingTime.GetSeconds()<<" transmit time is "<<Seconds(qp->m_rate.CalculateTxTime(pkt_size))<<"\n";
-	//std:://cout<<"sending time is  "<<sendingTime.GetSeconds()<<"\n";
 	qp->m_nextAvail = Simulator::Now() + sendingTime;
 }
 
@@ -635,7 +619,6 @@ void RdmaHw::ChangeRate(Ptr<RdmaQueuePair> qp, DataRate new_rate){
  *****************************/
 void RdmaHw::UpdateAlphaMlx(Ptr<RdmaQueuePair> q){
 	#if PRINT_LOG
-	////std:://cout << Simulator::Now() << " alpha update:" << m_node->GetId() << ' ' << q->mlx.m_alpha << ' ' << (int)q->mlx.m_alpha_cnp_arrived << '\n';
 	//printf("%lu alpha update: %08x %08x %u %u %.6lf->", Simulator::Now().GetTimeStep(), q->sip.Get(), q->dip.Get(), q->sport, q->dport, q->mlx.m_alpha);
 	#endif
 	if (q->mlx.m_alpha_cnp_arrived){
