@@ -1,0 +1,10 @@
+9 1 8
+8
+8 0 25Gbps 0.005ms 0
+8 1 25Gbps 0.005ms 0
+8 2 25Gbps 0.005ms 0
+8 3 25Gbps 0.005ms 0
+8 4 25Gbps 0.005ms 0
+8 5 25Gbps 0.005ms 0
+8 6 25Gbps 0.005ms 0
+8 7 25Gbps 0.005ms 0

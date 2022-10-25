@@ -78,8 +78,8 @@ uint32_t enable_trace = 1;
 
 uint32_t buffer_size = 16;
 
-uint32_t qlen_dump_interval = 100000000, qlen_mon_interval = 100;
-uint64_t qlen_mon_start = 2000000000, qlen_mon_end = 2100000000;
+uint32_t qlen_dump_interval = 1000, qlen_mon_interval = 100;
+uint64_t qlen_mon_start = 0, qlen_mon_end = 2100000000;
 string qlen_mon_file;
 
 unordered_map<uint64_t, uint32_t> rate2kmax, rate2kmin;
@@ -136,7 +136,6 @@ void ScheduleFlowInputs(){
 	while (flow_input.idx < flow_num && Seconds(flow_input.start_time) == Simulator::Now()){
 		uint32_t port = portNumder[flow_input.src][flow_input.dst]++; // get a new port number 
 		//RdmaClientHelper clientHelper(flow_input.pg, serverAddress[flow_input.src], serverAddress[flow_input.dst], port, flow_input.dport, flow_input.maxPacketCount, has_win?(global_t==1?maxBdp:pairBdp[n.Get(flow_input.src)][n.Get(flow_input.dst)]):0, global_t==1?maxRtt:pairRtt[flow_input.src][flow_input.dst]);
-		//std:://cout<<flow_input.src<<" "<<flow_input.dst<<" "<<flow_input.pg<<" "<<serverAddress[flow_input.src]<<" "<<serverAddress[flow_input.dst]<<" "<<port<<" "<<flow_input.dport<<" "<<flow_input.maxPacketCount<<"\n";
 		//ApplicationContainer appCon = clientHelper.Install(n.Get(flow_input.src));
 		//appCon.Start(Time(0));
 
@@ -157,7 +156,6 @@ void SendFlow(int src, int dst , int maxPacketCount, void (*msg_handler)(void* f
     uint32_t port = portNumder[src][dst]++; // get a new port number
     int pg = 3,dport = 100;
 	flow_input.idx++;
-	//std::cout<<"flow input is "<<flow_input.idx<<"\n";
     RdmaClientHelper clientHelper(pg, serverAddress[src], serverAddress[dst], port, dport, maxPacketCount, has_win?(global_t==1?maxBdp:pairBdp[n.Get(src)][n.Get(dst)]):0, global_t==1?maxRtt:pairRtt[src][dst],
     msg_handler, fun_arg, tag, src, dst);
     ApplicationContainer appCon = clientHelper.Install(n.Get(src));
@@ -202,35 +200,53 @@ struct QlenDistribution{
 		cnt[kb]++;
 	}
 };
-map<uint32_t, map<uint32_t, QlenDistribution> > queue_result;
+map<uint32_t, map<uint32_t, uint32_t > > queue_result;
 void monitor_buffer(FILE* qlen_output, NodeContainer *n){
 	for (uint32_t i = 0; i < n->GetN(); i++){
 		if (n->Get(i)->GetNodeType() == 1){ // is switch
 			Ptr<SwitchNode> sw = DynamicCast<SwitchNode>(n->Get(i));
 			if (queue_result.find(i) == queue_result.end())
 				queue_result[i];
+			//fprintf(qlen_output, "\n");
+			//fprintf(qlen_output, "time: %lu\n", Simulator::Now().GetTimeStep());
+			int test = 0;
 			for (uint32_t j = 1; j < sw->GetNDevices(); j++){
 				uint32_t size = 0;
 				for (uint32_t k = 0; k < SwitchMmu::qCnt; k++)
 					size += sw->m_mmu->egress_bytes[j][k];
-				queue_result[i][j].add(size);
+				//if (queue_result[i].find(j) == queue_result[i].end())
+				//{
+				//	vector<uint32_t> v;
+				//	queue_result[i][j] = v;
+				//}
+				if(size >= 1000){
+				queue_result[i][j] = size;// .push_back(size);
+				if(test==0){
+				test = 1;
+				fprintf(qlen_output, "time %lu %u ", Simulator::Now().GetTimeStep(), i);
+				}
+				//if(j==1){
+				//fprintf(qlen_output, "t %lu %u j %u %u ", Simulator::Now().GetTimeStep(), i, j, size);
+				if (j<sw->GetNDevices()-1){
+				test = 2;
+				fprintf(qlen_output, "j %u %u ", j, size);
+				}else if (j==sw->GetNDevices()-1){
+				fprintf(qlen_output, "j %u %u\n", j, size);
+				test = 3;
+				}
+				}
+				if(j == sw->GetNDevices()-1 && test==2){
+				fprintf(qlen_output, "\n");
+				}
+				//else
+				//	queue_result[i][j]+=size;
+				//queue_result[i][j].add(size);
 			}
+			//fprintf(qlen_output, "\n");
 		}
 	}
-	if (Simulator::Now().GetTimeStep() % qlen_dump_interval == 0){
-		fprintf(qlen_output, "time: %lu\n", Simulator::Now().GetTimeStep());
-		for (auto &it0 : queue_result)
-			for (auto &it1 : it0.second){
-				fprintf(qlen_output, "%u %u", it0.first, it1.first);
-				auto &dist = it1.second.cnt;
-				for (uint32_t i = 0; i < dist.size(); i++)
-					fprintf(qlen_output, " %u", dist[i]);
-				fprintf(qlen_output, "\n");
-			}
-		fflush(qlen_output);
-	}
-	if (Simulator::Now().GetTimeStep() < qlen_mon_end)
-		Simulator::Schedule(NanoSeconds(qlen_mon_interval), &monitor_buffer, qlen_output, n);
+	fflush(qlen_output);
+	Simulator::Schedule(NanoSeconds(qlen_mon_interval), &monitor_buffer, qlen_output, n);
 }
 
 void CalculateRoute(Ptr<Node> host){
@@ -256,17 +272,14 @@ void CalculateRoute(Ptr<Node> host){
 			if (!it->second.up)
 				continue;
 			Ptr<Node> next = it->first;
-			// If 'next' have not been visited.
 			if (dis.find(next) == dis.end()){
 				dis[next] = d + 1;
 				delay[next] = delay[now] + it->second.delay;
 				txDelay[next] = txDelay[now] + packet_payload_size * 1000000000lu * 8 / it->second.bw;
 				bw[next] = std::min(bw[now], it->second.bw);
-				// we only enqueue switch, because we do not want packets to go through host as middle point
 				if (next->GetNodeType() == 1)
 					q.push_back(next);
 			}
-			// if 'now' is on the shortest path from 'next' to 'host'.
 			if (d + 1 == dis[next]){
 				nextHop[next][host].push_back(now);
 			}
@@ -289,22 +302,15 @@ void CalculateRoutes(NodeContainer &n){
 }
 
 void SetRoutingEntries(){
-	// For each node.
 	for (auto i = nextHop.begin(); i != nextHop.end(); i++){
 		Ptr<Node> node = i->first;
-		//std:://cout<<"src node "<<node->GetId()<<"\n";
 		auto &table = i->second;
 		for (auto j = table.begin(); j != table.end(); j++){
-			// The destination node.
 			Ptr<Node> dst = j->first;
-			//std:://cout<<"dst node "<<dst->GetId()<<"\n";
-			// The IP address of the dst.
 			Ipv4Address dstAddr = dst->GetObject<Ipv4>()->GetAddress(1, 0).GetLocal();
-			// The next hops towards the dst.
 			vector<Ptr<Node> > nexts = j->second;
 			for (int k = 0; k < (int)nexts.size(); k++){
 				Ptr<Node> next = nexts[k];
-				//std:://cout<<"hop "<<k<<" node is "<<next->GetId()<<"\n";
 				uint32_t interface = nbr2if[node][next].idx;
 				if (node->GetNodeType() == 1)
 					DynamicCast<SwitchNode>(node)->AddTableEntry(dstAddr, interface);
@@ -314,15 +320,6 @@ void SetRoutingEntries(){
 			}
 		}
 	}
-//for (auto i = nextHop.begin(); i != nextHop.end(); i++){
-//		//std:://cout<<i->first<<" "<<i->second->first<<" "<<i->second->second.size()<<" next hops are\n";
-//		vector<Ptr<Node> > nexts = i->second->second;
-//		for (int k = 0; k < (int)nexts.size(); k++){
-//			Ptr<Node> next = nexts[k];
-//			uint32_t interface = nbr2if[node][next].idx;
-//			//std:://cout<<next.getId()<<" "<<interface<<"\n";
-//		}
-//	}
 }
 
 // take down the link between a and b, and redo the routing
@@ -360,134 +357,102 @@ uint64_t get_nic_rate(NodeContainer &n){
 
 int main1(int argc, char *argv[])
 {
-	////std:://cout<<"testThird\n"
 	clock_t begint, endt;
 	begint = clock();
-	//int argc = 2;
-	//char *argv[] = ['scratch/third','mix/config.txt'];
-#ifndef PGO_TRAINING
-	////std:://cout<<"Argc "<<argc<<" argv "<<argv<<"\n";
-	if (argc > 1)
-#else
-	if (true)
-#endif
-	{
-		//Read the configuration file
-		std::ifstream conf;
-#ifndef PGO_TRAINING
-		conf.open(argv[1]);
-#else
-		conf.open(PATH_TO_PGO_CONFIG);
-#endif
+	#ifndef PGO_TRAINING
+		if (argc > 1)
+	#else
+		if (true)
+	#endif
+		{
+			//Read the configuration file
+			std::ifstream conf;
+	#ifndef PGO_TRAINING
+			conf.open(argv[1]);
+	#else
+			conf.open(PATH_TO_PGO_CONFIG);
+	#endif
 		while (!conf.eof())
 		{
 			std::string key;
 			conf >> key;
-
-			//std:://cout << conf.cur << "\n";
-
 			if (key.compare("ENABLE_QCN") == 0)
 			{
 				uint32_t v;
 				conf >> v;
 				enable_qcn = v;
-				//if (enable_qcn)
-					//std:://cout << "ENABLE_QCN\t\t\t" << "Yes" << "\n";
-				//else
-					//std:://cout << "ENABLE_QCN\t\t\t" << "No" << "\n";
 			}
 			else if (key.compare("USE_DYNAMIC_PFC_THRESHOLD") == 0)
 			{
 				uint32_t v;
 				conf >> v;
 				use_dynamic_pfc_threshold = v;
-				//if (use_dynamic_pfc_threshold)
-					//std:://cout << "USE_DYNAMIC_PFC_THRESHOLD\t" << "Yes" << "\n";
-				//else
-					//std:://cout << "USE_DYNAMIC_PFC_THRESHOLD\t" << "No" << "\n";
 			}
 			else if (key.compare("CLAMP_TARGET_RATE") == 0)
 			{
 				uint32_t v;
 				conf >> v;
 				clamp_target_rate = v;
-				//if (clamp_target_rate)
-					//std:://cout << "CLAMP_TARGET_RATE\t\t" << "Yes" << "\n";
-				//else
-					//std:://cout << "CLAMP_TARGET_RATE\t\t" << "No" << "\n";
 			}
 			else if (key.compare("PAUSE_TIME") == 0)
 			{
 				double v;
 				conf >> v;
 				pause_time = v;
-				//std:://cout << "PAUSE_TIME\t\t\t" << pause_time << "\n";
 			}
 			else if (key.compare("DATA_RATE") == 0)
 			{
 				std::string v;
 				conf >> v;
 				data_rate = v;
-				//std:://cout << "DATA_RATE\t\t\t" << data_rate << "\n";
 			}
 			else if (key.compare("LINK_DELAY") == 0)
 			{
 				std::string v;
 				conf >> v;
 				link_delay = v;
-				//std:://cout << "LINK_DELAY\t\t\t" << link_delay << "\n";
 			}
 			else if (key.compare("PACKET_PAYLOAD_SIZE") == 0)
 			{
 				uint32_t v;
 				conf >> v;
 				packet_payload_size = v;
-				//std:://cout << "PACKET_PAYLOAD_SIZE\t\t" << packet_payload_size << "\n";
 			}
 			else if (key.compare("L2_CHUNK_SIZE") == 0)
 			{
 				uint32_t v;
 				conf >> v;
 				l2_chunk_size = v;
-				//std:://cout << "L2_CHUNK_SIZE\t\t\t" << l2_chunk_size << "\n";
 			}
 			else if (key.compare("L2_ACK_INTERVAL") == 0)
 			{
 				uint32_t v;
 				conf >> v;
 				l2_ack_interval = v;
-				//std:://cout << "L2_ACK_INTERVAL\t\t\t" << l2_ack_interval << "\n";
 			}
 			else if (key.compare("L2_BACK_TO_ZERO") == 0)
 			{
 				uint32_t v;
 				conf >> v;
 				l2_back_to_zero = v;
-				//if (l2_back_to_zero)
-					//std:://cout << "L2_BACK_TO_ZERO\t\t\t" << "Yes" << "\n";
-				//else
-					//std:://cout << "L2_BACK_TO_ZERO\t\t\t" << "No" << "\n";
 			}
 			else if (key.compare("TOPOLOGY_FILE") == 0)
 			{
 				std::string v;
 				conf >> v;
 				topology_file = v;
-				//std:://cout << "TOPOLOGY_FILE\t\t\t" << topology_file << "\n";
 			}
 			else if (key.compare("FLOW_FILE") == 0)
 			{
 				std::string v;
 				conf >> v;
 				flow_file = v;
-				//std:://cout << "FLOW_FILE\t\t\t" << flow_file << "\n";
 			}
 			else if (key.compare("TRACE_FILE") == 0)
 			{
 				std::string v;
 				conf >> v;
 				trace_file = v;
-				//std:://cout << "TRACE_FILE\t\t\t" << trace_file << "\n";
 			}
 			else if (key.compare("TRACE_OUTPUT_FILE") == 0)
 			{
@@ -498,187 +463,144 @@ int main1(int argc, char *argv[])
 				{
 					trace_output_file = trace_output_file + std::string(argv[2]);
 				}
-				//std:://cout << "TRACE_OUTPUT_FILE\t\t" << trace_output_file << "\n";
 			}
 			else if (key.compare("SIMULATOR_STOP_TIME") == 0)
 			{
 				double v;
 				conf >> v;
 				simulator_stop_time = v;
-				//std:://cout << "SIMULATOR_STOP_TIME\t\t" << simulator_stop_time << "\n";
 			}
 			else if (key.compare("ALPHA_RESUME_INTERVAL") == 0)
 			{
 				double v;
 				conf >> v;
 				alpha_resume_interval = v;
-				//std:://cout << "ALPHA_RESUME_INTERVAL\t\t" << alpha_resume_interval << "\n";
 			}
 			else if (key.compare("RP_TIMER") == 0)
 			{
 				double v;
 				conf >> v;
 				rp_timer = v;
-				//std:://cout << "RP_TIMER\t\t\t" << rp_timer << "\n";
 			}
 			else if (key.compare("EWMA_GAIN") == 0)
 			{
 				double v;
 				conf >> v;
 				ewma_gain = v;
-				//std:://cout << "EWMA_GAIN\t\t\t" << ewma_gain << "\n";
 			}
 			else if (key.compare("FAST_RECOVERY_TIMES") == 0)
 			{
 				uint32_t v;
 				conf >> v;
 				fast_recovery_times = v;
-				//std:://cout << "FAST_RECOVERY_TIMES\t\t" << fast_recovery_times << "\n";
 			}
 			else if (key.compare("RATE_AI") == 0)
 			{
 				std::string v;
 				conf >> v;
 				rate_ai = v;
-				//std:://cout << "RATE_AI\t\t\t\t" << rate_ai << "\n";
 			}
 			else if (key.compare("RATE_HAI") == 0)
 			{
 				std::string v;
 				conf >> v;
 				rate_hai = v;
-				//std:://cout << "RATE_HAI\t\t\t" << rate_hai << "\n";
 			}
 			else if (key.compare("ERROR_RATE_PER_LINK") == 0)
 			{
 				double v;
 				conf >> v;
 				error_rate_per_link = v;
-				//std:://cout << "ERROR_RATE_PER_LINK\t\t" << error_rate_per_link << "\n";
 			}
 			else if (key.compare("CC_MODE") == 0){
 				conf >> cc_mode;
-				//std:://cout << "CC_MODE\t\t" << cc_mode << '\n';
 			}else if (key.compare("RATE_DECREASE_INTERVAL") == 0){
 				double v;
 				conf >> v;
 				rate_decrease_interval = v;
-				//std:://cout << "RATE_DECREASE_INTERVAL\t\t" << rate_decrease_interval << "\n";
 			}else if (key.compare("MIN_RATE") == 0){
 				conf >> min_rate;
-				//std:://cout << "MIN_RATE\t\t" << min_rate << "\n";
 			}else if (key.compare("FCT_OUTPUT_FILE") == 0){
 				conf >> fct_output_file;
-				//std:://cout << "FCT_OUTPUT_FILE\t\t" << fct_output_file << '\n';
 			}else if (key.compare("HAS_WIN") == 0){
 				conf >> has_win;
-				//std:://cout << "HAS_WIN\t\t" << has_win << "\n";
 			}else if (key.compare("GLOBAL_T") == 0){
 				conf >> global_t;
-				//std:://cout << "GLOBAL_T\t\t" << global_t << '\n';
 			}else if (key.compare("MI_THRESH") == 0){
 				conf >> mi_thresh;
-				//std:://cout << "MI_THRESH\t\t" << mi_thresh << '\n';
 			}else if (key.compare("VAR_WIN") == 0){
 				uint32_t v;
 				conf >> v;
 				var_win = v;
-				//std:://cout << "VAR_WIN\t\t" << v << '\n';
 			}else if (key.compare("FAST_REACT") == 0){
 				uint32_t v;
 				conf >> v;
 				fast_react = v;
-				//std:://cout << "FAST_REACT\t\t" << v << '\n';
 			}else if (key.compare("U_TARGET") == 0){
 				conf >> u_target;
-				//std:://cout << "U_TARGET\t\t" << u_target << '\n';
 			}else if (key.compare("INT_MULTI") == 0){
 				conf >> int_multi;
-				//std:://cout << "INT_MULTI\t\t\t\t" << int_multi << '\n';
 			}else if (key.compare("RATE_BOUND") == 0){
 				uint32_t v;
 				conf >> v;
 				rate_bound = v;
-				//std:://cout << "RATE_BOUND\t\t" << rate_bound << '\n';
 			}else if (key.compare("ACK_HIGH_PRIO") == 0){
 				conf >> ack_high_prio;
-				//std:://cout << "ACK_HIGH_PRIO\t\t" << ack_high_prio << '\n';
 			}else if (key.compare("DCTCP_RATE_AI") == 0){
 				conf >> dctcp_rate_ai;
-				//std:://cout << "DCTCP_RATE_AI\t\t\t\t" << dctcp_rate_ai << "\n";
 			}else if (key.compare("PFC_OUTPUT_FILE") == 0){
 				conf >> pfc_output_file;
-				//std:://cout << "PFC_OUTPUT_FILE\t\t\t\t" << pfc_output_file << '\n';
 			}else if (key.compare("LINK_DOWN") == 0){
 				conf >> link_down_time >> link_down_A >> link_down_B;
-				//std:://cout << "LINK_DOWN\t\t\t\t" << link_down_time << ' '<< link_down_A << ' ' << link_down_B << '\n';
 			}else if (key.compare("ENABLE_TRACE") == 0){
 				conf >> enable_trace;
-				//std:://cout << "ENABLE_TRACE\t\t\t\t" << enable_trace << '\n';
 			}else if (key.compare("KMAX_MAP") == 0){
 				int n_k ;
 				conf >> n_k;
-				//std:://cout << "KMAX_MAP\t\t\t\t";
 				for (int i = 0; i < n_k; i++){
 					uint64_t rate;
 					uint32_t k;
 					conf >> rate >> k;
 					rate2kmax[rate] = k;
-					//std:://cout << ' ' << rate << ' ' << k;
 				}
-				//std:://cout<<'\n';
 			}else if (key.compare("KMIN_MAP") == 0){
 				int n_k ;
 				conf >> n_k;
-				//std:://cout << "KMIN_MAP\t\t\t\t";
 				for (int i = 0; i < n_k; i++){
 					uint64_t rate;
 					uint32_t k;
 					conf >> rate >> k;
 					rate2kmin[rate] = k;
-					//std:://cout << ' ' << rate << ' ' << k;
 				}
-				//std:://cout<<'\n';
 			}else if (key.compare("PMAX_MAP") == 0){
 				int n_k ;
 				conf >> n_k;
-				//std:://cout << "PMAX_MAP\t\t\t\t";
 				for (int i = 0; i < n_k; i++){
 					uint64_t rate;
 					double p;
 					conf >> rate >> p;
 					rate2pmax[rate] = p;
-					//std:://cout << ' ' << rate << ' ' << p;
 				}
-				//std:://cout<<'\n';
 			}else if (key.compare("BUFFER_SIZE") == 0){
 				conf >> buffer_size;
-				//std:://cout << "BUFFER_SIZE\t\t\t\t" << buffer_size << '\n';
 			}else if (key.compare("QLEN_MON_FILE") == 0){
 				conf >> qlen_mon_file;
-				//std:://cout << "QLEN_MON_FILE\t\t\t\t" << qlen_mon_file << '\n';
 			}else if (key.compare("QLEN_MON_START") == 0){
 				conf >> qlen_mon_start;
-				//std:://cout << "QLEN_MON_START\t\t\t\t" << qlen_mon_start << '\n';
 			}else if (key.compare("QLEN_MON_END") == 0){
 				conf >> qlen_mon_end;
-				//std:://cout << "QLEN_MON_END\t\t\t\t" << qlen_mon_end << '\n';
 			}else if (key.compare("MULTI_RATE") == 0){
 				int v;
 				conf >> v;
 				multi_rate = v;
-				//std:://cout << "MULTI_RATE\t\t\t\t" << multi_rate << '\n';
 			}else if (key.compare("SAMPLE_FEEDBACK") == 0){
 				int v;
 				conf >> v;
 				sample_feedback = v;
-				//std:://cout << "SAMPLE_FEEDBACK\t\t\t\t" << sample_feedback << '\n';
 			}else if(key.compare("PINT_LOG_BASE") == 0){
 				conf >> pint_log_base;
-				//std:://cout << "PINT_LOG_BASE\t\t\t\t" << pint_log_base << '\n';
 			}else if (key.compare("PINT_PROB") == 0){
 				conf >> pint_prob;
-				//std:://cout << "PINT_PROB\t\t\t\t" << pint_prob << '\n';
 			}
 			fflush(stdout);
 		}
@@ -686,7 +608,6 @@ int main1(int argc, char *argv[])
 	}
 	else
 	{
-		//std:://cout << "Error: require a config file\n";
 		fflush(stdout);
 		return 1;
 	}
@@ -717,8 +638,6 @@ int main1(int argc, char *argv[])
 		printf("PINT bits: %d bytes: %d\n", Pint::get_n_bits(), Pint::get_n_bytes());
 	}
 
-	//SeedManager::SetSeed(time(NULL));
-
 	topof.open(topology_file.c_str());
 	flowf.open(flow_file.c_str());
 	tracef.open(trace_file.c_str());
@@ -727,8 +646,6 @@ int main1(int argc, char *argv[])
 	flowf >> flow_num;
 	tracef >> trace_num;
 
-
-	//n.Create(node_num);
 	std::vector<uint32_t> node_type(node_num, 0);
 	for (uint32_t i = 0; i < switch_num; i++)
 	{
@@ -745,7 +662,6 @@ int main1(int argc, char *argv[])
 			sw->SetAttribute("EcnEnabled", BooleanValue(enable_qcn));
 		}
 	}
-	//std:://cout<<"nodes created\n";
 
 	NS_LOG_INFO("Create nodes.");
 
@@ -756,18 +672,13 @@ int main1(int argc, char *argv[])
 	// Assign IP to each server
 	//
 	for (uint32_t i = 0; i < node_num; i++){
-		if (n.Get(i)->GetNodeType() == 0){ // is server
+		if (n.Get(i)->GetNodeType() == 0){ 
 			serverAddress.resize(i + 1);
 			serverAddress[i] = node_id_to_ip(i);
-			//std:://cout<<"server addresss for "<<i<<"th node is "<<serverAddress[i]<<"\n";
 		}
 	}
 
 	NS_LOG_INFO("Create channels.");
-	//std:://cout<<"Create channels\n";
-	//
-	// Explicitly create the channels required by the topology.
-	//
 
 	Ptr<RateErrorModel> rem = CreateObject<RateErrorModel>();
 	Ptr<UniformRandomVariable> uv = CreateObject<UniformRandomVariable>();
@@ -786,7 +697,6 @@ int main1(int argc, char *argv[])
 		std::string data_rate, link_delay;
 		double error_rate;
 		topof >> src >> dst >> data_rate >> link_delay >> error_rate;
-		//data_rate = "200Gbps";
 		Ptr<Node> snode = n.Get(src), dnode = n.Get(dst);
 
 		qbb.SetDeviceAttribute("DataRate", StringValue(data_rate));
@@ -847,7 +757,6 @@ int main1(int argc, char *argv[])
 	}
 
 	nic_rate = get_nic_rate(n);
-	//std:://cout<<"get nic rate is "<<nic_rate<<"\n";
 	// config switch
 	for (uint32_t i = 0; i < node_num; i++){
 		if (n.Get(i)->GetNodeType() == 1){ // is switch
@@ -868,16 +777,13 @@ int main1(int argc, char *argv[])
 
 				// set pfc alpha, proportional to link bw
 				sw->m_mmu->pfc_a_shift[j] = shift;
-				//std:://cout<<"rate and pfc_a_shift is "<<rate<<" "<<shift<<"\n";
 				while (rate > nic_rate && sw->m_mmu->pfc_a_shift[j] > 0){
 					sw->m_mmu->pfc_a_shift[j]--;
 					rate /= 2;
 				}
-				//std:://cout<<"rate and pfc_a_shift is "<<rate<<" "<<shift<<"\n";
 			}
 			sw->m_mmu->ConfigNPort(sw->GetNDevices()-1);
 			sw->m_mmu->ConfigBufferSize(buffer_size* 1024 * 1024);
-			//std:://cout<<"buffer size, ports and node id of the switch is "<<buffer_size<<" MB, "<<sw->GetNDevices()-1<<sw->GetId()<<"\n";
 			sw->m_mmu->node_id = sw->GetId();
 		}
 	}
@@ -958,7 +864,6 @@ int main1(int argc, char *argv[])
 				maxBdp = bdp;
 			if (rtt > maxRtt)
 				maxRtt = rtt;
-			//std:://cout<<i<<" "<<j<< " bdp and delays are "<<delay<<" "<<txDelay<<" "<<rtt<<" "<<bw<<" "<<bdp<<"\n";
 		}
 	}
 	printf("maxRtt=%lu maxBdp=%lu\n", maxRtt, maxBdp);
@@ -1013,7 +918,6 @@ int main1(int argc, char *argv[])
 	NS_LOG_INFO("Create Applications.");
 
 	Time interPacketInterval = Seconds(0.0000005 / 2);
-	//cout<<"interPacket interval is "<<interPacketInterval<<"\n";
 	// maintain port number for each host
 	for (uint32_t i = 0; i < node_num; i++){
 		if (n.Get(i)->GetNodeType() == 0)
@@ -1022,7 +926,6 @@ int main1(int argc, char *argv[])
 					portNumder[i][j] = 10000; // each host pair use port number from 10000
 			}
 	}
-	//cout<<"each host pair use port number from 10000\n";
 	flow_input.idx = -1;
 	// if (flow_num > 0){
 	// 	ReadFlowInput();
@@ -1033,14 +936,13 @@ int main1(int argc, char *argv[])
 	tracef.close();
 
 	// schedule link down
-	//std:://cout<<"link_down_time "<<link_down_time<<"\n";
 	if (link_down_time > 0){
 		Simulator::Schedule(Seconds(2) + MicroSeconds(link_down_time), &TakeDownLink, n, n.Get(link_down_A), n.Get(link_down_B));
 	}
 
 	// schedule buffer monitor
-	// FILE* qlen_output = fopen(qlen_mon_file.c_str(), "w");
-	// Simulator::Schedule(NanoSeconds(qlen_mon_start), &monitor_buffer, qlen_output, &n);
+	FILE* qlen_output = fopen(qlen_mon_file.c_str(), "w");
+	Simulator::Schedule(NanoSeconds(qlen_mon_start), &monitor_buffer, qlen_output, &n);
 
 	//
 	// Now, do the actual simulation.

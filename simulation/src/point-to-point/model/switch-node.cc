@@ -85,7 +85,6 @@ int SwitchNode::GetOutDev(Ptr<const Packet> p, CustomHeader &ch){
 		buf.u32[2] = ch.ack.sport | ((uint32_t)ch.ack.dport << 16);
 
 	uint32_t idx = EcmpHash(buf.u8, 12, m_ecmpSeed) % nexthops.size();
-	//std::cout<<"idx and nextHop is "<<idx<<" "<<nexthops[idx]<<"\n";
 	return nexthops[idx];
 }
 
@@ -134,7 +133,6 @@ void SwitchNode::SendToDev(Ptr<Packet>p, CustomHeader &ch){
 		m_devices[idx]->SwitchSend(qIndex, p, ch);
 	}else
 	{
-		//std::cout<<"IDX IS NEGATIVE, PACKET DROP\n";
 		return; // Drop
 	}
 }
@@ -143,63 +141,37 @@ uint32_t SwitchNode::EcmpHash(const uint8_t* key, size_t len, uint32_t seed) {
   uint32_t h = seed;
   if (len > 3) {
     const uint32_t* key_x4 = (const uint32_t*) key;
-    //std::cout<<"*key_x4 is "<<*key_x4<<"\n";
     size_t i = len >> 2;
-    //std::cout<"i is "<<i<<"\n";
     do {
-      //std::cout<<"i is "<<i<<"\n";
       uint32_t k = *key_x4++;
-      //std::cout<<"k is"<<k<<"\n";
       k *= 0xcc9e2d51;
-      //std::cout<<"k is after mult "<<k<<"\n"; 
       k = (k << 15) | (k >> 17);
-      //std::cout<<"after shift k is "<<k<<"\n";
       k *= 0x1b873593;
-      //std::cout<<"after mult k is "<<k<<"\n";
       h ^= k;
-      //std::cout<<"h is "<<h<<"\n";
       h = (h << 13) | (h >> 19);
-      //std::cout<<"h after shift is "<<h<<"\n";
       h += (h << 2) + 0xe6546b64;
-      //std::cout<<"h after mult is "<<h<<"\n";
     } while (--i);
     key = (const uint8_t*) key_x4;
-    //std::cout<<"key is "<<key<<"\n";
   }
   if (len & 3) {
     size_t i = len & 3;
-    //std::cout<<"i in ken and 3  is "<<i<<"\n";
     uint32_t k = 0;
     key = &key[i - 1];
-    //std::cout<<"key is "<<key<<"\n";
     do {
-      //std::cout<<" i inwhile is "<<i<<"\n";
       k <<= 8;
-      //std::cout<<"k is "<<k<<"\n";
       k |= *key--;
-      //std::cout<<"k is "<<k<<"\n";
     } while (--i);
     k *= 0xcc9e2d51;
-    //std::cout<<k<<"after mult is "<<k<<"\n";
     k = (k << 15) | (k >> 17);
-    //std::cout<<"k after shift is "<<k<<"\n";
     k *= 0x1b873593;
-    //std::cout<<"k mult is "<<k<<"\n";
     h ^= k;
-    //std::cout<<"h is "<<h<<"\n";
   }
   h ^= len;
-  //std::cout<<"h after if is "<<h<<"\n";
   h ^= h >> 16;
-  //std::cout<<"h is "<<h<<"\n";
   h *= 0x85ebca6b;
-  //std::cout<<"h after mult is "<<h<<"\n";
   h ^= h >> 13;
-  //std::cout<<"h after shift is "<<h<<"\n";
   h *= 0xc2b2ae35;
-  //std::cout<<"h is "<<h<<"\n";
   h ^= h >> 16;
-  //std::cout<<"h after shift "<<h<<"\n";
   return h;
 }
 
