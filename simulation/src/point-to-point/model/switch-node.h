@@ -19,12 +19,14 @@ class SwitchNode : public Node{
 
 	// monitor of PFC
 	uint32_t m_bytes[pCnt][pCnt][qCnt]; // m_bytes[inDev][outDev][qidx] is the bytes from inDev enqueued for outDev at qidx
-	
+
 	uint64_t m_txBytes[pCnt]; // counter of tx bytes
 
 	uint32_t m_lastPktSize[pCnt];
 	uint64_t m_lastPktTs[pCnt]; // ns
 	double m_u[pCnt];
+
+	std::unordered_map<uint32_t, int> m_spineTable; // For ToR switch, map from spine switch id to interface idx, to index m_devices;
 
 protected:
 	bool m_ecnEnabled;
@@ -35,6 +37,8 @@ protected:
 
 private:
 	int GetOutDev(Ptr<const Packet>, CustomHeader &ch);
+	int GetOutDevECMP(Ptr<const Packet>, CustomHeader &ch);
+	int GetOutDevStaticNaive(Ptr<const Packet>, CustomHeader &ch);
 	void SendToDev(Ptr<Packet>p, CustomHeader &ch);
 	static uint32_t EcmpHash(const uint8_t* key, size_t len, uint32_t seed);
 	void CheckAndSendPfc(uint32_t inDev, uint32_t qIndex);
