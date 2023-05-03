@@ -128,14 +128,16 @@ int SwitchNode::GetOutDevStaticNaive(Ptr<const Packet> p, CustomHeader& ch) {
     int chan_id = 0;
     for (auto it : m_devices) {
       if (!it->IsPointToPoint()) {
-        std::cout << "chan " << chan_id << " with type " << it->GetTypeId()
-                  << std::endl; // " count, start, end" <<
-                                // it->GetChannel()->GetNDevices() <<  std::endl
-                                // ; //" , " <<
-                                // it->GetChannel()->GetDevice(0)->GetNode()->GetId()
-                                // << ", " <<
-                                // it->GetChannel()->GetDevice(1)->GetNode()->GetId()<<
-                                // std::endl;
+        std::cout
+            << "chan " << chan_id << " with type " << it->GetTypeId()
+            << std::
+                   endl; // " count, start, end" <<
+                         // it->GetChannel()->GetNDevices() <<  std::endl
+                         // ; //" , " <<
+                         // it->GetChannel()->GetDevice(0)->GetNode()->GetId()
+                         // << ", " <<
+                         // it->GetChannel()->GetDevice(1)->GetNode()->GetId()<<
+                         // std::endl;
         chan_id += 1;
         continue;
         // std::cout << "Fatal: Not point to point for this, sid, did, it" <<
@@ -217,7 +219,7 @@ int SwitchNode::GetOutDevECMP(Ptr<const Packet> p, CustomHeader& ch) {
 
 int SwitchNode::GetOutDev(Ptr<const Packet> p, CustomHeader& ch) {
   // return GetOutDevECMP(p, ch)
-  return GetOutDevStaticNaive(p, ch)
+  return GetOutDevStaticNaive(p, ch);
 }
 
 void SwitchNode::CheckAndSendPfc(uint32_t inDev, uint32_t qIndex) {
