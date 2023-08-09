@@ -443,6 +443,26 @@ namespace ns3 {
 		SwitchSend(0, p, ch);
 	}
 
+	Ptr<Packet> QbbNetDevice::NICSendPfc(uint32_t qIndex, uint32_t type) {
+	Ptr<Packet> p = Create<Packet>(0);
+	PauseHeader pauseh((type == 0 ? m_pausetime : 0), m_queue->GetNBytes(qIndex),
+						qIndex);
+	// std::cout << "m_pausetime " << pauseh.GetTime() << " " << pauseh.GetQIndex() <<std::endl;
+	p->AddHeader(pauseh);
+	Ipv4Header ipv4h;  // Prepare IPv4 header
+	ipv4h.SetProtocol(0xFE);
+	//ipv4h.SetProtocol(L3ProtType::kPFC);
+	ipv4h.SetSource(
+		m_node->GetObject<Ipv4>()->GetAddress(m_ifIndex, 0).GetLocal());
+	ipv4h.SetDestination(Ipv4Address("255.255.255.255"));
+	ipv4h.SetPayloadSize(p->GetSize());
+	ipv4h.SetTtl(1);
+	ipv4h.SetIdentification(UniformVariable(0, 65536).GetValue());
+	p->AddHeader(ipv4h);
+	AddHeader(p, 0x800);
+	return p;
+	}
+
 	bool
 		QbbNetDevice::Attach(Ptr<QbbChannel> ch)
 	{

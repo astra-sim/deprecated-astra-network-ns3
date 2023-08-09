@@ -127,6 +127,7 @@ public:
    void TriggerTransmit(void);
 
 	void SendPfc(uint32_t qIndex, uint32_t type); // type: 0 = pause, 1 = resume
+  Ptr<Packet> NICSendPfc(uint32_t qIndex, uint32_t type);
 
 	TracedCallback<Ptr<const Packet>, uint32_t> m_traceEnqueue;
 	TracedCallback<Ptr<const Packet>, uint32_t> m_traceDequeue;
