@@ -99,6 +99,11 @@ uint64_t nic_rate;
 
 uint64_t maxRtt, maxBdp;
 
+std::vector<Ipv4Address> serverAddress;
+
+// maintain port number for each host pair
+std::unordered_map<uint32_t, unordered_map<uint32_t, uint16_t>> portNumber;
+
 struct Interface {
   uint32_t idx;
   bool up;
@@ -117,16 +122,12 @@ map<uint32_t, map<uint32_t, uint64_t>> pairBw;
 map<Ptr<Node>, map<Ptr<Node>, uint64_t>> pairBdp;
 map<uint32_t, map<uint32_t, uint64_t>> pairRtt;
 
-std::vector<Ipv4Address> serverAddress;
-
-// maintain port number for each host pair
-std::unordered_map<uint32_t, unordered_map<uint32_t, uint16_t>> portNumder;
-
 struct FlowInput {
   uint32_t src, dst, pg, maxPacketCount, port, dport;
   double start_time;
   uint32_t idx;
 };
+
 FlowInput flow_input = {0};
 uint32_t flow_num;
 
@@ -142,7 +143,7 @@ void ScheduleFlowInputs() {
   while (flow_input.idx < flow_num &&
          Seconds(flow_input.start_time) == Simulator::Now()) {
     uint32_t port =
-        portNumder[flow_input.src][flow_input.dst]++; // get a new port number
+        portNumber[flow_input.src][flow_input.dst]++; // get a new port number
     // RdmaClientHelper clientHelper(flow_input.pg,
     // serverAddress[flow_input.src], serverAddress[flow_input.dst], port,
     // flow_input.dport, flow_input.maxPacketCount,
@@ -167,7 +168,7 @@ void ScheduleFlowInputs() {
 
 void SendFlow(int src, int dst, int maxPacketCount,
               void (*msg_handler)(void *fun_arg), void *fun_arg, int tag) {
-  uint32_t port = portNumder[src][dst]++; // get a new port number
+  uint32_t port = portNumber[src][dst]++; // get a new port number
   int pg = 3, dport = 100;
   flow_input.idx++;
   RdmaClientHelper clientHelper(
@@ -387,9 +388,8 @@ uint64_t get_nic_rate(NodeContainer &n) {
           .GetBitRate();
 }
 
-int main1(int argc, char *argv[]) {
-  clock_t begint, endt;
-  begint = clock();
+bool ReadConf(int argc, char *argv[]) {
+
 #ifndef PGO_TRAINING
   if (argc > 1)
 #else
@@ -592,11 +592,15 @@ int main1(int argc, char *argv[]) {
       fflush(stdout);
     }
     conf.close();
+    return true;
   } else {
+	std::cout << "Error: require a config file\n";
     fflush(stdout);
-    return 1;
+    return false;
   }
+}
 
+void SetConfig() {
   bool dynamicth = use_dynamic_pfc_threshold;
 
   Config::SetDefault("ns3::QbbNetDevice::PauseTime", UintegerValue(pause_time));
@@ -623,6 +627,9 @@ int main1(int argc, char *argv[]) {
     printf("PINT bits: %d bytes: %d\n", Pint::get_n_bits(),
            Pint::get_n_bytes());
   }
+}
+
+void SetupNetwork(void (*qp_finish)(FILE *, Ptr<RdmaQueuePair>)) {
 
   topof.open(topology_file.c_str());
   flowf.open(flow_file.c_str());
@@ -938,7 +945,7 @@ int main1(int argc, char *argv[]) {
     if (n.Get(i)->GetNodeType() == 0)
       for (uint32_t j = 0; j < node_num; j++) {
         if (n.Get(j)->GetNodeType() == 0)
-          portNumder[i][j] = 10000; // each host pair use port number from 10000
+          portNumber[i][j] = 10000; // each host pair use port number from 10000
       }
   }
   flow_input.idx = -1;
@@ -962,6 +969,17 @@ int main1(int argc, char *argv[]) {
   FILE *qlen_output = fopen(qlen_mon_file.c_str(), "w");
   Simulator::Schedule(NanoSeconds(qlen_mon_start), &monitor_buffer, qlen_output,
                       &n);
+}
+
+int main1(int argc, char *argv[]) {
+  ////std:://cout<<"testThird\n"
+  clock_t begint, endt;
+  begint = clock();
+
+  if (!ReadConf(argc, argv))
+    return -1;
+  SetConfig();
+  SetupNetwork(qp_finish);
 
   //
   // Now, do the actual simulation.
