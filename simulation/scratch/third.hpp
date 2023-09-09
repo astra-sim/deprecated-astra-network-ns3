@@ -39,8 +39,6 @@
 #include <time.h>
 #include <unordered_map>
 
-
-
 // #include "third.h"
 
 using namespace ns3;
@@ -70,8 +68,10 @@ void SendFlow(int src, int dst, int maxPacketCount,
               void (*msg_handler)(void *fun_arg), void *fun_arg, int tag) {
   uint32_t port = portNumber[src][dst]++; // get a new port number
   // uint32_t port = portNumber[src][dst];
-  // if(sender_src_port_map.find(make_pair(port, make_pair(src, dst))) != sender_src_port_map.end()){
-  //   NS_ASSERT_MSG(false, "we did not expect multiple messages from the same sender and receiver burst at the same time now.");
+  // if(sender_src_port_map.find(make_pair(port, make_pair(src, dst))) !=
+  // sender_src_port_map.end()){
+  //   NS_ASSERT_MSG(false, "we did not expect multiple messages from the same
+  //   sender and receiver burst at the same time now.");
   // }
   sender_src_port_map[make_pair(port, make_pair(src, dst))] = tag;
   int pg = 3, dport = 100;
@@ -206,10 +206,9 @@ int main1(int argc, char *argv[]) {
 
   if (!ReadConf(argc, argv))
     return -1;
-  std::cout << " sfc_queue_num " << sfc_queue_num << " fc_mode " << fc_mode 
-            << " sfc trigger " << sfc_trigger_threshold << " sfc_target " << sfc_target_queue_depth
-            << " sfc_opt " << sfc_opt 
-            << std::endl;
+  std::cout << " sfc_queue_num " << sfc_queue_num << " fc_mode " << fc_mode
+            << " sfc trigger " << sfc_trigger_threshold << " sfc_target "
+            << sfc_target_queue_depth << " sfc_opt " << sfc_opt << std::endl;
   SetConfig();
   SetupNetwork(qp_finish);
 
