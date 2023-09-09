@@ -43,7 +43,10 @@ using namespace std;
 NS_LOG_COMPONENT_DEFINE("GENERIC_SIMULATION");
 
 uint32_t cc_mode = 1;
-bool enable_qcn = true, use_dynamic_pfc_threshold = true;
+uint32_t fc_mode = 2; // Full-PFC
+uint32_t lc_mode = 0;
+bool enable_qcn = true, use_dynamic_pfc_threshold = true,
+     enable_packetspray = false;
 uint32_t packet_payload_size = 1000, l2_chunk_size = 0, l2_ack_interval = 0;
 double pause_time = 5, simulator_stop_time = 3.01;
 std::string data_rate, link_delay, topology_file, flow_file, trace_file,
@@ -83,15 +86,33 @@ uint32_t buffer_size = 16;
 
 uint32_t qlen_dump_interval = 1000, qlen_mon_interval = 100;
 uint64_t qlen_mon_start = 0, qlen_mon_end = 2100000000;
+
+uint32_t sfc_queue_num = 4;
+uint32_t sfc_trigger_threshold = 100 * 1000;
+uint32_t sfc_target_queue_depth = 10 * 1000;
+uint32_t sfc_opt = 0;
 string qlen_mon_file;
 
 unordered_map<uint64_t, uint32_t> rate2kmax, rate2kmin;
 unordered_map<uint64_t, double> rate2pmax;
+std::map<uint8_t, uint8_t> swc_qos_map;
+std::map<uint8_t, uint8_t> flow_qos_map;
 
+// Smart-Pause
+bool enableSP = false;
+uint64_t SPthres = 30000;
+uint64_t SPmaxPauseLen = 50000;
+double SP_noPausePeriodRatio = 0;
+bool enableSPcor = true;
+double SPcorGain = 16.0;
+double clockOffsetStd = 0.001; // In nanoseconds
+
+// astra-sim
+std::string job_config, sys_config;
 /************************************************
  * Runtime varibles
  ***********************************************/
-std::ifstream topof, flowf, tracef;
+std::ifstream topof, flowf, tracef, jobf;
 
 NodeContainer n;
 
@@ -123,47 +144,27 @@ map<Ptr<Node>, map<Ptr<Node>, uint64_t>> pairBdp;
 map<uint32_t, map<uint32_t, uint64_t>> pairRtt;
 
 struct FlowInput {
-  uint32_t src, dst, pg, maxPacketCount, port, dport;
-  double start_time;
+  uint32_t src, dst, pg, appid, maxPacketCount, port, dport;
+  uint64_t start_time;
   uint32_t idx;
 };
 
 FlowInput flow_input = {0};
 uint32_t flow_num;
+uint32_t finished_flow_num;
 
-void ReadFlowInput() {
-  if (flow_input.idx < flow_num) {
-    flowf >> flow_input.src >> flow_input.dst >> flow_input.pg >>
-        flow_input.dport >> flow_input.maxPacketCount >> flow_input.start_time;
-    NS_ASSERT(n.Get(flow_input.src)->GetNodeType() == 0 &&
-              n.Get(flow_input.dst)->GetNodeType() == 0);
-  }
-}
-void ScheduleFlowInputs() {
-  while (flow_input.idx < flow_num &&
-         Seconds(flow_input.start_time) == Simulator::Now()) {
-    uint32_t port =
-        portNumber[flow_input.src][flow_input.dst]++; // get a new port number
-    // RdmaClientHelper clientHelper(flow_input.pg,
-    // serverAddress[flow_input.src], serverAddress[flow_input.dst], port,
-    // flow_input.dport, flow_input.maxPacketCount,
-    // has_win?(global_t==1?maxBdp:pairBdp[n.Get(flow_input.src)][n.Get(flow_input.dst)]):0,
-    // global_t==1?maxRtt:pairRtt[flow_input.src][flow_input.dst]);
-    // ApplicationContainer appCon =
-    // clientHelper.Install(n.Get(flow_input.src)); appCon.Start(Time(0));
-
-    // get the next flow input
-    flow_input.idx++;
-    ReadFlowInput();
-  }
-
-  // schedule the next time to run this function
-  if (flow_input.idx < flow_num) {
-    Simulator::Schedule(Seconds(flow_input.start_time) - Simulator::Now(),
-                        ScheduleFlowInputs);
-  } else { // no more flows, close the file
-    flowf.close();
-  }
+void SendFlow(int src, int dst, int maxPacketCount,
+              void (*msg_handler)(void *fun_arg), void *fun_arg, int tag) {
+  uint32_t port = portNumder[src][dst]++; // get a new port number
+  int pg = 3, dport = 100;
+  flow_input.idx++;
+  RdmaClientHelper clientHelper(
+      pg, serverAddress[src], serverAddress[dst], port, dport, maxPacketCount,
+      has_win ? (global_t == 1 ? maxBdp : pairBdp[n.Get(src)][n.Get(dst)]) : 0,
+      global_t == 1 ? maxRtt : pairRtt[src][dst], msg_handler, fun_arg, tag,
+      src, dst);
+  ApplicationContainer appCon = clientHelper.Install(n.Get(src));
+  appCon.Start(Time(0));
 }
 
 Ipv4Address node_id_to_ip(uint32_t id) {
@@ -208,7 +209,7 @@ void monitor_buffer(FILE *qlen_output, NodeContainer *n) {
         //{
         //	vector<uint32_t> v;
         //	queue_result[i][j] = v;
-        // }
+        //}
         if (size >= 1000) {
           queue_result[i][j] = size; // .push_back(size);
           if (test == 0) {
@@ -234,6 +235,7 @@ void monitor_buffer(FILE *qlen_output, NodeContainer *n) {
         //	queue_result[i][j]+=size;
         // queue_result[i][j].add(size);
       }
+      fflush(qlen_output);
       // fprintf(qlen_output, "\n");
     }
   }
@@ -279,12 +281,18 @@ void CalculateRoute(Ptr<Node> host) {
       }
     }
   }
-  for (auto it : delay)
+  for (auto it : delay) {
+    // std::cout << "pairDelay first "<< it.first->GetId() << " host " <<
+    // host->GetId() << " delay " << it.second << std::endl;
     pairDelay[it.first][host] = it.second;
+  }
   for (auto it : txDelay)
     pairTxDelay[it.first][host] = it.second;
-  for (auto it : bw)
+  for (auto it : bw) {
+    // std::cout << "pairBw first "<< it.first->GetId() << " host " <<
+    // host->GetId() << " bw " << it.second << std::endl;
     pairBw[it.first->GetId()][host->GetId()] = it.second;
+  }
 }
 
 void CalculateRoutes(NodeContainer &n) {
@@ -370,10 +378,44 @@ bool ReadConf(int argc, char *argv[]) {
     while (!conf.eof()) {
       std::string key;
       conf >> key;
+
+      // std::cout << conf.cur << "\n";
+      // std::cout << key << std::endl;
+      // Helper function for parsing k:v lists
+      auto qos_map_parse_elem = [](std::map<uint8_t, uint8_t> &qos_map,
+                                   std::string elem) {
+        std::string elem_delim = ":";
+
+        uint16_t app;
+        uint16_t pg;
+        size_t elem_pos = 0;
+
+        elem_pos = elem.find(elem_delim);
+        app = static_cast<uint16_t>(std::stoi(elem.substr(0, elem_pos)));
+        pg = static_cast<uint16_t>(
+            std::stoi(elem.substr(elem_pos + 1, elem.length())));
+
+        NS_ASSERT_MSG(qos_map.find(app) == qos_map.end(),
+                      "QOS_MAP value provided twice.");
+        qos_map[app] = pg;
+      };
+
       if (key.compare("ENABLE_QCN") == 0) {
         uint32_t v;
         conf >> v;
         enable_qcn = v;
+      } else if (key.compare("ENABLE_PACKETSPRAY") == 0) {
+        uint32_t v;
+        conf >> v;
+        enable_packetspray = v;
+        if (enable_packetspray)
+          std::cout << "ENABLE_PACKETSPRAY\t\t\t"
+                    << "Yes"
+                    << "\n";
+        else
+          std::cout << "ENABLE_PACKETSPRAY\t\t\t"
+                    << "No"
+                    << "\n";
       } else if (key.compare("USE_DYNAMIC_PFC_THRESHOLD") == 0) {
         uint32_t v;
         conf >> v;
@@ -552,10 +594,108 @@ bool ReadConf(int argc, char *argv[]) {
         conf >> pint_log_base;
       } else if (key.compare("PINT_PROB") == 0) {
         conf >> pint_prob;
+      } else if (key.compare("SFC_QUEUE_NUM") == 0) {
+        conf >> sfc_queue_num;
+        std::cout << "SFC_QUEUE_NUM\t\t\t\t" << sfc_queue_num << "\n";
+      } else if (key.compare("FC_MODE") == 0) {
+        conf >> fc_mode;
+        std::cout << "FC_MODE\t\t" << fc_mode << '\n';
+      } else if (key.compare("LC_MODE") == 0) {
+        conf >> lc_mode;
+        std::cout << "LC_MODE\t\t" << lc_mode << '\n';
+      } else if (key.compare("SFC_TRIGGER") == 0) {
+        conf >> sfc_trigger_threshold;
+        std::cout << "SFC_TRIGGER\t\t" << sfc_trigger_threshold << '\n';
+      } else if (key.compare("SFC_TARGET_QUEUE_DEPTH") == 0) {
+        conf >> sfc_target_queue_depth;
+        std::cout << "SFC_TARGET_QUEUE_DEPTH\t\t" << sfc_target_queue_depth
+                  << '\n';
+      } else if (key.compare("SFC_OPTIMIZATION") == 0) {
+        conf >> sfc_opt;
+        std::cout << "SFC_OPTMIZAITON\t\t" << sfc_opt << '\n';
+      } else if (key.compare("SWC_QOS_MAP") == 0) {
+        std::string swc_qos_map_raw;
+        conf >> swc_qos_map_raw;
+
+        std::string delim = ",";
+        size_t pos = 0;
+
+        while ((pos = swc_qos_map_raw.find(delim)) != string::npos) {
+          qos_map_parse_elem(swc_qos_map, swc_qos_map_raw.substr(0, pos));
+          swc_qos_map_raw.erase(0, pos + 1);
+        }
+        qos_map_parse_elem(swc_qos_map, swc_qos_map_raw);
+
+        std::cout << "SWC_QOS_MAP\t\t";
+        for (auto const &elem : swc_qos_map) {
+          std::cout << (uint32_t)elem.first << "->" << (uint32_t)elem.second
+                    << ",";
+        }
+        std::cout << std::endl;
+      } else if (key.compare("FLOW_QOS_MAP") == 0) {
+        std::string flow_qos_map_raw;
+        conf >> flow_qos_map_raw;
+
+        std::string delim = ",";
+        size_t pos = 0;
+
+        while ((pos = flow_qos_map_raw.find(delim)) != string::npos) {
+          qos_map_parse_elem(flow_qos_map, flow_qos_map_raw.substr(0, pos));
+          flow_qos_map_raw.erase(0, pos + 1);
+        }
+        qos_map_parse_elem(flow_qos_map, flow_qos_map_raw);
+
+        std::cout << "FLOW_QOS_MAP\t\t";
+        for (auto const &elem : flow_qos_map) {
+          std::cout << (uint32_t)elem.first << "->" << (uint32_t)elem.second
+                    << ",";
+        }
+        std::cout << std::endl;
+      } else if (key.compare("SP_THRESHOLD") == 0) {
+        int64_t v;
+        conf >> v;
+        SPthres = v;
+        std::cout << "SP_THRESHOLD\t\t\t\t" << SPthres << '\n';
+      } else if (key.compare("SP_MAX_PAUSE_LEN") == 0) {
+        int64_t v;
+        conf >> v;
+        SPmaxPauseLen = v;
+        std::cout << "SP_MAX_PAUSE_LEN\t\t\t\t" << SPmaxPauseLen << '\n';
+      } else if (key.compare("SP_NO_PAUSE_PERIOD_RATIO") == 0) {
+        double v;
+        conf >> v;
+        SP_noPausePeriodRatio = v;
+        std::cout << "SP_NO_PAUSE_PERIOD_RATIO\t\t" << SP_noPausePeriodRatio
+                  << "\n";
+      } else if (key.compare("ENABLE_CORRECTION_IN_SP") == 0) {
+        int v;
+        conf >> v;
+        enableSPcor = v;
+        std::cout << "ENABLE_CORRECTION_IN_SP\t\t\t\t" << enableSPcor << '\n';
+      } else if (key.compare("SP_CORRECTION_GAIN") == 0) {
+        double v;
+        conf >> v;
+        SPcorGain = v;
+        std::cout << "SP_CORRECTION_GAIN\t\t" << SPcorGain << "\n";
+      } else if (key.compare("SP_CLOCK_OFFSET_STD") == 0) {
+        double v;
+        conf >> v;
+        clockOffsetStd = v;
+        std::cout << "SP_CLOCK_OFFSET_STD\t\t" << clockOffsetStd << "\n";
+      } else if (key.compare("JOB_CONFIG") == 0) {
+        std::string v;
+        conf >> v;
+        job_config = v;
+        std::cout << "JOB_CONFIG\t\t" << job_config << "\n";
+      } else if (key.compare("SYS_CONFIG") == 0) {
+        std::string v;
+        conf >> v;
+        sys_config = v;
+        std::cout << "SYS_CONFIG\t\t" << sys_config << "\n";
       }
+
       fflush(stdout);
     }
-    conf.close();
     return true;
   } else {
     std::cout << "Error: require a config file\n";
@@ -567,6 +707,8 @@ bool ReadConf(int argc, char *argv[]) {
 void SetConfig() {
   bool dynamicth = use_dynamic_pfc_threshold;
 
+  Config::SetDefault("ns3::QbbNetDevice::SfcQCnt",
+                     UintegerValue(sfc_queue_num));
   Config::SetDefault("ns3::QbbNetDevice::PauseTime", UintegerValue(pause_time));
   Config::SetDefault("ns3::QbbNetDevice::QcnEnabled", BooleanValue(enable_qcn));
   Config::SetDefault("ns3::QbbNetDevice::DynamicThreshold",
@@ -616,6 +758,7 @@ void SetupNetwork(void (*qp_finish)(FILE *, Ptr<RdmaQueuePair>)) {
       Ptr<SwitchNode> sw = CreateObject<SwitchNode>();
       n.Add(sw);
       sw->SetAttribute("EcnEnabled", BooleanValue(enable_qcn));
+      sw->SetAttribute("PacketSprayEnabled", BooleanValue(enable_packetspray));
     }
   }
 
@@ -681,12 +824,36 @@ void SetupNetwork(void (*qp_finish)(FILE *, Ptr<RdmaQueuePair>)) {
       ipv4->AddInterface(d.Get(0));
       ipv4->AddAddress(
           1, Ipv4InterfaceAddress(serverAddress[src], Ipv4Mask(0xff000000)));
+
+      Ptr<SwitchNode> sw =
+          DynamicCast<SwitchNode>(dnode); // Destination Node is switch
+      sw->SetAttribute("IsEdge", BooleanValue(true));
+      // This is hardcoded,  for santity check, based on my knowledge for the
+      // topology. when we use sfc_fat.txt as the topoplogy, the ToR switches
+      // numbers are 0-20; when we use fat_hpcc.txt as the topology, the ToR
+      // switches numbers are 320-339; if (dst > 339 || dst < 320)
+      // {
+      // 	std::cout << "ToR switches numbering is wrong" << std::endl;
+      // 	// return -1;
+      //     exit(-1);
+      // }
     }
     if (dnode->GetNodeType() == 0) {
       Ptr<Ipv4> ipv4 = dnode->GetObject<Ipv4>();
       ipv4->AddInterface(d.Get(1));
       ipv4->AddAddress(
           1, Ipv4InterfaceAddress(serverAddress[dst], Ipv4Mask(0xff000000)));
+      Ptr<SwitchNode> sw =
+          DynamicCast<SwitchNode>(snode); // Destination Node is switch
+      sw->SetAttribute("IsEdge", BooleanValue(true));
+      /*
+      if (src > 339 || dst < 320)
+      {
+              std::cout << "ToR switches numbering is wrong" << std::endl;
+              return -1;
+exit(-1);
+      }
+      */
     }
 
     // used to create a graph of the topology
@@ -733,6 +900,7 @@ void SetupNetwork(void (*qp_finish)(FILE *, Ptr<RdmaQueuePair>)) {
     if (n.Get(i)->GetNodeType() == 1) { // is switch
       Ptr<SwitchNode> sw = DynamicCast<SwitchNode>(n.Get(i));
       uint32_t shift = 3; // by default 1/8
+
       for (uint32_t j = 1; j < sw->GetNDevices(); j++) {
         Ptr<QbbNetDevice> dev = DynamicCast<QbbNetDevice>(sw->GetDevice(j));
         // set ecn
@@ -749,6 +917,7 @@ void SetupNetwork(void (*qp_finish)(FILE *, Ptr<RdmaQueuePair>)) {
         uint64_t delay = DynamicCast<QbbChannel>(dev->GetChannel())
                              ->GetDelay()
                              .GetTimeStep();
+        // uint32_t headroom = 150000; // rate * delay / 8 / 1000000000 * 3;
         uint32_t headroom = rate * delay / 8 / 1000000000 * 3;
         sw->m_mmu->ConfigHdrm(j, headroom);
 
@@ -764,9 +933,23 @@ void SetupNetwork(void (*qp_finish)(FILE *, Ptr<RdmaQueuePair>)) {
       sw->m_mmu->node_id = sw->GetId();
     }
   }
+  std::default_random_engine ran_generator(1); // Seed == 1
+  std::normal_distribution<double> std_dist(0.0, clockOffsetStd);
 
+  srand(1);
 #if ENABLE_QP
   FILE *fct_output = fopen(fct_output_file.c_str(), "w");
+  std::cout << "QP is enabled " << std::endl;
+  jobf.open(job_config.c_str());
+
+  int job_num = 1;
+  int num_gpus = 1;
+  int total_pause_times = 0;
+  double communication_scale_factor = 1.0;
+  int num_passes = 1;
+  jobf >> job_num >> num_gpus >> total_pause_times >>
+      communication_scale_factor >> num_passes;
+  jobf.close();
   //
   // install RDMA driver
   //
@@ -784,6 +967,8 @@ void SetupNetwork(void (*qp_finish)(FILE *, Ptr<RdmaQueuePair>)) {
       rdmaHw->SetAttribute("RateAI", DataRateValue(DataRate(rate_ai)));
       rdmaHw->SetAttribute("RateHAI", DataRateValue(DataRate(rate_hai)));
       rdmaHw->SetAttribute("L2BackToZero", BooleanValue(l2_back_to_zero));
+      rdmaHw->SetAttribute("TotalPauseTimes",
+                           UintegerValue(nic_total_pause_time));
       rdmaHw->SetAttribute("L2ChunkSize", UintegerValue(l2_chunk_size));
       rdmaHw->SetAttribute("L2AckInterval", UintegerValue(l2_ack_interval));
       rdmaHw->SetAttribute("CcMode", UintegerValue(cc_mode));
@@ -801,8 +986,25 @@ void SetupNetwork(void (*qp_finish)(FILE *, Ptr<RdmaQueuePair>)) {
       rdmaHw->SetAttribute("DctcpRateAI",
                            DataRateValue(DataRate(dctcp_rate_ai)));
       rdmaHw->SetPintSmplThresh(pint_prob);
-      rdmaHw->SetAttribute("TotalPauseTimes",
-                           UintegerValue(nic_total_pause_time));
+      rdmaHw->SetAttribute("IRNEnabled", BooleanValue(lc_mode));
+      rdmaHw->SetAttribute("TotalPauseTimes", UintegerValue(total_pause_times));
+      // rdmaHw->SetAttribute("SfcOptimizationEnabled", UintegerValue(sfc_opt));
+      // rdmaHw->SetAttribute("SfcQCnt", UintegerValue(sfc_queue_num));
+      if (fc_mode == 5) {
+        enableSP = true;
+        rdmaHw->SetAttribute("EnableSP", BooleanValue(enableSP));
+        rdmaHw->SetAttribute("SPthreshold", UintegerValue(SPthres));
+        rdmaHw->SetAttribute("SPmaxPauseLen", UintegerValue(SPmaxPauseLen));
+        rdmaHw->SetAttribute("SPnoPausePeriodRatio",
+                             DoubleValue(SP_noPausePeriodRatio));
+        rdmaHw->SetAttribute("EnableSPCorrection", BooleanValue(enableSPcor));
+        rdmaHw->SetAttribute("SPcorGain", DoubleValue(SPcorGain));
+
+        double thisClockOffset = std_dist(ran_generator);
+        rdmaHw->SetAttribute("ClockOffset", DoubleValue(thisClockOffset));
+        std::cout << "Node " << i << " ClockOffset " << thisClockOffset << '\n';
+      }
+
       // create and install RdmaDriver
       Ptr<RdmaDriver> rdma = CreateObject<RdmaDriver>();
       Ptr<Node> node = n.Get(i);
@@ -842,6 +1044,11 @@ void SetupNetwork(void (*qp_finish)(FILE *, Ptr<RdmaQueuePair>)) {
       uint64_t rtt = delay * 2 + txDelay;
       uint64_t bw = pairBw[i][j];
       uint64_t bdp = rtt * bw / 1000000000 / 8;
+      // if(i == 0 && j== 17){
+      // 	std::cout << "i " << i << " j " << j << " delay " << delay << "
+      // txDelay " << txDelay << std::endl;
+      // }
+
       pairBdp[n.Get(i)][n.Get(j)] = bdp;
       pairRtt[i][j] = rtt;
       if (bdp > maxBdp)
@@ -859,7 +1066,17 @@ void SetupNetwork(void (*qp_finish)(FILE *, Ptr<RdmaQueuePair>)) {
     if (n.Get(i)->GetNodeType() == 1) { // switch
       Ptr<SwitchNode> sw = DynamicCast<SwitchNode>(n.Get(i));
       sw->SetAttribute("CcMode", UintegerValue(cc_mode));
+      sw->SetAttribute("FcMode", UintegerValue(fc_mode));
+      sw->SetAttribute("SfcQueueNum", UintegerValue(sfc_queue_num));
+      sw->SetAttribute("TargetQueueDepth",
+                       UintegerValue(sfc_target_queue_depth));
+      sw->SetAttribute("SfcTriggerThreshold",
+                       UintegerValue(sfc_trigger_threshold));
+      sw->SetAttribute("SfcOptimizationEnabled", UintegerValue(sfc_opt));
       sw->SetAttribute("MaxRtt", UintegerValue(maxRtt));
+      sw->SetAttribute("AckHighPrio", UintegerValue(ack_high_prio));
+
+      sw->SetQosMap(swc_qos_map);
     }
   }
 
@@ -912,12 +1129,6 @@ void SetupNetwork(void (*qp_finish)(FILE *, Ptr<RdmaQueuePair>)) {
           portNumber[i][j] = 10000; // each host pair use port number from 10000
       }
   }
-  flow_input.idx = -1;
-  // if (flow_num > 0){
-  // 	ReadFlowInput();
-  // 	Simulator::Schedule(Seconds(flow_input.start_time)-Simulator::Now(),
-  // ScheduleFlowInputs);
-  // }
 
   topof.close();
   tracef.close();
