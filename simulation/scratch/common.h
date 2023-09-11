@@ -155,7 +155,7 @@ uint32_t finished_flow_num;
 
 void SendFlow(int src, int dst, int maxPacketCount,
               void (*msg_handler)(void *fun_arg), void *fun_arg, int tag) {
-  uint32_t port = portNumder[src][dst]++; // get a new port number
+  uint32_t port = portNumber[src][dst]++; // get a new port number
   int pg = 3, dport = 100;
   flow_input.idx++;
   RdmaClientHelper clientHelper(

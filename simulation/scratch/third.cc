@@ -17,8 +17,7 @@
 #undef PGO_TRAINING
 #define PATH_TO_PGO_CONFIG "path_to_pgo_config"
 
-#include "common.hpp"
-
+#include "common.h"
 #include "ns3/applications-module.h"
 #include "ns3/core-module.h"
 #include "ns3/error-model.h"
@@ -38,8 +37,6 @@
 #include <ns3/switch-node.h>
 #include <time.h>
 #include <unordered_map>
-
-// #include "third.h"
 
 using namespace ns3;
 using namespace std;
