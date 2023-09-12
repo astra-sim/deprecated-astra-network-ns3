@@ -295,6 +295,8 @@ def configure(conf):
 
     env = conf.env
 
+    env.append_value("CXXFLAGS", "-I./src/applications")
+    env.append_value("CXXFLAGS", "-I" + os.getcwd() + "/../../../../")
     if Options.options.enable_gcov:
         env['GCOV_ENABLED'] = True
         env.append_value('CCFLAGS', '-fprofile-arcs')
