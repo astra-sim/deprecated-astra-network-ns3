@@ -47,10 +47,7 @@
 #include "ns3/seq-ts-header.h"
 #include "ns3/pointer.h"
 #include "ns3/custom-header.h"
-#include "ns3/workerQueue.h"
 #include <iostream>
-map<pair<int,pair<int,int> >, struct task1> sentHash;
-map<pair<int,int>,int> nodeHash;
 NS_LOG_COMPONENT_DEFINE("QbbNetDevice");
 
 namespace ns3 {
@@ -111,21 +108,6 @@ namespace ns3 {
 				int receiver_node = qp->GetDest();
 				int tag = qp->GetTag();
 				int t_count = qp->GetInitialSize();
-				if(sentHash.find(make_pair(tag,make_pair(sender_node, receiver_node)))!=sentHash.end()){
-					task1 t2 = sentHash[make_pair(tag,make_pair(sender_node, receiver_node))];
-					//sentHash.erase(make_pair(tag,make_pair(sender_node, receiver_node)));
-					if(t2.count==t_count)
-					{	
-						sentHash.erase(make_pair(tag,make_pair(sender_node, receiver_node)));
-						if(nodeHash.find(make_pair(sender_node, 0))==nodeHash.end()){
-     							nodeHash[make_pair(sender_node, 0)] = t_count;
-  						 }
-   						else{
-     							nodeHash[make_pair(sender_node, 0)] += t_count;
-  						 }
-						t2.msg_handler(t2.fun_arg);
-					}
-				}
 			}
 			if (!paused[qp->m_pg] && qp->GetBytesLeft() > 0 && !qp->IsWinBound()){
 				if (m_qpGrp->Get(idx)->m_nextAvail.GetTimeStep() > Simulator::Now().GetTimeStep()) //not available now

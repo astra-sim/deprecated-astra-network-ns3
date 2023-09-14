@@ -8,7 +8,6 @@ def build(bld):
     module = bld.create_ns3_module('applications', ['internet', 'config-store', 'tools', 'point-to-point'])
     module.source = [
         'model/bulk-send-application.cc',
-        '../../scratch/workerQueue.cc',
 	'model/onoff-application.cc',
         'model/packet-sink.cc',
         'model/ping6.cc',
@@ -23,7 +22,6 @@ def build(bld):
         'model/udp-echo-client.cc',
         'model/udp-echo-server.cc',
         'model/v4ping.cc',
-	'model/simple-udp-application.cc',
         'helper/bulk-send-helper.cc',
         'helper/on-off-helper.cc',
         'helper/packet-sink-helper.cc',
@@ -53,7 +51,6 @@ def build(bld):
     headers.module = 'applications'
     headers.source = [
         'model/bulk-send-application.h',
-        '../../scratch/workerQueue.h',
 	'../../scratch/myHeader.h',
 	'model/onoff-application.h',
         'model/packet-sink.h',
@@ -69,7 +66,6 @@ def build(bld):
         'model/udp-echo-client.h',
         'model/udp-echo-server.h',
         'model/v4ping.h',
-	'model/simple-udp-application.h',
         'helper/bulk-send-helper.h',
         'helper/on-off-helper.h',
         'helper/packet-sink-helper.h',

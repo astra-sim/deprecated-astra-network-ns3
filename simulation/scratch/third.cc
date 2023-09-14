@@ -64,24 +64,16 @@ map<std::pair<int, int>, int> nodeHash;
 void SendFlow(int src, int dst, int maxPacketCount,
               void (*msg_handler)(void *fun_arg), void *fun_arg, int tag) {
   uint32_t port = portNumber[src][dst]++; // get a new port number
-  // uint32_t port = portNumber[src][dst];
-  // if(sender_src_port_map.find(make_pair(port, make_pair(src, dst))) !=
-  // sender_src_port_map.end()){
-  //   NS_ASSERT_MSG(false, "we did not expect multiple messages from the same
-  //   sender and receiver burst at the same time now.");
-  // }
   sender_src_port_map[make_pair(port, make_pair(src, dst))] = tag;
   int pg = 3, dport = 100;
   flow_input.idx++;
-  std::cout << "flow input is " << flow_input.idx << " src " << src << " dst "
-            << dst << "\n";
+  //std::cout << "flow input is " << flow_input.idx << " src " << src << " dst "
+  //          << dst << "\n";
   RdmaClientHelper clientHelper(
-      pg, 3, serverAddress[src], serverAddress[dst], port, dport,
-      maxPacketCount,
+      pg, serverAddress[src], serverAddress[dst], port, dport, maxPacketCount,
       has_win ? (global_t == 1 ? maxBdp : pairBdp[n.Get(src)][n.Get(dst)]) : 0,
-      global_t == 1 ? maxRtt : pairRtt[src][dst]);
-  // msg_handler, fun_arg, tag, src, dst);
-
+      global_t == 1 ? maxRtt : pairRtt[src][dst], msg_handler, fun_arg, tag,
+      src, dst);
   ApplicationContainer appCon = clientHelper.Install(n.Get(src));
   appCon.Start(Time(0));
 }

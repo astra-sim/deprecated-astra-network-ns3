@@ -130,22 +130,6 @@ struct FlowInput {
 
 FlowInput flow_input = {0};
 uint32_t flow_num;
-uint32_t finished_flow_num;
-
-void SendFlow(int src, int dst, int maxPacketCount,
-              void (*msg_handler)(void *fun_arg), void *fun_arg, int tag) {
-  uint32_t port = portNumber[src][dst]++; // get a new port number
-  int pg = 3, dport = 100;
-  flow_input.idx++;
-  RdmaClientHelper clientHelper(
-      pg, serverAddress[src], serverAddress[dst], port, dport, maxPacketCount,
-      has_win ? (global_t == 1 ? maxBdp : pairBdp[n.Get(src)][n.Get(dst)]) : 0,
-      global_t == 1 ? maxRtt : pairRtt[src][dst], msg_handler, fun_arg, tag,
-      src, dst);
-  ApplicationContainer appCon = clientHelper.Install(n.Get(src));
-  appCon.Start(Time(0));
-}
-
 Ipv4Address node_id_to_ip(uint32_t id) {
   return Ipv4Address(0x0b000001 + ((id / 256) * 0x00010000) +
                      ((id % 256) * 0x00000100));

@@ -33,14 +33,10 @@
 #include "ns3/socket-factory.h"
 #include "ns3/socket.h"
 #include "ns3/uinteger.h"
-#include "ns3/workerQueue.h"
 #include <ns3/rdma-driver.h>
 #include <stdio.h>
 #include <stdlib.h>
-map<pair<int, pair<int, int>>, int> recvHash;
-map<pair<int, pair<int, int>>, struct task1> expeRecvHash;
-// map<pair<int,pair<int,int> >, struct task1> sentHash;
-map<pair<int, int>, int> nodeHash;
+
 namespace ns3 {
 
 NS_LOG_COMPONENT_DEFINE("RdmaClient");
@@ -109,59 +105,9 @@ void RdmaClient::SetPG(uint16_t pg) { m_pg = pg; }
 void RdmaClient::SetSize(uint64_t size) { m_size = size; }
 
 void RdmaClient::Sent() {
-  int sender_node = src;
-  int receiver_node = dest;
-  // static int totalsendAcks = 0;
-  // totalsendAcks++;
-  // if(sentHash.find(make_pair(tag,make_pair(sender_node,
-  // receiver_node)))!=sentHash.end()){ task1 t2 =
-  // sentHash[make_pair(tag,make_pair(sender_node, receiver_node))];
-  // sentHash.erase(make_pair(tag,make_pair(sender_node, receiver_node)));
-  //  if(nodeHash.find(make_pair(sender_node, 0))==nodeHash.end()){
-  //  nodeHash[make_pair(sender_node, 0)] = m_size;
-  // }
-  // else{
-  // nodeHash[make_pair(sender_node, 0)] += m_size;
-  // }
-  // totalsendAcks++;
-  // t2.msg_handler(t2.fun_arg);
-  // }
 }
 
 void RdmaClient::Finish() {
-  int count = m_size;
-  int sender_node = src;
-  int receiver_node = dest;
-  if (expeRecvHash.find(make_pair(
-          tag, make_pair(sender_node, receiver_node))) != expeRecvHash.end()) {
-    task1 t2 =
-        expeRecvHash[make_pair(tag, make_pair(sender_node, receiver_node))];
-    if (count == t2.count) {
-      expeRecvHash.erase(make_pair(tag, make_pair(sender_node, receiver_node)));
-      t2.msg_handler(t2.fun_arg);
-    } else if (count > t2.count) {
-      recvHash[make_pair(tag, make_pair(sender_node, receiver_node))] =
-          count - t2.count;
-      expeRecvHash.erase(make_pair(tag, make_pair(sender_node, receiver_node)));
-      t2.msg_handler(t2.fun_arg);
-    } else {
-      t2.count -= count;
-      expeRecvHash[make_pair(tag, make_pair(sender_node, receiver_node))] = t2;
-    }
-  } else {
-    if (recvHash.find(make_pair(tag, make_pair(sender_node, receiver_node))) ==
-        recvHash.end()) {
-      recvHash[make_pair(tag, make_pair(sender_node, receiver_node))] = count;
-    } else {
-      recvHash[make_pair(tag, make_pair(sender_node, receiver_node))] += count;
-    }
-  }
-  if (nodeHash.find(make_pair(receiver_node, 1)) == nodeHash.end()) {
-    nodeHash[make_pair(receiver_node, 1)] = m_size;
-  } else {
-    nodeHash[make_pair(receiver_node, 1)] += m_size;
-  }
-  m_node->DeleteApplication(this);
 }
 
 void RdmaClient::SetFn(void (*msg_handler)(void *fun_arg), void *fun_arg) {
