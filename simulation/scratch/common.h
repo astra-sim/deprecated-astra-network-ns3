@@ -130,42 +130,6 @@ struct FlowInput {
 
 FlowInput flow_input = {0};
 uint32_t flow_num;
-
-void ReadFlowInput() {
-  if (flow_input.idx < flow_num) {
-    flowf >> flow_input.src >> flow_input.dst >> flow_input.pg >>
-        flow_input.dport >> flow_input.maxPacketCount >> flow_input.start_time;
-    NS_ASSERT(n.Get(flow_input.src)->GetNodeType() == 0 &&
-              n.Get(flow_input.dst)->GetNodeType() == 0);
-  }
-}
-void ScheduleFlowInputs() {
-  while (flow_input.idx < flow_num &&
-         Seconds(flow_input.start_time) == Simulator::Now()) {
-    uint32_t port =
-        portNumber[flow_input.src][flow_input.dst]++; // get a new port number
-    // RdmaClientHelper clientHelper(flow_input.pg,
-    // serverAddress[flow_input.src], serverAddress[flow_input.dst], port,
-    // flow_input.dport, flow_input.maxPacketCount,
-    // has_win?(global_t==1?maxBdp:pairBdp[n.Get(flow_input.src)][n.Get(flow_input.dst)]):0,
-    // global_t==1?maxRtt:pairRtt[flow_input.src][flow_input.dst]);
-    // ApplicationContainer appCon =
-    // clientHelper.Install(n.Get(flow_input.src)); appCon.Start(Time(0));
-
-    // get the next flow input
-    flow_input.idx++;
-    ReadFlowInput();
-  }
-
-  // schedule the next time to run this function
-  if (flow_input.idx < flow_num) {
-    Simulator::Schedule(Seconds(flow_input.start_time) - Simulator::Now(),
-                        ScheduleFlowInputs);
-  } else { // no more flows, close the file
-    flowf.close();
-  }
-}
-
 Ipv4Address node_id_to_ip(uint32_t id) {
   return Ipv4Address(0x0b000001 + ((id / 256) * 0x00010000) +
                      ((id % 256) * 0x00000100));
@@ -234,6 +198,7 @@ void monitor_buffer(FILE *qlen_output, NodeContainer *n) {
         //	queue_result[i][j]+=size;
         // queue_result[i][j].add(size);
       }
+      fflush(qlen_output);
       // fprintf(qlen_output, "\n");
     }
   }
@@ -279,12 +244,18 @@ void CalculateRoute(Ptr<Node> host) {
       }
     }
   }
-  for (auto it : delay)
+  for (auto it : delay) {
+    // std::cout << "pairDelay first "<< it.first->GetId() << " host " <<
+    // host->GetId() << " delay " << it.second << std::endl;
     pairDelay[it.first][host] = it.second;
+  }
   for (auto it : txDelay)
     pairTxDelay[it.first][host] = it.second;
-  for (auto it : bw)
+  for (auto it : bw) {
+    // std::cout << "pairBw first "<< it.first->GetId() << " host " <<
+    // host->GetId() << " bw " << it.second << std::endl;
     pairBw[it.first->GetId()][host->GetId()] = it.second;
+  }
 }
 
 void CalculateRoutes(NodeContainer &n) {
@@ -370,6 +341,7 @@ bool ReadConf(int argc, char *argv[]) {
     while (!conf.eof()) {
       std::string key;
       conf >> key;
+
       if (key.compare("ENABLE_QCN") == 0) {
         uint32_t v;
         conf >> v;
@@ -681,6 +653,7 @@ void SetupNetwork(void (*qp_finish)(FILE *, Ptr<RdmaQueuePair>)) {
       ipv4->AddInterface(d.Get(0));
       ipv4->AddAddress(
           1, Ipv4InterfaceAddress(serverAddress[src], Ipv4Mask(0xff000000)));
+
     }
     if (dnode->GetNodeType() == 0) {
       Ptr<Ipv4> ipv4 = dnode->GetObject<Ipv4>();
@@ -733,6 +706,7 @@ void SetupNetwork(void (*qp_finish)(FILE *, Ptr<RdmaQueuePair>)) {
     if (n.Get(i)->GetNodeType() == 1) { // is switch
       Ptr<SwitchNode> sw = DynamicCast<SwitchNode>(n.Get(i));
       uint32_t shift = 3; // by default 1/8
+
       for (uint32_t j = 1; j < sw->GetNDevices(); j++) {
         Ptr<QbbNetDevice> dev = DynamicCast<QbbNetDevice>(sw->GetDevice(j));
         // set ecn
@@ -749,6 +723,7 @@ void SetupNetwork(void (*qp_finish)(FILE *, Ptr<RdmaQueuePair>)) {
         uint64_t delay = DynamicCast<QbbChannel>(dev->GetChannel())
                              ->GetDelay()
                              .GetTimeStep();
+        // uint32_t headroom = 150000; // rate * delay / 8 / 1000000000 * 3;
         uint32_t headroom = rate * delay / 8 / 1000000000 * 3;
         sw->m_mmu->ConfigHdrm(j, headroom);
 
@@ -767,6 +742,7 @@ void SetupNetwork(void (*qp_finish)(FILE *, Ptr<RdmaQueuePair>)) {
 
 #if ENABLE_QP
   FILE *fct_output = fopen(fct_output_file.c_str(), "w");
+  std::cout << "QP is enabled " << std::endl;
   //
   // install RDMA driver
   //
@@ -913,11 +889,6 @@ void SetupNetwork(void (*qp_finish)(FILE *, Ptr<RdmaQueuePair>)) {
       }
   }
   flow_input.idx = -1;
-  // if (flow_num > 0){
-  // 	ReadFlowInput();
-  // 	Simulator::Schedule(Seconds(flow_input.start_time)-Simulator::Now(),
-  // ScheduleFlowInputs);
-  // }
 
   topof.close();
   tracef.close();
