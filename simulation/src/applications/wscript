@@ -51,7 +51,6 @@ def build(bld):
     headers.module = 'applications'
     headers.source = [
         'model/bulk-send-application.h',
-	'../../scratch/myHeader.h',
 	'model/onoff-application.h',
         'model/packet-sink.h',
         'model/ping6.h',
