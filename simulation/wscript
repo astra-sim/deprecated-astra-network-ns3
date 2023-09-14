@@ -625,6 +625,8 @@ def add_scratch_programs(bld):
         if filename.startswith('.') or filename == 'CVS':
 	    continue
         if os.path.isdir(os.path.join("scratch", filename)):
+            # Do not build anything for directories.
+    	    continue
             obj = bld.create_ns3_program(filename, all_modules)
             obj.path = obj.path.find_dir('scratch').find_dir(filename)
             obj.source = obj.path.ant_glob('*.cc')
