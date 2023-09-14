@@ -167,16 +167,13 @@ void qp_finish(FILE *fout, Ptr<RdmaQueuePair> q) {
                                         // required (with header but no INT)
   uint64_t standalone_fct = base_rtt + total_bytes * 8000000000lu / b;
   // sip, dip, sport, dport, size (B), start_time, fct (ns), standalone_fct (ns)
-  // fprintf(fout, "%08x %08x %u %u %lu %lu %lu %lu\n", q->sip.Get(),
-  // q->dip.Get(), q->sport, q->dport, q->m_size, q->startTime.GetTimeStep(),
-  // (Simulator::Now() - q->startTime).GetTimeStep(), standalone_fct);
-  fprintf(fout, "%8u %8u %u %u %lu %lu %lu %lu\n", sid, did, q->sport, q->dport,
-          q->m_size, q->startTime.GetTimeStep(),
+  fprintf(fout, "%08x %08x %u %u %lu %lu %lu %lu\n", q->sip.Get(), q->dip.Get(),
+          q->sport, q->dport, q->m_size, q->startTime.GetTimeStep(),
           (Simulator::Now() - q->startTime).GetTimeStep(), standalone_fct);
   fflush(fout);
 
-  std::cout << " " << sid << " " << did << " " << q->sport << " " << q->dport
-            << " " << q->m_size << std::endl;
+  // std::cout << " " << sid << " " << did << " " << q->sport << " " << q->dport
+  //           << " " << q->m_size << std::endl;
   // remove rxQp from the receiver
   Ptr<Node> dstNode = n.Get(did);
   Ptr<RdmaDriver> rdma = dstNode->GetObject<RdmaDriver>();
@@ -203,9 +200,6 @@ int main1(int argc, char *argv[]) {
 
   if (!ReadConf(argc, argv))
     return -1;
-  std::cout << " sfc_queue_num " << sfc_queue_num << " fc_mode " << fc_mode
-            << " sfc trigger " << sfc_trigger_threshold << " sfc_target "
-            << sfc_target_queue_depth << " sfc_opt " << sfc_opt << std::endl;
   SetConfig();
   SetupNetwork(qp_finish);
 
@@ -224,6 +218,3 @@ int main1(int argc, char *argv[]) {
   endt = clock();
   // std:://cout << (double)(endt - begint) / CLOCKS_PER_SEC << "\n";
 }
-// int main(int argc, char *argv[]) {
-// 	return -1;
-// }
