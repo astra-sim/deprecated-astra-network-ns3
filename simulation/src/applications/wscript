@@ -42,6 +42,31 @@ def build(bld):
             file = file.replace("./src/applications/", "")
             module.source.append(file)
 
+    # These directories have been included starting in ASTRA-sim 2.0 and are not necessary in ASTRA_sim 1.0
+    # We do not want two versions of the ns3 repository (one for 1.0 and one for 2.0), hence, the below code is 
+    # kept for both ASTRA-sim versions. 
+    if os.getenv('IS_ASTRA_SIM_1_0') is None:
+        for dirpath, dirs, files in os.walk('./src/applications/et_def/'):
+            for filename in fnmatch.filter(files, '*.cc'):
+                file = os.path.join(dirpath, filename)
+                file = file.replace("./src/applications/", "")
+                module.source.append(file)
+        for dirpath, dirs, files in os.walk('./src/applications/et_feeder/'):
+            for filename in fnmatch.filter(files, '*.cpp'):
+                file = os.path.join(dirpath, filename)
+                file = file.replace("./src/applications/", "")
+                module.source.append(file)
+        for dirpath, dirs, files in os.walk('./src/applications/third_party/utils'):
+            for filename in fnmatch.filter(files, '*.cc'):
+                file = os.path.join(dirpath, filename)
+                file = file.replace("./src/applications/", "")
+                module.source.append(file)
+        for dirpath, dirs, files in os.walk('./src/applications/remote_memory_backend/analytical'):
+            for filename in fnmatch.filter(files, '*.cc'):
+                file = os.path.join(dirpath, filename)
+                file = file.replace("./src/applications/", "")
+                module.source.append(file)
+
     applications_test = bld.create_ns3_module_test_library('applications')
     applications_test.source = [
         'test/udp-client-server-test.cc',
