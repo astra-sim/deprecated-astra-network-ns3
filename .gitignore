@@ -4,10 +4,7 @@
 *.conf_check_*
 .waf-1.7.11-*/
 .lock-waf_linux2_build
-simulation/build/ns3/*
-simulation/build/.wafpickle-*
-simulation/build/.old_srcdir
-simulation/build/scratch/*
+simulation/build/*
 simulation/**/ns3.18-*
 simulation/mix/*.txt
 simulation/mix/*.tr
