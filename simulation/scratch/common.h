@@ -398,7 +398,8 @@ bool ReadConf(int argc, char *argv[]) {
         std::string v;
         conf >> v;
         trace_output_file = v;
-        //if (argc > 2) {
+        // Removed to handle new command line arguments in build.sh.
+	//if (argc > 2) {
         //  trace_output_file = trace_output_file + std::string(argv[2]);
         //}
       } else if (key.compare("SIMULATOR_STOP_TIME") == 0) {
