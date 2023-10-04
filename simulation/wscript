@@ -10,6 +10,7 @@ import re
 import shlex
 import subprocess
 import textwrap
+import os
 
 from utils import read_config_file
 
@@ -295,8 +296,17 @@ def configure(conf):
 
     env = conf.env
 
+    conf.env["lpthread"] = conf.check(mandatory=True, lib="pthread", uselib_store="PTHREAD")
+    conf.env.append_value('CXXDEFINES', 'ENABLE_PTHREAD')
+    conf.env.append_value('CCDEFINES', 'ENABLE_PTHREAD')
+    conf.env["lprotobuf"] = conf.check(mandatory=True, lib="protobuf", uselib_store="PROTOBUF")
+    conf.env.append_value('CXXDEFINES', 'ENABLE_PROTOBUF')
+    conf.env.append_value('CCDEFINES', 'ENABLE_PROTOBUF')
+
     env.append_value("CXXFLAGS", "-I./src/applications")
     env.append_value("CXXFLAGS", "-I" + os.getcwd() + "/../../../../")
+    env.append_value("CXXFLAGS", "-I" + os.getcwd() + "/../../../../extern/graph_frontend/chakra")
+    env.append_value("CXXFLAGS", "-I" + os.getcwd() + "/../../../../extern/remote_memory_backend/analytical")
     if Options.options.enable_gcov:
         env['GCOV_ENABLED'] = True
         env.append_value('CCFLAGS', '-fprofile-arcs')
@@ -478,10 +488,10 @@ def configure(conf):
     # These flags are used for the implicitly dependent modules.
     if env['ENABLE_STATIC_NS3']:
         if sys.platform == 'darwin':
-            env.STLIB_MARKER = '-Wl,-all_load'
+            env.STLIB_MARKER = '-Wl,-all_load,-lpthread,-lprotobuf'
         else:
-            env.STLIB_MARKER = '-Wl,--whole-archive,-Bstatic'
-            env.SHLIB_MARKER = '-Wl,-Bdynamic,--no-whole-archive'
+            env.STLIB_MARKER = '-Wl,--whole-archive,-Bstatic,-lpthread,-lprotobuf'
+            env.SHLIB_MARKER = '-Wl,-Bdynamic,--no-whole-archive,-lpthread,-lprotobuf'
 
 
     have_gsl = conf.check_cfg(package='gsl', args=['--cflags', '--libs'],
@@ -594,15 +604,15 @@ def create_ns3_program(bld, name, dependencies=('core',)):
     program.use = program.ns3_module_dependencies
     if program.env['ENABLE_STATIC_NS3']:
         if sys.platform == 'darwin':
-            program.env.STLIB_MARKER = '-Wl,-all_load'
+            program.env.STLIB_MARKER = '-Wl,-all_load,-lpthread,-lprotobuf'
         else:
-            program.env.STLIB_MARKER = '-Wl,-Bstatic,--whole-archive'
-            program.env.SHLIB_MARKER = '-Wl,-Bdynamic,--no-whole-archive'
+            program.env.STLIB_MARKER = '-Wl,-Bstatic,--whole-archive,-lpthread,-lprotobuf'
+            program.env.SHLIB_MARKER = '-Wl,-Bdynamic,--no-whole-archive,-lpthread,-lprotobuf'
     else:
         if program.env.DEST_BINFMT == 'elf':
             # All ELF platforms are impacted but only the gcc compiler has a flag to fix it.
             if 'gcc' in (program.env.CXX_NAME, program.env.CC_NAME): 
-                program.env.append_value ('SHLIB_MARKER', '-Wl,--no-as-needed')
+                program.env.append_value ('SHLIB_MARKER', '-Wl,--no-as-needed,-lpthread,-lprotobuf')
 
     return program
 
@@ -633,6 +643,7 @@ def add_scratch_programs(bld):
             obj.target = filename
             obj.name = obj.target
             obj.install_path = None
+            obj.uselib = "PTHREAD PROTOBUF"
         elif filename.endswith(".cc"):
             name = filename[:-len(".cc")]
             obj = bld.create_ns3_program(name, all_modules)
@@ -641,6 +652,7 @@ def add_scratch_programs(bld):
             obj.target = name
             obj.name = obj.target
             obj.install_path = None
+            obj.uselib = "PTHREAD PROTOBUF"
 
 def _get_all_task_gen(self):
     for group in self.groups:
