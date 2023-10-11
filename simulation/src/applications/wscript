@@ -102,6 +102,9 @@ def build(bld):
         ]
 
     for dirpath, dirs, files in os.walk('./src/applications/astra-sim/'):
+        if 'network_frontend' in dirpath:
+            print(dirpath, files)
+            continue
         for filename in fnmatch.filter(files, '*.hh'):
             file = os.path.join(dirpath, filename)
             file = file.replace("./src/applications/", "")
