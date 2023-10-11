@@ -9,3 +9,4 @@ simulation/**/ns3.18-*
 simulation/mix/*.txt
 simulation/mix/*.tr
 simulation/scratch/**
+simulation/mix/mix.tr*
