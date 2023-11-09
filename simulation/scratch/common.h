@@ -323,218 +323,208 @@ uint64_t get_nic_rate(NodeContainer &n) {
           .GetBitRate();
 }
 
-bool ReadConf(int argc, char *argv[]) {
-
-#ifndef PGO_TRAINING
-  if (argc > 1)
-#else
-  if (true)
-#endif
-  {
-    // Read the configuration file
-    std::ifstream conf;
-#ifndef PGO_TRAINING
-    conf.open(argv[1]);
-#else
-    conf.open(PATH_TO_PGO_CONFIG);
-#endif
-    while (!conf.eof()) {
-      std::string key;
-      conf >> key;
-
-      if (key.compare("ENABLE_QCN") == 0) {
-        uint32_t v;
-        conf >> v;
-        enable_qcn = v;
-      } else if (key.compare("USE_DYNAMIC_PFC_THRESHOLD") == 0) {
-        uint32_t v;
-        conf >> v;
-        use_dynamic_pfc_threshold = v;
-      } else if (key.compare("CLAMP_TARGET_RATE") == 0) {
-        uint32_t v;
-        conf >> v;
-        clamp_target_rate = v;
-      } else if (key.compare("PAUSE_TIME") == 0) {
-        double v;
-        conf >> v;
-        pause_time = v;
-      } else if (key.compare("DATA_RATE") == 0) {
-        std::string v;
-        conf >> v;
-        data_rate = v;
-      } else if (key.compare("LINK_DELAY") == 0) {
-        std::string v;
-        conf >> v;
-        link_delay = v;
-      } else if (key.compare("PACKET_PAYLOAD_SIZE") == 0) {
-        uint32_t v;
-        conf >> v;
-        packet_payload_size = v;
-      } else if (key.compare("L2_CHUNK_SIZE") == 0) {
-        uint32_t v;
-        conf >> v;
-        l2_chunk_size = v;
-      } else if (key.compare("L2_ACK_INTERVAL") == 0) {
-        uint32_t v;
-        conf >> v;
-        l2_ack_interval = v;
-      } else if (key.compare("L2_BACK_TO_ZERO") == 0) {
-        uint32_t v;
-        conf >> v;
-        l2_back_to_zero = v;
-      } else if (key.compare("TOPOLOGY_FILE") == 0) {
-        std::string v;
-        conf >> v;
-        topology_file = v;
-      } else if (key.compare("FLOW_FILE") == 0) {
-        std::string v;
-        conf >> v;
-        flow_file = v;
-      } else if (key.compare("TRACE_FILE") == 0) {
-        std::string v;
-        conf >> v;
-        trace_file = v;
-      } else if (key.compare("TRACE_OUTPUT_FILE") == 0) {
-        std::string v;
-        conf >> v;
-        trace_output_file = v;
-        // Removed to handle new command line arguments in build.sh.
-	//if (argc > 2) {
-        //  trace_output_file = trace_output_file + std::string(argv[2]);
-        //}
-      } else if (key.compare("SIMULATOR_STOP_TIME") == 0) {
-        double v;
-        conf >> v;
-        simulator_stop_time = v;
-      } else if (key.compare("ALPHA_RESUME_INTERVAL") == 0) {
-        double v;
-        conf >> v;
-        alpha_resume_interval = v;
-      } else if (key.compare("RP_TIMER") == 0) {
-        double v;
-        conf >> v;
-        rp_timer = v;
-      } else if (key.compare("EWMA_GAIN") == 0) {
-        double v;
-        conf >> v;
-        ewma_gain = v;
-      } else if (key.compare("FAST_RECOVERY_TIMES") == 0) {
-        uint32_t v;
-        conf >> v;
-        fast_recovery_times = v;
-      } else if (key.compare("RATE_AI") == 0) {
-        std::string v;
-        conf >> v;
-        rate_ai = v;
-      } else if (key.compare("RATE_HAI") == 0) {
-        std::string v;
-        conf >> v;
-        rate_hai = v;
-      } else if (key.compare("ERROR_RATE_PER_LINK") == 0) {
-        double v;
-        conf >> v;
-        error_rate_per_link = v;
-      } else if (key.compare("CC_MODE") == 0) {
-        conf >> cc_mode;
-      } else if (key.compare("RATE_DECREASE_INTERVAL") == 0) {
-        double v;
-        conf >> v;
-        rate_decrease_interval = v;
-      } else if (key.compare("MIN_RATE") == 0) {
-        conf >> min_rate;
-      } else if (key.compare("FCT_OUTPUT_FILE") == 0) {
-        conf >> fct_output_file;
-      } else if (key.compare("HAS_WIN") == 0) {
-        conf >> has_win;
-      } else if (key.compare("GLOBAL_T") == 0) {
-        conf >> global_t;
-      } else if (key.compare("MI_THRESH") == 0) {
-        conf >> mi_thresh;
-      } else if (key.compare("VAR_WIN") == 0) {
-        uint32_t v;
-        conf >> v;
-        var_win = v;
-      } else if (key.compare("FAST_REACT") == 0) {
-        uint32_t v;
-        conf >> v;
-        fast_react = v;
-      } else if (key.compare("U_TARGET") == 0) {
-        conf >> u_target;
-      } else if (key.compare("INT_MULTI") == 0) {
-        conf >> int_multi;
-      } else if (key.compare("RATE_BOUND") == 0) {
-        uint32_t v;
-        conf >> v;
-        rate_bound = v;
-      } else if (key.compare("ACK_HIGH_PRIO") == 0) {
-        conf >> ack_high_prio;
-      } else if (key.compare("DCTCP_RATE_AI") == 0) {
-        conf >> dctcp_rate_ai;
-      } else if (key.compare("NIC_TOTAL_PAUSE_TIME") == 0) {
-        conf >> nic_total_pause_time;
-      } else if (key.compare("PFC_OUTPUT_FILE") == 0) {
-        conf >> pfc_output_file;
-      } else if (key.compare("LINK_DOWN") == 0) {
-        conf >> link_down_time >> link_down_A >> link_down_B;
-      } else if (key.compare("ENABLE_TRACE") == 0) {
-        conf >> enable_trace;
-      } else if (key.compare("KMAX_MAP") == 0) {
-        int n_k;
-        conf >> n_k;
-        for (int i = 0; i < n_k; i++) {
-          uint64_t rate;
-          uint32_t k;
-          conf >> rate >> k;
-          rate2kmax[rate] = k;
-        }
-      } else if (key.compare("KMIN_MAP") == 0) {
-        int n_k;
-        conf >> n_k;
-        for (int i = 0; i < n_k; i++) {
-          uint64_t rate;
-          uint32_t k;
-          conf >> rate >> k;
-          rate2kmin[rate] = k;
-        }
-      } else if (key.compare("PMAX_MAP") == 0) {
-        int n_k;
-        conf >> n_k;
-        for (int i = 0; i < n_k; i++) {
-          uint64_t rate;
-          double p;
-          conf >> rate >> p;
-          rate2pmax[rate] = p;
-        }
-      } else if (key.compare("BUFFER_SIZE") == 0) {
-        conf >> buffer_size;
-      } else if (key.compare("QLEN_MON_FILE") == 0) {
-        conf >> qlen_mon_file;
-      } else if (key.compare("QLEN_MON_START") == 0) {
-        conf >> qlen_mon_start;
-      } else if (key.compare("QLEN_MON_END") == 0) {
-        conf >> qlen_mon_end;
-      } else if (key.compare("MULTI_RATE") == 0) {
-        int v;
-        conf >> v;
-        multi_rate = v;
-      } else if (key.compare("SAMPLE_FEEDBACK") == 0) {
-        int v;
-        conf >> v;
-        sample_feedback = v;
-      } else if (key.compare("PINT_LOG_BASE") == 0) {
-        conf >> pint_log_base;
-      } else if (key.compare("PINT_PROB") == 0) {
-        conf >> pint_prob;
-      }
-      fflush(stdout);
-    }
-    conf.close();
-    return true;
-  } else {
-    std::cout << "Error: require a config file\n";
+bool ReadConf(string network_configuration) {
+  // Read the configuration file
+  std::ifstream conf;
+  conf.open(network_configuration);
+  if (!conf.is_open()) {
+    std::cout << "Error: cannot find network config file: " << network_configuration << std::endl;
     fflush(stdout);
     return false;
   }
+  
+  while (!conf.eof()) {
+    std::string key;
+    conf >> key;
+
+    if (key.compare("ENABLE_QCN") == 0) {
+      uint32_t v;
+      conf >> v;
+      enable_qcn = v;
+    } else if (key.compare("USE_DYNAMIC_PFC_THRESHOLD") == 0) {
+      uint32_t v;
+      conf >> v;
+      use_dynamic_pfc_threshold = v;
+    } else if (key.compare("CLAMP_TARGET_RATE") == 0) {
+      uint32_t v;
+      conf >> v;
+      clamp_target_rate = v;
+    } else if (key.compare("PAUSE_TIME") == 0) {
+      double v;
+      conf >> v;
+      pause_time = v;
+    } else if (key.compare("DATA_RATE") == 0) {
+      std::string v;
+      conf >> v;
+      data_rate = v;
+    } else if (key.compare("LINK_DELAY") == 0) {
+      std::string v;
+      conf >> v;
+      link_delay = v;
+    } else if (key.compare("PACKET_PAYLOAD_SIZE") == 0) {
+      uint32_t v;
+      conf >> v;
+      packet_payload_size = v;
+    } else if (key.compare("L2_CHUNK_SIZE") == 0) {
+      uint32_t v;
+      conf >> v;
+      l2_chunk_size = v;
+    } else if (key.compare("L2_ACK_INTERVAL") == 0) {
+      uint32_t v;
+      conf >> v;
+      l2_ack_interval = v;
+    } else if (key.compare("L2_BACK_TO_ZERO") == 0) {
+      uint32_t v;
+      conf >> v;
+      l2_back_to_zero = v;
+    } else if (key.compare("TOPOLOGY_FILE") == 0) {
+      std::string v;
+      conf >> v;
+      topology_file = v;
+    } else if (key.compare("FLOW_FILE") == 0) {
+      std::string v;
+      conf >> v;
+      flow_file = v;
+    } else if (key.compare("TRACE_FILE") == 0) {
+      std::string v;
+      conf >> v;
+      trace_file = v;
+    } else if (key.compare("TRACE_OUTPUT_FILE") == 0) {
+      std::string v;
+      conf >> v;
+      trace_output_file = v;
+      // Removed to handle new command line arguments in build.sh.
+  //if (argc > 2) {
+      //  trace_output_file = trace_output_file + std::string(argv[2]);
+      //}
+    } else if (key.compare("SIMULATOR_STOP_TIME") == 0) {
+      double v;
+      conf >> v;
+      simulator_stop_time = v;
+    } else if (key.compare("ALPHA_RESUME_INTERVAL") == 0) {
+      double v;
+      conf >> v;
+      alpha_resume_interval = v;
+    } else if (key.compare("RP_TIMER") == 0) {
+      double v;
+      conf >> v;
+      rp_timer = v;
+    } else if (key.compare("EWMA_GAIN") == 0) {
+      double v;
+      conf >> v;
+      ewma_gain = v;
+    } else if (key.compare("FAST_RECOVERY_TIMES") == 0) {
+      uint32_t v;
+      conf >> v;
+      fast_recovery_times = v;
+    } else if (key.compare("RATE_AI") == 0) {
+      std::string v;
+      conf >> v;
+      rate_ai = v;
+    } else if (key.compare("RATE_HAI") == 0) {
+      std::string v;
+      conf >> v;
+      rate_hai = v;
+    } else if (key.compare("ERROR_RATE_PER_LINK") == 0) {
+      double v;
+      conf >> v;
+      error_rate_per_link = v;
+    } else if (key.compare("CC_MODE") == 0) {
+      conf >> cc_mode;
+    } else if (key.compare("RATE_DECREASE_INTERVAL") == 0) {
+      double v;
+      conf >> v;
+      rate_decrease_interval = v;
+    } else if (key.compare("MIN_RATE") == 0) {
+      conf >> min_rate;
+    } else if (key.compare("FCT_OUTPUT_FILE") == 0) {
+      conf >> fct_output_file;
+    } else if (key.compare("HAS_WIN") == 0) {
+      conf >> has_win;
+    } else if (key.compare("GLOBAL_T") == 0) {
+      conf >> global_t;
+    } else if (key.compare("MI_THRESH") == 0) {
+      conf >> mi_thresh;
+    } else if (key.compare("VAR_WIN") == 0) {
+      uint32_t v;
+      conf >> v;
+      var_win = v;
+    } else if (key.compare("FAST_REACT") == 0) {
+      uint32_t v;
+      conf >> v;
+      fast_react = v;
+    } else if (key.compare("U_TARGET") == 0) {
+      conf >> u_target;
+    } else if (key.compare("INT_MULTI") == 0) {
+      conf >> int_multi;
+    } else if (key.compare("RATE_BOUND") == 0) {
+      uint32_t v;
+      conf >> v;
+      rate_bound = v;
+    } else if (key.compare("ACK_HIGH_PRIO") == 0) {
+      conf >> ack_high_prio;
+    } else if (key.compare("DCTCP_RATE_AI") == 0) {
+      conf >> dctcp_rate_ai;
+    } else if (key.compare("NIC_TOTAL_PAUSE_TIME") == 0) {
+      conf >> nic_total_pause_time;
+    } else if (key.compare("PFC_OUTPUT_FILE") == 0) {
+      conf >> pfc_output_file;
+    } else if (key.compare("LINK_DOWN") == 0) {
+      conf >> link_down_time >> link_down_A >> link_down_B;
+    } else if (key.compare("ENABLE_TRACE") == 0) {
+      conf >> enable_trace;
+    } else if (key.compare("KMAX_MAP") == 0) {
+      int n_k;
+      conf >> n_k;
+      for (int i = 0; i < n_k; i++) {
+        uint64_t rate;
+        uint32_t k;
+        conf >> rate >> k;
+        rate2kmax[rate] = k;
+      }
+    } else if (key.compare("KMIN_MAP") == 0) {
+      int n_k;
+      conf >> n_k;
+      for (int i = 0; i < n_k; i++) {
+        uint64_t rate;
+        uint32_t k;
+        conf >> rate >> k;
+        rate2kmin[rate] = k;
+      }
+    } else if (key.compare("PMAX_MAP") == 0) {
+      int n_k;
+      conf >> n_k;
+      for (int i = 0; i < n_k; i++) {
+        uint64_t rate;
+        double p;
+        conf >> rate >> p;
+        rate2pmax[rate] = p;
+      }
+    } else if (key.compare("BUFFER_SIZE") == 0) {
+      conf >> buffer_size;
+    } else if (key.compare("QLEN_MON_FILE") == 0) {
+      conf >> qlen_mon_file;
+    } else if (key.compare("QLEN_MON_START") == 0) {
+      conf >> qlen_mon_start;
+    } else if (key.compare("QLEN_MON_END") == 0) {
+      conf >> qlen_mon_end;
+    } else if (key.compare("MULTI_RATE") == 0) {
+      int v;
+      conf >> v;
+      multi_rate = v;
+    } else if (key.compare("SAMPLE_FEEDBACK") == 0) {
+      int v;
+      conf >> v;
+      sample_feedback = v;
+    } else if (key.compare("PINT_LOG_BASE") == 0) {
+      conf >> pint_log_base;
+    } else if (key.compare("PINT_PROB") == 0) {
+      conf >> pint_prob;
+    }
+    fflush(stdout);
+  }
+  conf.close();
+  return true;
 }
 
 void SetConfig() {
