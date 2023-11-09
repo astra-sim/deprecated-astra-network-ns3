@@ -307,6 +307,7 @@ def configure(conf):
     env.append_value("CXXFLAGS", "-I" + os.getcwd() + "/../../../../")
     env.append_value("CXXFLAGS", "-I" + os.getcwd() + "/../../../../extern/graph_frontend/chakra")
     env.append_value("CXXFLAGS", "-I" + os.getcwd() + "/../../../../extern/remote_memory_backend/analytical")
+    env.append_value("CXXFLAGS", "-I" + os.getcwd() + "/../../../../extern/helper")
     if Options.options.enable_gcov:
         env['GCOV_ENABLED'] = True
         env.append_value('CCFLAGS', '-fprofile-arcs')
