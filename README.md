@@ -1,3 +1,7 @@
+> [!CAUTION]
+> This repository has been DEPRECATED. To use the ns3 backend with the most recent ASTRA-sim, refer to the new [NS3 backend repository](https://github.com/astra-sim/astra-network-ns3)
+
+
 # NS3-Interface
 This repository contains an NS3-based network simulator that acts as a network backend for ASTRA-sim. 
 ASTRA-sim is a distributed machine learning system simulator, developed as a joint collaboration between Georgia Tech, Meta, and Intel.
